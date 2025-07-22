@@ -24,7 +24,7 @@ export default function SeekerLayout({
 }) {
   const pathname = usePathname();
   const loggedInUser = {
-    email: "seeker@example.com",
+    email: "tarjkothari2004@gmail.com",
     name: "Job Seeker"
   };
 
