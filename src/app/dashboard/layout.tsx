@@ -1,3 +1,6 @@
+
+"use client";
+
 import { Logo } from "@/components/logo";
 import {
   SidebarProvider,
@@ -11,14 +14,20 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BarChart2, LogOut, Scale, Settings, User } from "lucide-react";
-import Link from "next/link";
+import { BarChart2, LogOut, Scale, Settings } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const loggedInUser = {
+    email: "manager@company.com",
+    name: "Hiring Manager"
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
@@ -29,19 +38,31 @@ export default function DashboardLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/ranker" tooltip="Candidate Ranker">
+                <SidebarMenuButton
+                  href="/dashboard/ranker"
+                  tooltip="Candidate Ranker"
+                  isActive={pathname.startsWith('/dashboard/ranker')}
+                >
                   <BarChart2 />
                   <span>Candidate Ranker</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/bias-checker" tooltip="Bias Checker">
+                <SidebarMenuButton
+                  href="/dashboard/bias-checker"
+                  tooltip="Bias Checker"
+                  isActive={pathname.startsWith('/dashboard/bias-checker')}
+                >
                   <Scale />
                   <span>Bias Checker</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/dashboard/account" tooltip="Account">
+                <SidebarMenuButton
+                  href="/dashboard/account"
+                  tooltip="Account"
+                  isActive={pathname.startsWith('/dashboard/account')}
+                >
                   <Settings />
                   <span>Account</span>
                 </SidebarMenuButton>
@@ -51,32 +72,36 @@ export default function DashboardLayout({
           <SidebarFooter>
             <div className="flex items-center gap-3 p-2">
               <Avatar>
-                <AvatarImage src="https://placehold.co/40x40" alt="User Avatar" />
+                <AvatarImage
+                  src="https://placehold.co/40x40"
+                  alt="User Avatar"
+                  data-ai-hint="avatar"
+                />
                 <AvatarFallback>JP</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
-                  Hiring Manager
+                  {loggedInUser.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  manager@company.com
+                  {loggedInUser.email}
                 </span>
               </div>
             </div>
-             <SidebarMenu>
-                 <SidebarMenuItem>
-                    <SidebarMenuButton href="/login" tooltip="Logout">
-                        <LogOut/>
-                        <span>Logout</span>
-                    </SidebarMenuButton>
-                 </SidebarMenuItem>
-             </SidebarMenu>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton href="/login" tooltip="Logout">
+                  <LogOut />
+                  <span>Logout</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
           </SidebarFooter>
         </Sidebar>
         <main className="flex-1">
           <header className="flex h-14 items-center gap-4 border-b bg-background px-4 lg:px-6">
             <div className="md:hidden">
-                <SidebarTrigger />
+              <SidebarTrigger />
             </div>
             <div className="flex-1">
               <h1 className="text-lg font-semibold">Job Provider Dashboard</h1>
