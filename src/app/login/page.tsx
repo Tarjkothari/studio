@@ -31,7 +31,7 @@ export default function LoginPage() {
     // This is a mock login.
     // In a real app, you would have authentication logic here.
     setTimeout(() => {
-        if (email === 'admin@resumerank.ai' && password === 'password') {
+        if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj@2108') {
              toast({
                 title: "Login Successful",
                 description: "Redirecting to admin dashboard.",
