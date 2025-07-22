@@ -31,24 +31,38 @@ export default function LoginPage() {
     // This is a mock login.
     // In a real app, you would have authentication logic here.
     setTimeout(() => {
+      let role = 'Job Seeker';
+      let name = "Job Seeker";
+      let redirectPath = '/seeker';
+      let loginSuccess = false;
+
         if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj@2108') {
              toast({
                 title: "Login Successful",
                 description: "Redirecting to admin dashboard.",
              });
-             router.push('/admin');
+             role = "Admin";
+             name = "Admin";
+             redirectPath = '/admin';
+             loginSuccess = true;
         } else if (email.endsWith('@company.com')) {
             toast({
                 title: "Login Successful",
                 description: "Redirecting to job provider dashboard.",
              });
-            router.push('/dashboard');
+            role = "Job Provider";
+            name = "Hiring Manager";
+            redirectPath = '/dashboard';
+            loginSuccess = true;
         } else if (email) {
             toast({
                 title: "Login Successful",
                 description: "Redirecting to job seeker dashboard.",
              });
-            router.push('/seeker');
+            role = "Job Seeker";
+            name = email.split('@')[0];
+            redirectPath = '/seeker';
+            loginSuccess = true;
         } else {
              toast({
                 variant: "destructive",
@@ -56,6 +70,30 @@ export default function LoginPage() {
                 description: "Invalid credentials.",
              });
         }
+        
+        if (loginSuccess) {
+            try {
+                const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                const userExists = existingUsers.some((user: any) => user.email === email);
+
+                if (!userExists) {
+                    const newUser = {
+                        name: name,
+                        email: email,
+                        role: role,
+                        avatar: "https://placehold.co/40x40",
+                        fallback: name.substring(0,2).toUpperCase(),
+                        status: "Active",
+                    };
+                    const updatedUsers = [...existingUsers, newUser];
+                    localStorage.setItem('users', JSON.stringify(updatedUsers));
+                }
+            } catch (e) {
+                console.error("Could not update users in localStorage", e);
+            }
+            router.push(redirectPath);
+        }
+
         setIsLoading(false);
     }, 1000)
   };

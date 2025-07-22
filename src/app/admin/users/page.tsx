@@ -1,26 +1,23 @@
+
+"use client";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useEffect, useState } from "react";
 
-const users = [
+type User = {
+    name: string;
+    email: string;
+    role: string;
+    avatar: string;
+    fallback: string;
+    status: string;
+};
+
+const defaultUsers: User[] = [
   {
-    name: "Hiring Manager",
-    email: "manager@company.com",
-    role: "Job Provider",
-    avatar: "https://placehold.co/40x40",
-    fallback: "HM",
-    status: "Active",
-  },
-  {
-    name: "Jane Doe",
-    email: "jane.d@example.com",
-    role: "Job Seeker",
-    avatar: "https://placehold.co/40x40",
-    fallback: "JD",
-    status: "Active",
-  },
-    {
     name: "Admin",
     email: "admin@resumerank.ai",
     role: "Admin",
@@ -28,17 +25,32 @@ const users = [
     fallback: "AD",
     status: "Active",
   },
-  {
-    name: "Peter Jones",
-    email: "peter.j@work.net",
-    role: "Job Provider",
-    avatar: "https://placehold.co/40x40",
-    fallback: "PJ",
-    status: "Inactive",
-  },
 ];
 
 export default function UsersPage() {
+  const [users, setUsers] = useState<User[]>(defaultUsers);
+  
+  useEffect(() => {
+    try {
+        const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        // Combine default users with stored users, avoiding duplicates
+        const combinedUsers = [...defaultUsers];
+        const storedUserEmails = new Set(defaultUsers.map(u => u.email));
+
+        for (const user of storedUsers) {
+            if (!storedUserEmails.has(user.email)) {
+                combinedUsers.push(user);
+                storedUserEmails.add(user.email);
+            }
+        }
+
+        setUsers(combinedUsers);
+    } catch (e) {
+        console.error("Could not retrieve users from localStorage", e);
+        setUsers(defaultUsers);
+    }
+  }, []);
+
   return (
     <Card>
       <CardHeader>
@@ -60,7 +72,7 @@ export default function UsersPage() {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar>
-                       <AvatarImage src={user.avatar} />
+                       <AvatarImage src={user.avatar} data-ai-hint="avatar" />
                        <AvatarFallback>{user.fallback}</AvatarFallback>
                     </Avatar>
                     <div>
