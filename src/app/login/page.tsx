@@ -16,12 +16,10 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
 
 export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const { login } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -30,32 +28,36 @@ export default function LoginPage() {
     event.preventDefault();
     setIsLoading(true);
 
-    try {
-      const user = await login(email, password);
-      if (user) {
-        toast({
-          title: "Login Successful",
-          description: "Welcome back!",
-        });
-        if (user.role === 'Admin') {
-            router.push('/admin');
-        } else if (user.role === 'Job Provider') {
+    // This is a mock login.
+    // In a real app, you would have authentication logic here.
+    setTimeout(() => {
+        if (email === 'admin@resumerank.ai' && password === 'password') {
+             toast({
+                title: "Login Successful",
+                description: "Redirecting to admin dashboard.",
+             });
+             router.push('/admin');
+        } else if (email.endsWith('@company.com')) {
+            toast({
+                title: "Login Successful",
+                description: "Redirecting to job provider dashboard.",
+             });
             router.push('/dashboard');
-        } else {
+        } else if (email) {
+            toast({
+                title: "Login Successful",
+                description: "Redirecting to job seeker dashboard.",
+             });
             router.push('/seeker');
+        } else {
+             toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: "Invalid credentials.",
+             });
         }
-      } else {
-        throw new Error("Invalid credentials");
-      }
-    } catch (error) {
-      toast({
-        variant: "destructive",
-        title: "Login Failed",
-        description: "Invalid email or password. Please try again.",
-      });
-    } finally {
-      setIsLoading(false);
-    }
+        setIsLoading(false);
+    }, 1000)
   };
 
   return (
