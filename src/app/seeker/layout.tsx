@@ -32,7 +32,7 @@ export default function SeekerLayout({
 }) {
   const pathname = usePathname();
   const [loggedInUser, setLoggedInUser] = useState<User>({
-    email: "job.seeker@example.com",
+    email: "",
     name: "Job Seeker",
     fallback: "JS"
   });
