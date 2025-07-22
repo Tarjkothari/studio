@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -75,19 +76,21 @@ export default function LoginPage() {
             try {
                 const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
                 const userExists = existingUsers.some((user: any) => user.email === email);
+                const currentUser = {
+                    name: name,
+                    email: email,
+                    role: role,
+                    avatar: "https://placehold.co/40x40",
+                    fallback: name.substring(0,2).toUpperCase(),
+                    status: "Active",
+                };
 
                 if (!userExists) {
-                    const newUser = {
-                        name: name,
-                        email: email,
-                        role: role,
-                        avatar: "https://placehold.co/40x40",
-                        fallback: name.substring(0,2).toUpperCase(),
-                        status: "Active",
-                    };
-                    const updatedUsers = [...existingUsers, newUser];
+                    const updatedUsers = [...existingUsers, currentUser];
                     localStorage.setItem('users', JSON.stringify(updatedUsers));
                 }
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+
             } catch (e) {
                 console.error("Could not update users in localStorage", e);
             }

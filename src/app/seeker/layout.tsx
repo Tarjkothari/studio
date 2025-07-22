@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Logo } from "@/components/logo";
@@ -16,6 +17,13 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FileUp, LogOut, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+
+type User = {
+  email: string;
+  name: string;
+  fallback: string;
+};
 
 export default function SeekerLayout({
   children,
@@ -23,10 +31,27 @@ export default function SeekerLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const loggedInUser = {
+  const [loggedInUser, setLoggedInUser] = useState<User>({
     email: "job.seeker@example.com",
-    name: "Job Seeker"
-  };
+    name: "Job Seeker",
+    fallback: "JS"
+  });
+
+  useEffect(() => {
+    try {
+        const userString = localStorage.getItem('loggedInUser');
+        if (userString) {
+            const user = JSON.parse(userString);
+            setLoggedInUser({
+              name: user.name,
+              email: user.email,
+              fallback: user.fallback
+            });
+        }
+    } catch(e) {
+      console.error("Could not retrieve logged in user from localStorage", e);
+    }
+  }, []);
 
   return (
     <SidebarProvider>
@@ -67,7 +92,7 @@ export default function SeekerLayout({
                   alt="User Avatar"
                   data-ai-hint="avatar"
                 />
-                <AvatarFallback>JS</AvatarFallback>
+                <AvatarFallback>{loggedInUser.fallback}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
