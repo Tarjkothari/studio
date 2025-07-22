@@ -1,3 +1,6 @@
+
+"use client";
+
 import { Logo } from "@/components/logo";
 import {
   SidebarProvider,
@@ -12,12 +15,19 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, Users } from "lucide-react";
+import { usePathname } from "next/navigation";
 
 export default function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+  const loggedInUser = {
+    email: "tarjkothari2004@gmail.com",
+    name: "Admin"
+  };
+
   return (
     <SidebarProvider>
       <div className="flex min-h-screen bg-background">
@@ -28,13 +38,21 @@ export default function AdminLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/users" tooltip="Users">
+                <SidebarMenuButton 
+                  href="/admin/users" 
+                  tooltip="Users"
+                  isActive={pathname.startsWith('/admin/users')}
+                >
                   <Users />
                   <span>Users</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/admin/settings" tooltip="Settings">
+                <SidebarMenuButton 
+                  href="/admin/settings" 
+                  tooltip="Settings"
+                  isActive={pathname.startsWith('/admin/settings')}
+                >
                   <Settings />
                   <span>Settings</span>
                 </SidebarMenuButton>
@@ -47,15 +65,16 @@ export default function AdminLayout({
                 <AvatarImage
                   src="https://placehold.co/40x40"
                   alt="User Avatar"
+                  data-ai-hint="avatar"
                 />
                 <AvatarFallback>AD</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
-                  Admin
+                  {loggedInUser.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  tarjkothari2004@gmail.com
+                  {loggedInUser.email}
                 </span>
               </div>
             </div>
