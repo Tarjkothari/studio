@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Briefcase, MapPin, Users, PlusCircle } from 'lucide-react';
@@ -13,6 +14,7 @@ type JobPosting = {
     company: string;
     location: string;
     postedBy: string;
+    description: string;
 };
 
 type Application = {
@@ -20,6 +22,7 @@ type Application = {
 }
 
 export default function MyJobsPage() {
+    const router = useRouter();
     const [myJobs, setMyJobs] = useState<JobPosting[]>([]);
     const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
@@ -39,9 +42,7 @@ export default function MyJobsPage() {
 
     useEffect(() => {
         if (!currentUserEmail) {
-            // Wait for the user's email to be loaded
             if (!isLoading && myJobs.length === 0) {
-                 // only stop loading if we are sure there are no jobs
             } else if (isLoading && !currentUserEmail) {
                 return;
             }
@@ -71,6 +72,11 @@ export default function MyJobsPage() {
             setIsLoading(false);
         }
     }, [currentUserEmail]);
+
+    const handleViewApplicantsClick = (job: JobPosting) => {
+        sessionStorage.setItem('selectedJobForApplicants', JSON.stringify(job));
+        router.push(`/dashboard/my-jobs/${job.id}/applicants`);
+    };
 
     return (
         <div className="space-y-6">
@@ -127,11 +133,9 @@ export default function MyJobsPage() {
                                 </div>
                             </CardContent>
                             <CardFooter>
-                                <Button asChild className="w-full">
-                                    <Link href={`/dashboard/my-jobs/${job.id}/applicants`}>
-                                        <Users className="mr-2 h-4 w-4" />
-                                        View Applicants
-                                    </Link>
+                                <Button onClick={() => handleViewApplicantsClick(job)} className="w-full">
+                                    <Users className="mr-2 h-4 w-4" />
+                                    View Applicants
                                 </Button>
                             </CardFooter>
                         </Card>

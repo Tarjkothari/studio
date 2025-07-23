@@ -48,11 +48,24 @@ export default function ApplicantsPage() {
         if (!jobId) return;
         
         try {
-            const allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
-            const currentJob = allJobs.find((j: JobPosting) => j.id === jobId);
-            if (currentJob) {
-                setJob(currentJob);
-            } else {
+            const selectedJobString = sessionStorage.getItem('selectedJobForApplicants');
+            let currentJob: JobPosting | null = null;
+            if (selectedJobString) {
+                currentJob = JSON.parse(selectedJobString);
+                if (currentJob && currentJob.id === jobId) {
+                    setJob(currentJob);
+                }
+            }
+
+            if (!currentJob) {
+                const allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
+                currentJob = allJobs.find((j: JobPosting) => j.id === jobId);
+                if (currentJob) {
+                    setJob(currentJob);
+                }
+            }
+            
+            if (!currentJob) {
                 toast({ variant: 'destructive', title: 'Job not found' });
                 router.push('/dashboard/my-jobs');
                 return;
@@ -205,4 +218,3 @@ export default function ApplicantsPage() {
         </div>
     );
 }
-
