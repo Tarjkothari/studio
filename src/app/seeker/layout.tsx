@@ -37,52 +37,42 @@ export default function SeekerLayout({
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const checkUser = () => {
-      try {
+  const updateUser = () => {
+    try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
-          const user = JSON.parse(userString);
-          if (user.role === 'Job Seeker') {
-            if (isMounted) {
+            const user = JSON.parse(userString);
+            if (user.role === 'Job Seeker') {
               setLoggedInUser(user);
+            } else {
+              router.push('/login');
             }
-          } else {
-            // Wrong role, redirect
-            router.push('/login');
-          }
         } else {
-          // No user, redirect
           router.push('/login');
         }
-      } catch (e) {
-        console.error("Could not retrieve user from localStorage", e);
-        router.push('/login');
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
+    } catch(e) {
+      console.error("Could not retrieve logged in user from localStorage", e);
+      router.push('/login');
+    } finally {
+        setIsLoading(false);
+    }
+  };
 
-    checkUser();
-
-    // Listen for storage changes to update user info across tabs
-    const handleStorageChange = () => {
-        checkUser();
-    };
-
-    window.addEventListener('storage', handleStorageChange);
+  useEffect(() => {
+    updateUser();
     
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'loggedInUser' || event.key === null) { 
+        updateUser();
+      }
+    }
+    window.addEventListener('storage', handleStorageChange);
+
     return () => {
-      isMounted = false;
       window.removeEventListener('storage', handleStorageChange);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router]);
-
+  }, []);
 
   if (isLoading) {
      return (
@@ -93,8 +83,6 @@ export default function SeekerLayout({
   }
 
   if (!loggedInUser) {
-    // This state should ideally not be reached if logic is correct,
-    // but as a fallback, it prevents rendering the layout while redirecting.
     return null;
   }
 
