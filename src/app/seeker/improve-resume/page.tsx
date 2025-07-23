@@ -1,6 +1,7 @@
+
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -18,6 +19,21 @@ export default function ImproveResumePage() {
   const [jobDescription, setJobDescription] = useState("");
   const [results, setResults] = useState<SuggestResumeImprovementsOutput>([]);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Check session storage for a pre-filled job description
+    const prefilledJd = sessionStorage.getItem('jobDescriptionForImprover');
+    if (prefilledJd) {
+      setJobDescription(prefilledJd);
+      // Clear it so it doesn't persist across sessions
+      sessionStorage.removeItem('jobDescriptionForImprover');
+      toast({
+        title: "Job Description Loaded",
+        description: "The job description from the listing has been pre-filled for you."
+      })
+    }
+  }, []);
+
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];

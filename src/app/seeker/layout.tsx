@@ -15,7 +15,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileUp, LogOut, Settings } from "lucide-react";
+import { FileUp, LogOut, Settings, Briefcase } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -71,6 +71,18 @@ export default function SeekerLayout({
           </SidebarHeader>
           <SidebarContent>
             <SidebarMenu>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Job Listings"
+                  isActive={pathname.startsWith('/seeker/jobs')}
+                  asChild
+                >
+                  <Link href="/seeker/jobs">
+                    <Briefcase />
+                    <span>Job Listings</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
                   tooltip="Resume Improver"
