@@ -16,26 +16,31 @@ export default function Home() {
       icon: <ScanSearch className="h-8 w-8 text-primary" />,
       title: 'AI Resume Parsing',
       description: 'Effortlessly extract skills, experience, and education from any resume PDF.',
+      href: '/dashboard/ranker'
     },
     {
       icon: <FileText className="h-8 w-8 text-primary" />,
       title: 'Job Description Analysis',
       description: 'Instantly identify key requirements and qualifications from job descriptions.',
+      href: '/dashboard/bias-checker'
     },
     {
       icon: <BarChart className="h-8 w-8 text-primary" />,
       title: 'Intelligent Candidate Ranking',
       description: 'Score and rank candidates based on their relevance to your job opening.',
+      href: '/dashboard/ranker'
     },
     {
       icon: <FlaskConical className="h-8 w-8 text-primary" />,
       title: 'Resume Improvement',
       description: 'Get AI-powered suggestions to tailor your resume for any job.',
+      href: '/seeker/improve-resume'
     },
     {
       icon: <Scale className="h-8 w-8 text-primary" />,
       title: 'Bias Detection',
       description: 'Promote fair hiring by identifying and removing potential bias from job posts.',
+      href: '/dashboard/bias-checker'
     },
   ];
 
@@ -83,15 +88,17 @@ export default function Home() {
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {features.map((feature) => (
-              <Card key={feature.title} className="flex flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                <CardHeader className="p-0">
-                  {feature.icon}
-                  <CardTitle className="mt-4">{feature.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0 mt-2">
-                  <p className="text-muted-foreground">{feature.description}</p>
-                </CardContent>
-              </Card>
+              <Link href={feature.href} key={feature.title}>
+                 <Card className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                  <CardHeader className="p-0">
+                    {feature.icon}
+                    <CardTitle className="mt-4">{feature.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-0 mt-2">
+                    <p className="text-muted-foreground">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             ))}
           </div>
         </section>
