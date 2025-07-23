@@ -38,30 +38,32 @@ export default function SeekerLayout({
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const updateUser = () => {
-    try {
+  useEffect(() => {
+    let isMounted = true;
+
+    const updateUser = () => {
+      try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
-            const user = JSON.parse(userString);
-            if (user.role === 'Job Seeker') {
-              setLoggedInUser(user);
-            } else {
-              router.push('/login');
-            }
+          const user = JSON.parse(userString);
+          if (user.role === 'Job Seeker') {
+            if (isMounted) setLoggedInUser(user);
+          } else {
+            router.push('/login');
+          }
         } else {
           router.push('/login');
         }
-    } catch(e) {
-      console.error("Could not retrieve logged in user from localStorage", e);
-      router.push('/login');
-    } finally {
-        setIsLoading(false);
-    }
-  };
+      } catch (e) {
+        console.error("Could not retrieve logged in user from localStorage", e);
+        router.push('/login');
+      } finally {
+        if (isMounted) setIsLoading(false);
+      }
+    };
 
-  useEffect(() => {
     updateUser();
-    
+
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === 'loggedInUser' || event.key === null) {
         updateUser();
@@ -70,10 +72,11 @@ export default function SeekerLayout({
     window.addEventListener('storage', handleStorageChange);
 
     return () => {
+      isMounted = false;
       window.removeEventListener('storage', handleStorageChange);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router, pathname]);
+  }, []);
 
   if (isLoading) {
      return (
