@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut, Settings, Users, Loader2 } from "lucide-react";
+import Link from "next/link";
 
 
 export default function AdminLayout({
@@ -27,6 +28,7 @@ export default function AdminLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [user, setUser] = useState<{name: string, email: string} | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const userString = localStorage.getItem('loggedInUser');
@@ -40,10 +42,11 @@ export default function AdminLayout({
     } else {
       router.push('/login');
     }
+    setIsLoading(false);
   }, [router]);
 
 
-  if (!user) {
+  if (isLoading) {
       return (
       <div className="flex h-screen items-center justify-center">
           <Loader2 className="h-10 w-10 animate-spin" />
@@ -61,23 +64,27 @@ export default function AdminLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  href="/admin/users" 
+                <SidebarMenuButton
                   tooltip="Users"
                   isActive={pathname.startsWith('/admin/users')}
+                  asChild
                 >
-                  <Users />
-                  <span>Users</span>
+                  <Link href="/admin/users">
+                    <Users />
+                    <span>Users</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton 
-                  href="/admin/settings" 
+                <SidebarMenuButton
                   tooltip="Settings"
                   isActive={pathname.startsWith('/admin/settings')}
+                  asChild
                 >
-                  <Settings />
-                  <span>Settings</span>
+                  <Link href="/admin/settings">
+                    <Settings />
+                    <span>Settings</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -94,18 +101,20 @@ export default function AdminLayout({
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
-                  {user.name}
+                  {user?.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {user.email}
+                  {user?.email}
                 </span>
               </div>
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/login" tooltip="Logout">
-                  <LogOut />
-                  <span>Logout</span>
+                <SidebarMenuButton tooltip="Logout" asChild>
+                    <Link href="/login">
+                      <LogOut />
+                      <span>Logout</span>
+                    </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
