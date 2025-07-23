@@ -26,76 +26,69 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
 
-    // This is a mock login.
-    // In a real app, you would have a proper backend authentication.
-    setTimeout(() => {
-        try {
-            const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = existingUsers.find((user: any) => user.email === email);
+    try {
+        const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const user = existingUsers.find((user: any) => user.email === email);
 
-            // Special handling for the designated admin user to ensure access
-            if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj2108') {
-                 toast({
-                    title: "Login Successful",
-                    description: `Redirecting to admin dashboard.`,
-                });
-                
-                // Ensure the user object for the session is correct
-                const adminUser = user || {
-                    name: "Admin",
-                    email: "tarjkothari2004@gmail.com",
-                    role: "Admin",
-                    avatar: "https://placehold.co/40x40",
-                    fallback: "AD",
-                    status: "Active",
-                };
+        if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj2108') {
+            toast({
+                title: "Login Successful",
+                description: `Redirecting to admin dashboard.`,
+            });
+            
+            const adminUser = user || {
+                name: "Admin",
+                email: "tarjkothari2004@gmail.com",
+                role: "Admin",
+                avatar: "https://placehold.co/40x40",
+                fallback: "AD",
+                status: "Active",
+            };
 
-                localStorage.setItem('loggedInUser', JSON.stringify(adminUser));
-                router.push('/admin');
-                return;
+            localStorage.setItem('loggedInUser', JSON.stringify(adminUser));
+            router.push('/admin');
+            return;
+        }
+
+        if (user && user.password && user.password === password) {
+            toast({
+                title: "Login Successful",
+                description: `Redirecting to ${user.role.toLowerCase()} dashboard.`,
+            });
+            
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            
+            let redirectPath = '/';
+            if (user.role === 'Admin') {
+                redirectPath = '/admin';
+            } else if (user.role === 'Job Provider') {
+                redirectPath = '/dashboard';
+            } else if (user.role === 'Job Seeker') {
+                redirectPath = '/seeker';
             }
+            router.push(redirectPath);
 
-
-            if (user && user.password && user.password === password) {
-                 toast({
-                    title: "Login Successful",
-                    description: `Redirecting to ${user.role.toLowerCase()} dashboard.`,
-                });
-                
-                localStorage.setItem('loggedInUser', JSON.stringify(user));
-                
-                let redirectPath = '/';
-                if (user.role === 'Admin') {
-                    redirectPath = '/admin';
-                } else if (user.role === 'Job Provider') {
-                    redirectPath = '/dashboard';
-                } else if (user.role === 'Job Seeker') {
-                    redirectPath = '/seeker';
-                }
-                router.push(redirectPath);
-
-            } else {
-                 toast({
-                    variant: "destructive",
-                    title: "Login Failed",
-                    description: "Invalid credentials. Please check your email and password.",
-                });
-            }
-        } catch(e) {
-            console.error("Login error:", e);
-             toast({
+        } else {
+            toast({
                 variant: "destructive",
                 title: "Login Failed",
-                description: "An unexpected error occurred.",
+                description: "Invalid credentials. Please check your email and password.",
             });
-        } finally {
-             setIsLoading(false);
         }
-    }, 1000);
+    } catch(e) {
+        console.error("Login error:", e);
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "An unexpected error occurred.",
+        });
+    } finally {
+        setIsLoading(false);
+    }
   };
 
   return (
