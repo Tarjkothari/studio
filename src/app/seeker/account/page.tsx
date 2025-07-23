@@ -15,12 +15,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 type User = {
   name: string;
   email: string;
   role: string;
   fallback: string;
+  avatar: string;
 };
 
 export default function AccountPage() {
@@ -28,6 +30,7 @@ export default function AccountPage() {
   const [user, setUser] = useState<User | null>(null);
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -40,6 +43,7 @@ export default function AccountPage() {
         setUser(loggedInUser);
         setFullName(loggedInUser.name);
         setEmail(loggedInUser.email);
+        setAvatarPreview(loggedInUser.avatar);
       }
     } catch (e) {
       console.error("Failed to load user from local storage", e);
@@ -52,6 +56,17 @@ export default function AccountPage() {
       setIsLoading(false);
     }
   }, [toast]);
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
   const handleSaveChanges = (event: React.FormEvent) => {
     event.preventDefault();
@@ -73,12 +88,11 @@ export default function AccountPage() {
             name: fullName,
             email: email,
             fallback: fullName.substring(0,2).toUpperCase(),
+            avatar: avatarPreview || user.avatar,
         };
 
-        // Update loggedInUser in localStorage
         localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
 
-        // Update user in the 'users' array in localStorage
         const allUsersString = localStorage.getItem('users');
         if (allUsersString) {
             let allUsers = JSON.parse(allUsersString);
@@ -96,6 +110,9 @@ export default function AccountPage() {
             title: "Success",
             description: "Your account details have been updated.",
         });
+
+        // Trigger a custom event to notify the sidebar to update
+        window.dispatchEvent(new Event('storage'));
 
     } catch (e) {
         console.error("Failed to save user to local storage", e);
@@ -127,7 +144,18 @@ export default function AccountPage() {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handleSaveChanges}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
+          <div className="flex items-center gap-6">
+            <Avatar className="h-20 w-20">
+                <AvatarImage src={avatarPreview || undefined} data-ai-hint="avatar" />
+                <AvatarFallback>{user?.fallback}</AvatarFallback>
+            </Avatar>
+            <div className="space-y-2">
+                <Label htmlFor="profile-picture">Profile Picture</Label>
+                <Input id="profile-picture" type="file" accept="image/*" onChange={handleFileChange} />
+                <p className="text-xs text-muted-foreground">Upload a professional headshot.</p>
+            </div>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="full-name">Full Name</Label>
             <Input

@@ -24,6 +24,7 @@ type User = {
   email: string;
   name: string;
   fallback: string;
+  avatar: string;
 };
 
 export default function SeekerLayout({
@@ -35,23 +36,30 @@ export default function SeekerLayout({
   const [loggedInUser, setLoggedInUser] = useState<User>({
     email: "",
     name: "Job Seeker",
-    fallback: "JS"
+    fallback: "JS",
+    avatar: "https://placehold.co/40x40"
   });
 
-  useEffect(() => {
+  const updateUser = () => {
     try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
             const user = JSON.parse(userString);
-            setLoggedInUser({
-              name: user.name,
-              email: user.email,
-              fallback: user.fallback
-            });
+            setLoggedInUser(user);
         }
     } catch(e) {
       console.error("Could not retrieve logged in user from localStorage", e);
     }
+  };
+
+  useEffect(() => {
+    updateUser();
+    // Listen for the custom storage event
+    window.addEventListener('storage', updateUser);
+    return () => {
+      // Clean up the event listener
+      window.removeEventListener('storage', updateUser);
+    };
   }, []);
 
   return (
@@ -93,7 +101,7 @@ export default function SeekerLayout({
             <div className="flex items-center gap-3 p-2">
               <Avatar>
                 <AvatarImage
-                  src="https://placehold.co/40x40"
+                  src={loggedInUser.avatar}
                   alt="User Avatar"
                   data-ai-hint="avatar"
                 />

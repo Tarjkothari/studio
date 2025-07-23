@@ -17,6 +17,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BarChart2, LogOut, Scale, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+type User = {
+  email: string;
+  name: string;
+  fallback: string;
+  avatar: string;
+};
+
 
 export default function DashboardLayout({
   children,
@@ -24,10 +33,32 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const loggedInUser = {
+  const [loggedInUser, setLoggedInUser] = useState<User>({
     email: "manager@company.com",
-    name: "Hiring Manager"
+    name: "Hiring Manager",
+    fallback: "HM",
+    avatar: "https://placehold.co/40x40"
+  });
+
+   const updateUser = () => {
+    try {
+        const userString = localStorage.getItem('loggedInUser');
+        if (userString) {
+            const user = JSON.parse(userString);
+            setLoggedInUser(user);
+        }
+    } catch(e) {
+      console.error("Could not retrieve logged in user from localStorage", e);
+    }
   };
+
+  useEffect(() => {
+    updateUser();
+    window.addEventListener('storage', updateUser);
+    return () => {
+      window.removeEventListener('storage', updateUser);
+    };
+  }, []);
 
   return (
     <SidebarProvider>
@@ -39,37 +70,40 @@ export default function DashboardLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/dashboard/ranker" passHref>
                   <SidebarMenuButton
                     tooltip="Candidate Ranker"
                     isActive={pathname.startsWith('/dashboard/ranker')}
+                    asChild
                   >
-                    <BarChart2 />
-                    <span>Candidate Ranker</span>
+                    <Link href="/dashboard/ranker" passHref>
+                      <BarChart2 />
+                      <span>Candidate Ranker</span>
+                    </Link>
                   </SidebarMenuButton>
-                </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/bias-checker" passHref>
                   <SidebarMenuButton
                     tooltip="Bias Checker"
                     isActive={pathname.startsWith('/dashboard/bias-checker')}
+                    asChild
                   >
-                    <Scale />
-                    <span>Bias Checker</span>
+                     <Link href="/dashboard/bias-checker" passHref>
+                        <Scale />
+                        <span>Bias Checker</span>
+                     </Link>
                   </SidebarMenuButton>
-                </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <Link href="/dashboard/account" passHref>
                   <SidebarMenuButton
                     tooltip="Account"
                     isActive={pathname.startsWith('/dashboard/account')}
+                    asChild
                   >
-                    <Settings />
-                    <span>Account</span>
+                    <Link href="/dashboard/account" passHref>
+                      <Settings />
+                      <span>Account</span>
+                    </Link>
                   </SidebarMenuButton>
-                </Link>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
@@ -77,11 +111,11 @@ export default function DashboardLayout({
             <div className="flex items-center gap-3 p-2">
               <Avatar>
                 <AvatarImage
-                  src="https://placehold.co/40x40"
+                  src={loggedInUser.avatar}
                   alt="User Avatar"
                   data-ai-hint="avatar"
                 />
-                <AvatarFallback>JP</AvatarFallback>
+                <AvatarFallback>{loggedInUser.fallback}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
@@ -94,12 +128,12 @@ export default function DashboardLayout({
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                 <Link href="/login" passHref>
-                    <SidebarMenuButton tooltip="Logout">
+                 <SidebarMenuButton tooltip="Logout" asChild>
+                    <Link href="/login" passHref>
                         <LogOut />
                         <span>Logout</span>
-                    </SidebarMenuButton>
-                 </Link>
+                    </Link>
+                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
