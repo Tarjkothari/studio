@@ -39,7 +39,7 @@ export default function LoginPage() {
       let loginSuccess = false;
 
       // Special admin user
-      if (email === 'admin@resumerank.ai' && password === 'password') {
+      if (email.toLowerCase() === 'admin@resumerank.ai' && password === 'password') {
             toast({
             title: "Login Successful",
             description: "Redirecting to admin dashboard.",

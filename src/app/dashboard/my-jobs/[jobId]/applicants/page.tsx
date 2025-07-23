@@ -45,43 +45,52 @@ export default function ApplicantsPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!jobId) return;
+        if (!jobId) {
+            return;
+        }
 
-        setIsLoading(true);
         try {
-            // First, find the job from all job postings.
             const allJobsString = localStorage.getItem('jobPostings');
             if (allJobsString) {
-                const allJobs = JSON.parse(allJobsString);
-                const currentJob = allJobs.find((j: JobPosting) => j.id === jobId) || null;
-                
+                const allJobs = JSON.parse(allJobsString) as JobPosting[];
+                const currentJob = allJobs.find((j) => j.id === jobId);
                 if (currentJob) {
                     setJob(currentJob);
-                    // If job is found, load the applicants for that job.
-                    const allApplicationsString = localStorage.getItem('jobApplications');
-                    if (allApplicationsString) {
-                        const allApplications = JSON.parse(allApplicationsString);
-                        const jobApplicants = allApplications.filter((app: Application) => app.jobId === jobId);
-                        setApplicants(jobApplicants.map((app: Application) => ({ ...app })));
-                    }
                 } else {
-                    toast({ variant: 'destructive', title: 'Error: Job not found' });
+                    toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: 'Job not found.',
+                    });
                     router.push('/dashboard/my-jobs');
-                    return;
                 }
-            } else {
-                 toast({ variant: 'destructive', title: 'Error: Could not load jobs' });
-                 router.push('/dashboard/my-jobs');
-                 return;
             }
-
         } catch (e) {
-            console.error('Failed to load data', e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicant data.' });
+            console.error('Failed to load job data', e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not load job data.' });
+            router.push('/dashboard/my-jobs');
+        }
+    }, [jobId, router, toast]);
+
+    useEffect(() => {
+        if (!job) {
+            return;
+        }
+
+        try {
+            const allApplicationsString = localStorage.getItem('jobApplications');
+            if (allApplicationsString) {
+                const allApplications = JSON.parse(allApplicationsString) as Application[];
+                const jobApplicants = allApplications.filter((app) => app.jobId === job.id);
+                setApplicants(jobApplicants.map((app) => ({ ...app })));
+            }
+        } catch (e) {
+             console.error('Failed to load applicant data', e);
+             toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicant data.' });
         } finally {
             setIsLoading(false);
         }
-    }, [jobId, router, toast]);
+    }, [job, toast]);
 
     const handleRankApplicant = async (applicantEmail: string) => {
         const applicantIndex = applicants.findIndex(a => a.applicantEmail === applicantEmail);
@@ -123,7 +132,7 @@ export default function ApplicantsPage() {
         }
     };
     
-    if (isLoading) {
+    if (isLoading || !job) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 
