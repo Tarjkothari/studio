@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, User } from "lucide-react";
+import { Loader2, Upload } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type User = {
@@ -153,9 +153,17 @@ export default function AccountPage() {
                     </AvatarFallback>
                 </Avatar>
                 <div className="space-y-2">
-                    <Label htmlFor="profile-picture">Profile Picture</Label>
-                    <Input id="profile-picture" type="file" accept="image/*" onChange={handleFileChange} />
-                    <p className="text-xs text-muted-foreground">Upload a company logo or profile picture.</p>
+                    <Label htmlFor="profile-picture-upload">Profile Picture</Label>
+                    <div className="flex items-center gap-2">
+                        <Input id="profile-picture-upload" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                        <Button asChild variant="outline">
+                            <Label htmlFor="profile-picture-upload" className="cursor-pointer">
+                                <Upload className="mr-2 h-4 w-4" />
+                                Choose File
+                            </Label>
+                        </Button>
+                        <p className="text-xs text-muted-foreground">Upload a company logo.</p>
+                    </div>
                 </div>
             </div>
           <div className="space-y-2">

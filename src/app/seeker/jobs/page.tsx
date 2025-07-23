@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, Loader2 } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -148,7 +148,16 @@ export default function JobSearchPage() {
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="resume-upload">Upload Resume (PDF)</Label>
-              <Input id="resume-upload" type="file" accept=".pdf" onChange={handleFileChange} />
+               <div className="flex items-center gap-2">
+                  <Input id="resume-upload" type="file" accept=".pdf" className="hidden" onChange={handleFileChange} />
+                  <Button asChild variant="outline">
+                      <Label htmlFor="resume-upload" className="cursor-pointer">
+                          <Upload className="mr-2 h-4 w-4" />
+                          Choose File
+                      </Label>
+                  </Button>
+                  {resumeFile && <p className="text-sm text-muted-foreground">{resumeFile.name}</p>}
+                </div>
             </div>
           </div>
           <DialogFooter>

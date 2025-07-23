@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { suggestResumeImprovements, SuggestResumeImprovementsOutput } from "@/ai/flows/suggest-resume-improvements";
-import { Loader2, Lightbulb, ThumbsUp, ThumbsDown, FileText } from "lucide-react";
+import { Loader2, Lightbulb, ThumbsUp, ThumbsDown, Upload } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Input } from "@/components/ui/input";
 import { parseResume } from "@/ai/flows/parse-resume";
@@ -111,9 +111,17 @@ export default function ImproveResumePage() {
           <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4">
                <div className="space-y-2">
-                <Label htmlFor="resume-file">Upload Resume (PDF)</Label>
-                <Input id="resume-file" type="file" accept=".pdf" onChange={handleFileChange} />
-                <p className="text-xs text-muted-foreground">Or paste your resume text below.</p>
+                <Label htmlFor="resume-file-upload">Upload Resume (PDF)</Label>
+                 <div className="flex items-center gap-2">
+                    <Input id="resume-file-upload" type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                     <Button asChild variant="outline">
+                        <Label htmlFor="resume-file-upload" className="cursor-pointer">
+                            <Upload className="mr-2 h-4 w-4" />
+                            Choose File
+                        </Label>
+                    </Button>
+                    <p className="text-xs text-muted-foreground">Or paste below.</p>
+                </div>
               </div>
               <div className="space-y-2">
                 <Label htmlFor="resume-text">Your Resume Text</Label>

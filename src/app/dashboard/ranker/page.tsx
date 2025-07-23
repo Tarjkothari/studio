@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState } from "react";
@@ -9,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { parseResume } from "@/ai/flows/parse-resume";
 import { rankCandidates, RankCandidatesOutput } from "@/ai/flows/rank-candidates";
-import { Loader2, Star } from "lucide-react";
+import { Loader2, Star, Upload } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 
@@ -127,20 +128,21 @@ export default function RankerPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="resumes">Resumes (PDF)</Label>
-              <Input
-                id="resumes"
-                type="file"
-                accept=".pdf"
-                multiple
-                onChange={handleFileChange}
-                required
-              />
-               {resumeFiles.length > 0 && (
-                <p className="text-sm text-muted-foreground pt-2">
-                  {resumeFiles.length} file(s) selected.
-                </p>
-              )}
+              <Label htmlFor="resumes-upload">Resumes (PDF)</Label>
+               <div className="flex items-center gap-2">
+                  <Input id="resumes-upload" type="file" accept=".pdf" multiple className="hidden" onChange={handleFileChange} required />
+                  <Button asChild variant="outline">
+                      <Label htmlFor="resumes-upload" className="cursor-pointer">
+                          <Upload className="mr-2 h-4 w-4" />
+                          Choose Files
+                      </Label>
+                  </Button>
+                  {resumeFiles.length > 0 && (
+                      <p className="text-sm text-muted-foreground">
+                          {resumeFiles.length} file(s) selected.
+                      </p>
+                  )}
+               </div>
             </div>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
