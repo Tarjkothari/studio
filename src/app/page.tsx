@@ -6,7 +6,6 @@ import {
   FlaskConical,
   Scale,
   ScanSearch,
-  Users,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
@@ -37,11 +36,6 @@ export default function Home() {
       icon: <Scale className="h-8 w-8 text-primary" />,
       title: 'Bias Detection',
       description: 'Promote fair hiring by identifying and removing potential bias from job posts.',
-    },
-    {
-      icon: <Users className="h-8 w-8 text-primary" />,
-      title: 'Admin & User Management',
-      description: 'Full control over users and system settings with a dedicated admin panel.',
     },
   ];
 
