@@ -162,6 +162,7 @@ export default function PostJobPage() {
                 <SelectContent>
                     <SelectItem value="Not Required">Not Required</SelectItem>
                     <SelectItem value="High School">High School Diploma</SelectItem>
+                    <SelectItem value="Diploma">Diploma</SelectItem>
                     <SelectItem value="Associate's Degree">Associate's Degree</SelectItem>
                     <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
                     <SelectItem value="Master's Degree">Master's Degree</SelectItem>
