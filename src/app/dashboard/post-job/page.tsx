@@ -25,6 +25,7 @@ export default function PostJobPage() {
   const [location, setLocation] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [criteria, setCriteria] = useState("");
+  const [minimumMarks, setMinimumMarks] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -63,6 +64,7 @@ export default function PostJobPage() {
             location: location,
             description: jobDescription,
             criteria: criteria,
+            minimumMarks: minimumMarks,
             postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email
         };
 
@@ -99,7 +101,7 @@ export default function PostJobPage() {
         </CardDescription>
       </CardHeader>
       <form onSubmit={handlePostJob}>
-        <CardContent className="space-y-6">
+        <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="job-title">Job Title</Label>
             <Input
@@ -120,7 +122,7 @@ export default function PostJobPage() {
               required
             />
           </div>
-          <div className="space-y-2">
+          <div className="space-y-2 md:col-span-2">
             <Label htmlFor="job-description">Job Description</Label>
             <Textarea
               id="job-description"
@@ -140,6 +142,15 @@ export default function PostJobPage() {
               onChange={(e) => setCriteria(e.target.value)}
               placeholder="List key criteria for the ideal candidate (e.g., 5+ years of React experience, Bachelor's degree in CS)..."
               required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="minimum-marks">Minimum Academic Marks</Label>
+            <Input
+              id="minimum-marks"
+              value={minimumMarks}
+              onChange={(e) => setMinimumMarks(e.target.value)}
+              placeholder="e.g., 75% or 8.0 CGPA"
             />
           </div>
         </CardContent>

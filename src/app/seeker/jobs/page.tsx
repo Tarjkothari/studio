@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,6 +27,7 @@ type JobPosting = {
   location: string;
   description: string;
   criteria?: string;
+  minimumMarks?: string;
 };
 
 export default function JobSearchPage() {
@@ -215,6 +216,18 @@ export default function JobSearchPage() {
                                 ))}
                             </ul>
                         </div>
+                       )}
+                       {viewingJob?.minimumMarks && (
+                        <>
+                         <Separator />
+                         <div className="space-y-2">
+                            <h3 className="text-base font-semibold text-foreground">Academic Requirement</h3>
+                            <div className="flex items-center gap-2">
+                                <Award className="h-4 w-4 text-primary" />
+                                <span>Minimum Marks: <strong>{viewingJob.minimumMarks}</strong></span>
+                            </div>
+                         </div>
+                        </>
                        )}
                        <Separator />
                         <div className="space-y-2">
