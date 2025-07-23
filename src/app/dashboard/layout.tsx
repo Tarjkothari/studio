@@ -57,9 +57,12 @@ export default function DashboardLayout({
 
   useEffect(() => {
     updateUser();
-    window.addEventListener('storage', updateUser);
+    
+    const handleStorageChange = () => updateUser();
+    window.addEventListener('storage', handleStorageChange);
+
     return () => {
-      window.removeEventListener('storage', updateUser);
+      window.removeEventListener('storage', handleStorageChange);
     };
   }, [router]);
 

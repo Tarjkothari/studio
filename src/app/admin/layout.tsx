@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import {
@@ -26,12 +26,15 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
+  const [user, setUser] = useState<{name: string, email: string} | null>(null);
 
   useEffect(() => {
     const userString = localStorage.getItem('loggedInUser');
     if (userString) {
       const user = JSON.parse(userString);
-      if (user.role !== 'Admin') {
+      if (user.role === 'Admin') {
+        setUser(user);
+      } else {
         router.push('/login');
       }
     } else {
@@ -39,19 +42,14 @@ export default function AdminLayout({
     }
   }, [router]);
 
-  const loggedInUser = {
-    email: "tarjkothari2004@gmail.com",
-    name: "Admin"
-  };
 
-  const userString = typeof window !== 'undefined' ? localStorage.getItem('loggedInUser') : null;
-    if (!userString || JSON.parse(userString).role !== 'Admin') {
-       return (
-        <div className="flex h-screen items-center justify-center">
-            <Loader2 className="h-10 w-10 animate-spin" />
-        </div>
-       )
-    }
+  if (!user) {
+      return (
+      <div className="flex h-screen items-center justify-center">
+          <Loader2 className="h-10 w-10 animate-spin" />
+      </div>
+      )
+  }
 
   return (
     <SidebarProvider>
@@ -96,10 +94,10 @@ export default function AdminLayout({
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
-                  {loggedInUser.name}
+                  {user.name}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {loggedInUser.email}
+                  {user.email}
                 </span>
               </div>
             </div>
