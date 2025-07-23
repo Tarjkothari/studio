@@ -24,6 +24,7 @@ export default function PostJobPage() {
   const [jobTitle, setJobTitle] = useState("");
   const [location, setLocation] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [criteria, setCriteria] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -44,7 +45,7 @@ export default function PostJobPage() {
     event.preventDefault();
     setIsSaving(true);
 
-    if (!jobTitle || !location || !jobDescription) {
+    if (!jobTitle || !location || !jobDescription || !criteria) {
       toast({
         variant: "destructive",
         title: "Missing Information",
@@ -61,6 +62,7 @@ export default function PostJobPage() {
             company: companyName,
             location: location,
             description: jobDescription,
+            criteria: criteria,
             postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email
         };
 
@@ -122,10 +124,21 @@ export default function PostJobPage() {
             <Label htmlFor="job-description">Job Description</Label>
             <Textarea
               id="job-description"
-              rows={12}
+              rows={8}
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
               placeholder="Describe the role, responsibilities, and qualifications..."
+              required
+            />
+          </div>
+           <div className="space-y-2">
+            <Label htmlFor="criteria">Key Criteria</Label>
+            <Textarea
+              id="criteria"
+              rows={4}
+              value={criteria}
+              onChange={(e) => setCriteria(e.target.value)}
+              placeholder="List key criteria for the ideal candidate (e.g., 5+ years of React experience, Bachelor's degree in CS)..."
               required
             />
           </div>
@@ -144,4 +157,3 @@ export default function PostJobPage() {
     </Card>
   );
 }
-

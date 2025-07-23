@@ -13,11 +13,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, MapPin, Loader2, Upload, FileText } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { Separator } from "@/components/ui/separator";
 
 type JobPosting = {
   id: string;
@@ -25,6 +26,7 @@ type JobPosting = {
   company: string;
   location: string;
   description: string;
+  criteria?: string;
 };
 
 export default function JobSearchPage() {
@@ -188,7 +190,7 @@ export default function JobSearchPage() {
             <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{viewingJob?.title}</DialogTitle>
-                    <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
+                     <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <Briefcase className="h-4 w-4"/>
                             <span>{viewingJob?.company}</span>
@@ -200,8 +202,25 @@ export default function JobSearchPage() {
                     </div>
                 </DialogHeader>
                 <ScrollArea className="max-h-[60vh] pr-4">
-                    <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap">
-                        {viewingJob?.description}
+                    <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap space-y-4">
+                       {viewingJob?.criteria && (
+                        <div className="space-y-2">
+                            <h3 className="text-base font-semibold text-foreground">Key Criteria</h3>
+                            <ul className="list-none p-0 space-y-1">
+                                {viewingJob.criteria.split('\n').map((item, index) => item.trim() && (
+                                    <li key={index} className="flex items-start gap-2">
+                                        <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+                                        <span>{item}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                       )}
+                       <Separator />
+                        <div className="space-y-2">
+                           <h3 className="text-base font-semibold text-foreground">Job Description</h3>
+                           <p>{viewingJob?.description}</p>
+                        </div>
                     </div>
                 </ScrollArea>
                 <DialogFooter>
