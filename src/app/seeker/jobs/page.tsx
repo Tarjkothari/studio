@@ -110,17 +110,9 @@ export default function JobSearchPage() {
             
             toast({
               title: "Application Sent!",
-              description: "We'll now analyze your resume for improvements."
+              description: "Your application has been submitted successfully.",
             });
             
-            // Pass data to resume improver
-            sessionStorage.setItem('jobDescriptionForImprover', selectedJob.description);
-            sessionStorage.setItem('resumeForImprover', resumeDataUri);
-            if (achievements) {
-                sessionStorage.setItem('achievementsForImprover', achievements);
-            }
-            router.push('/seeker/improve-resume');
-
         } catch (error) {
             console.error("Failed to process application", error);
             toast({ variant: "destructive", title: "Application Failed", description: "Could not save your application." });
@@ -230,7 +222,7 @@ export default function JobSearchPage() {
             <Button variant="outline" onClick={() => setIsApplyDialogOpen(false)}>Cancel</Button>
             <Button onClick={handleConfirmApplication} disabled={!resumeFile || isProcessing}>
               {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Analyze & Apply
+              Apply
             </Button>
           </DialogFooter>
         </DialogContent>
