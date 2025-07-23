@@ -17,6 +17,7 @@ export default function ImproveResumePage() {
   const { toast } = useToast();
   const [resumeText, setResumeText] = useState("");
   const [jobDescription, setJobDescription] = useState("");
+  const [achievements, setAchievements] = useState("");
   const [results, setResults] = useState<SuggestResumeImprovementsOutput>([]);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -54,6 +55,12 @@ export default function ImproveResumePage() {
         parseAndSetResume(prefilledResume);
         sessionStorage.removeItem('resumeForImprover');
     }
+
+    const prefilledAchievements = sessionStorage.getItem('achievementsForImprover');
+    if(prefilledAchievements) {
+        setAchievements(prefilledAchievements);
+        sessionStorage.removeItem('achievementsForImprover');
+    }
   }, []);
 
 
@@ -84,7 +91,7 @@ export default function ImproveResumePage() {
     setResults([]);
 
     try {
-      const suggestions = await suggestResumeImprovements({ resumeText, jobDescription });
+      const suggestions = await suggestResumeImprovements({ resumeText, jobDescription, achievements });
       setResults(suggestions);
     } catch (error) {
       console.error(error);
@@ -108,45 +115,59 @@ export default function ImproveResumePage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <div className="space-y-4">
-               <div className="space-y-2">
-                <Label htmlFor="resume-file-upload">Upload Resume (PDF)</Label>
-                 <div className="flex items-center gap-2">
-                    <Input id="resume-file-upload" type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
-                     <Button asChild variant="outline">
-                        <Label htmlFor="resume-file-upload" className="cursor-pointer">
-                            <Upload className="mr-2 h-4 w-4" />
-                            Choose File
-                        </Label>
-                    </Button>
-                    <p className="text-xs text-muted-foreground">Or paste below.</p>
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                 <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="resume-file-upload">Upload Resume (PDF)</Label>
+                        <div className="flex items-center gap-2">
+                            <Input id="resume-file-upload" type="file" accept=".pdf" onChange={handleFileChange} className="hidden" />
+                            <Button asChild variant="outline">
+                                <Label htmlFor="resume-file-upload" className="cursor-pointer">
+                                    <Upload className="mr-2 h-4 w-4" />
+                                    Choose File
+                                </Label>
+                            </Button>
+                            <p className="text-xs text-muted-foreground">Or paste below.</p>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="resume-text">Your Resume Text</Label>
+                        <Textarea
+                        id="resume-text"
+                        placeholder="Paste your resume text here..."
+                        value={resumeText}
+                        onChange={(e) => setResumeText(e.target.value)}
+                        rows={15}
+                        required
+                        />
+                    </div>
                 </div>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="resume-text">Your Resume Text</Label>
-                <Textarea
-                  id="resume-text"
-                  placeholder="Paste your resume text here..."
-                  value={resumeText}
-                  onChange={(e) => setResumeText(e.target.value)}
-                  rows={15}
-                  required
-                />
-              </div>
+                <div className="space-y-4">
+                    <div className="space-y-2">
+                        <Label htmlFor="job-description">Job Description</Label>
+                        <Textarea
+                            id="job-description"
+                            placeholder="Paste the job description here..."
+                            value={jobDescription}
+                            onChange={(e) => setJobDescription(e.target.value)}
+                            rows={10}
+                            required
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="achievements">Your Achievements (Optional)</Label>
+                        <Textarea
+                            id="achievements"
+                            placeholder="Describe your key achievements, projects, or awards..."
+                            value={achievements}
+                            onChange={(e) => setAchievements(e.target.value)}
+                            rows={8}
+                        />
+                    </div>
+                </div>
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="job-description">Job Description</Label>
-              <Textarea
-                id="job-description"
-                placeholder="Paste the job description here..."
-                value={jobDescription}
-                onChange={(e) => setJobDescription(e.target.value)}
-                rows={19}
-                required
-              />
-            </div>
-            <div className="md:col-span-2">
+            <div className="mt-6">
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
                   <>

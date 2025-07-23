@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -13,14 +14,22 @@ import {z} from 'genkit';
 
 const SuggestResumeImprovementsInputSchema = z.object({
   resumeText: z.string().describe('The text content of the resume.'),
-  jobDescription: z.string().describe('The job description to tailor the resume to.'),
+  jobDescription: z
+    .string()
+    .describe('The job description to tailor the resume to.'),
+  achievements: z
+    .string()
+    .optional()
+    .describe('A description of the candidate\'s achievements.'),
 });
 export type SuggestResumeImprovementsInput = z.infer<
   typeof SuggestResumeImprovementsInputSchema
 >;
 
 const ImprovementSuggestionSchema = z.object({
-  suggestion: z.string().describe('A specific suggestion for improving the resume.'),
+  suggestion: z
+    .string()
+    .describe('A specific suggestion for improving the resume.'),
   reasoning: z
     .string()
     .describe(
@@ -41,20 +50,24 @@ export type SuggestResumeImprovementsOutput = z.infer<
   typeof SuggestResumeImprovementsOutputSchema
 >;
 
-const shouldIncludeSuggestionTool = ai.defineTool({
-  name: 'shouldIncludeSuggestion',
-  description: "Determines whether including a suggestion would improve a candidate's chances based on the job description and resume.",
-  inputSchema: z.object({
-    suggestion: z.string().describe('The resume improvement suggestion.'),
-    jobDescription: z.string().describe('The job description for the job the candidate is applying for.'),
-    resumeText: z.string().describe('The text content of the resume.'),
-  }),
-  outputSchema: z.boolean(),
-},
-async (input) => {
-  // Directly return true, as the LLM will determine the value.
-  return true;
-}
+const shouldIncludeSuggestionTool = ai.defineTool(
+  {
+    name: 'shouldIncludeSuggestion',
+    description:
+      "Determines whether including a suggestion would improve a candidate's chances based on the job description and resume.",
+    inputSchema: z.object({
+      suggestion: z.string().describe('The resume improvement suggestion.'),
+      jobDescription: z
+        .string()
+        .describe('The job description for the job the candidate is applying for.'),
+      resumeText: z.string().describe('The text content of the resume.'),
+    }),
+    outputSchema: z.boolean(),
+  },
+  async input => {
+    // Directly return true, as the LLM will determine the value.
+    return true;
+  }
 );
 
 export async function suggestResumeImprovements(
@@ -75,6 +88,11 @@ const prompt = ai.definePrompt({
 
   Job Description:
   {{{jobDescription}}}
+  {{#if achievements}}
+
+  Achievements:
+  {{{achievements}}}
+  {{/if}}
 
   Each suggestion should include:
   - suggestion: A specific suggestion for improving the resume.

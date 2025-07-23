@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { Textarea } from "@/components/ui/textarea";
 
 type JobPosting = {
   id: string;
@@ -38,6 +39,7 @@ export default function JobSearchPage() {
   const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [achievements, setAchievements] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
 
   // State for the new "View Details" dialog
@@ -58,6 +60,7 @@ export default function JobSearchPage() {
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
     setResumeFile(null); // Reset file input
+    setAchievements(""); // Reset achievements
     setIsApplyDialogOpen(true);
   };
   
@@ -89,6 +92,9 @@ export default function JobSearchPage() {
         const resumeDataUri = e.target?.result as string;
         sessionStorage.setItem('jobDescriptionForImprover', selectedJob.description);
         sessionStorage.setItem('resumeForImprover', resumeDataUri);
+        if (achievements) {
+            sessionStorage.setItem('achievementsForImprover', achievements);
+        }
         router.push('/seeker/improve-resume');
         setIsProcessing(false);
         setIsApplyDialogOpen(false);
@@ -161,7 +167,7 @@ export default function JobSearchPage() {
           <DialogHeader>
             <DialogTitle>Apply for {selectedJob?.title}</DialogTitle>
             <DialogDescription>
-              Upload your resume to get AI-powered suggestions before finalizing your application.
+              Upload your resume and describe your achievements to get AI-powered feedback.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -178,6 +184,16 @@ export default function JobSearchPage() {
                   {resumeFile && <p className="text-sm text-muted-foreground">{resumeFile.name}</p>}
                 </div>
             </div>
+            <div className="space-y-2">
+                <Label htmlFor="achievements">Your Achievements (Optional)</Label>
+                <Textarea
+                    id="achievements"
+                    placeholder="Briefly describe your key achievements, projects, or awards..."
+                    rows={5}
+                    value={achievements}
+                    onChange={(e) => setAchievements(e.target.value)}
+                />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsApplyDialogOpen(false)}>Cancel</Button>
@@ -192,14 +208,16 @@ export default function JobSearchPage() {
             <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{viewingJob?.title}</DialogTitle>
-                    <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                            <Briefcase className="h-4 w-4"/>
-                            <span>{viewingJob?.company}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4"/>
-                            <span>{viewingJob?.location}</span>
+                    <div className="pt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2">
+                                <Briefcase className="h-4 w-4"/>
+                                <span>{viewingJob?.company}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4"/>
+                                <span>{viewingJob?.location}</span>
+                            </div>
                         </div>
                     </div>
                 </DialogHeader>
