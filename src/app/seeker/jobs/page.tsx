@@ -273,7 +273,7 @@ export default function JobSearchPage() {
                 <ScrollArea className="max-h-[60vh] pr-4">
                     <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap space-y-4">
                        
-                        {(viewingJob?.criteria || viewingJob?.minimumDegree || viewingingJob?.minimumMarks) && (
+                        {(viewingJob?.criteria || viewingJob?.minimumDegree || viewingJob?.minimumMarks) && (
                             <div className="space-y-4">
                                 <h3 className="text-base font-semibold text-foreground">Requirements</h3>
                                 <div className="space-y-3">
