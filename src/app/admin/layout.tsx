@@ -36,13 +36,13 @@ export default function AdminLayout({
       const user = JSON.parse(userString);
       if (user.role === 'Admin') {
         setUser(user);
+        setIsLoading(false);
       } else {
         router.push('/login');
       }
     } else {
       router.push('/login');
     }
-    setIsLoading(false);
   }, [router]);
 
 

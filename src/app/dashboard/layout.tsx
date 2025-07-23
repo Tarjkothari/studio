@@ -24,6 +24,7 @@ type User = {
   name: string;
   fallback: string;
   avatar: string;
+  role: string;
 };
 
 
@@ -58,7 +59,11 @@ export default function DashboardLayout({
   useEffect(() => {
     updateUser();
     
-    const handleStorageChange = () => updateUser();
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'loggedInUser') {
+        updateUser();
+      }
+    }
     window.addEventListener('storage', handleStorageChange);
 
     return () => {

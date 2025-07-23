@@ -25,6 +25,7 @@ type User = {
   name: string;
   fallback: string;
   avatar: string;
+  role: string;
 };
 
 export default function SeekerLayout({
@@ -41,7 +42,7 @@ export default function SeekerLayout({
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
             const user = JSON.parse(userString);
-            if (user.role === 'Job Seeker' || user.role === 'Admin') {
+            if (user.role === 'Job Seeker') {
               setLoggedInUser(user);
             } else {
               router.push('/login');
@@ -57,8 +58,14 @@ export default function SeekerLayout({
 
   useEffect(() => {
     updateUser();
-    const handleStorageChange = () => updateUser();
+    
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'loggedInUser') {
+        updateUser();
+      }
+    };
     window.addEventListener('storage', handleStorageChange);
+
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
