@@ -29,7 +29,7 @@ const ImprovementSuggestionSchema = z.object({
   isValuable: z
     .boolean()
     .describe(
-      'Whether or not the including the suggestion would improve a candidate\'s chances.'
+      "Whether or not the including the suggestion would improve a candidate's chances."
     ),
 });
 
@@ -43,7 +43,7 @@ export type SuggestResumeImprovementsOutput = z.infer<
 
 const shouldIncludeSuggestionTool = ai.defineTool({
   name: 'shouldIncludeSuggestion',
-  description: 'Determines whether including a suggestion would improve a candidate\'s chances based on the job description and resume.',
+  description: "Determines whether including a suggestion would improve a candidate's chances based on the job description and resume.",
   inputSchema: z.object({
     suggestion: z.string().describe('The resume improvement suggestion.'),
     jobDescription: z.string().describe('The job description for the job the candidate is applying for.'),
@@ -71,12 +71,25 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert resume writer. Review the provided resume and job description, and provide a list of suggestions to improve the resume so that it is a better fit for the job description.
 
   Resume:
-  {{resumeText}}
+  {{{resumeText}}}
 
   Job Description:
-  {{jobDescription}}
+  {{{jobDescription}}}
 
   Each suggestion should include:
   - suggestion: A specific suggestion for improving the resume.
   - reasoning: The reasoning behind the suggestion, explaining why it would improve the candidates chances.
-  - isValuable: A boolean indicating whether or not including the suggestion would improve a candidate's chances.  Use the \
+  - isValuable: A boolean indicating whether or not including the suggestion would improve a candidate's chances. Use the shouldIncludeSuggestionTool tool to determine this value.`,
+});
+
+const suggestResumeImprovementsFlow = ai.defineFlow(
+  {
+    name: 'suggestResumeImprovementsFlow',
+    inputSchema: SuggestResumeImprovementsInputSchema,
+    outputSchema: SuggestResumeImprovementsOutputSchema,
+  },
+  async input => {
+    const {output} = await prompt(input);
+    return output!;
+  }
+);
