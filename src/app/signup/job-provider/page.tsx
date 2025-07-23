@@ -46,6 +46,7 @@ export default function JobProviderSignUpPage() {
         const newUser = {
             name: companyName,
             email: email,
+            password: password, // Storing password
             role: "Job Provider",
             avatar: "https://placehold.co/40x40",
             fallback: companyName.substring(0,2).toUpperCase(),

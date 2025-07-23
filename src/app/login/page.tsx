@@ -31,95 +31,48 @@ export default function LoginPage() {
     setIsLoading(true);
 
     // This is a mock login.
-    // In a real app, you would have authentication logic here.
+    // In a real app, you would have a proper backend authentication.
     setTimeout(() => {
-      let role = '';
-      let name = "";
-      let redirectPath = '';
-      let loginSuccess = false;
+        try {
+            const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
+            const user = existingUsers.find((user: any) => user.email === email);
 
-      // Special admin user
-      if (email.toLowerCase() === 'admin@resumerank.ai' && password === 'password') {
-            toast({
-            title: "Login Successful",
-            description: "Redirecting to admin dashboard.",
-            });
-            role = "Admin";
-            name = "Admin";
-            redirectPath = '/admin';
-            loginSuccess = true;
-      } else if (email.includes('@') && email.split('@')[1].includes('.')) {
-          // A simple check for a valid-looking company email vs a personal one.
-          // In a real app, roles would be stored in a database.
-          const domain = email.split('@')[1];
-          if(domain !== 'gmail.com' && domain !== 'yahoo.com' && domain !== 'outlook.com'){
-              toast({
-                  title: "Login Successful",
-                  description: "Redirecting to job provider dashboard.",
-              });
-              role = "Job Provider";
-              name = "Hiring Manager"; // Default name for providers
-              redirectPath = '/dashboard';
-              loginSuccess = true;
-          } else {
-              toast({
-                  title: "Login Successful",
-                  description: "Redirecting to job seeker dashboard.",
-              });
-              role = "Job Seeker";
-              name = email.split('@')[0];
-              redirectPath = '/seeker';
-              loginSuccess = true;
-          }
-      } else {
-            toast({
-            variant: "destructive",
-            title: "Login Failed",
-            description: "Invalid credentials.",
-            });
-      }
-        
-        if (loginSuccess) {
-            try {
-                const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-                let userExists = false;
-                
-                // Find and update the user if they exist, otherwise add them.
-                const updatedUsers = existingUsers.map((user: any) => {
-                    if (user.email === email) {
-                        userExists = true;
-                        // Update role and name on login, in case it changed
-                        user.role = role;
-                        user.name = name;
-                        return user;
-                    }
-                    return user;
+            if (user && user.password === password) {
+                 toast({
+                    title: "Login Successful",
+                    description: `Redirecting to ${user.role.toLowerCase()} dashboard.`,
                 });
-
-                const currentUser = {
-                    name: name,
-                    email: email,
-                    role: role,
-                    avatar: "https://placehold.co/40x40",
-                    fallback: name.substring(0,2).toUpperCase(),
-                    status: "Active",
-                };
-
-                if (!userExists) {
-                    updatedUsers.push(currentUser);
-                }
                 
-                localStorage.setItem('users', JSON.stringify(updatedUsers));
-                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                localStorage.setItem('loggedInUser', JSON.stringify(user));
+                
+                let redirectPath = '/';
+                if (user.role === 'Admin') {
+                    redirectPath = '/admin';
+                } else if (user.role === 'Job Provider') {
+                    redirectPath = '/dashboard';
+                } else if (user.role === 'Job Seeker') {
+                    redirectPath = '/seeker';
+                }
+                router.push(redirectPath);
 
-            } catch (e) {
-                console.error("Could not update users in localStorage", e);
+            } else {
+                 toast({
+                    variant: "destructive",
+                    title: "Login Failed",
+                    description: "Invalid credentials. Please check your email and password.",
+                });
             }
-            router.push(redirectPath);
+        } catch(e) {
+            console.error("Login error:", e);
+             toast({
+                variant: "destructive",
+                title: "Login Failed",
+                description: "An unexpected error occurred.",
+            });
+        } finally {
+             setIsLoading(false);
         }
-
-        setIsLoading(false);
-    }, 1000)
+    }, 1000);
   };
 
   return (

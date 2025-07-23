@@ -14,6 +14,7 @@ type User = {
     avatar: string;
     fallback: string;
     status: string;
+    password?: string;
 };
 
 const defaultUsers: User[] = [
@@ -24,6 +25,7 @@ const defaultUsers: User[] = [
     avatar: "https://placehold.co/40x40",
     fallback: "AD",
     status: "Active",
+    password: "password",
   },
 ];
 
@@ -32,22 +34,39 @@ export default function UsersPage() {
   
   useEffect(() => {
     try {
-        const storedUsers = JSON.parse(localStorage.getItem('users') || '[]');
-        // Combine default users with stored users, avoiding duplicates
-        const combinedUsers = [...defaultUsers];
-        const storedUserEmails = new Set(defaultUsers.map(u => u.email));
+        const storedUsersString = localStorage.getItem('users');
+        let combinedUsers: User[] = [...defaultUsers];
 
-        for (const user of storedUsers) {
-            if (!storedUserEmails.has(user.email)) {
-                combinedUsers.push(user);
-                storedUserEmails.add(user.email);
+        if (storedUsersString) {
+            const storedUsers = JSON.parse(storedUsersString) as User[];
+            const storedUserEmails = new Set(defaultUsers.map(u => u.email));
+
+            for (const user of storedUsers) {
+                if (!storedUserEmails.has(user.email)) {
+                    combinedUsers.push(user);
+                    storedUserEmails.add(user.email);
+                }
             }
+        }
+        
+        // Ensure default admin user is always in the list and has a password
+        const adminUser = combinedUsers.find(u => u.email === 'admin@resumerank.ai');
+        if (adminUser) {
+            if (!adminUser.password) {
+                adminUser.password = 'password';
+            }
+        } else {
+             // This case should ideally not happen if defaultUsers is set correctly.
         }
 
         setUsers(combinedUsers);
+        localStorage.setItem('users', JSON.stringify(combinedUsers));
+
     } catch (e) {
         console.error("Could not retrieve users from localStorage", e);
+        // If local storage is corrupt or unavailable, ensure at least the default admin is there
         setUsers(defaultUsers);
+        localStorage.setItem('users', JSON.stringify(defaultUsers));
     }
   }, []);
 
