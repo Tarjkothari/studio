@@ -17,6 +17,13 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Send } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function PostJobPage() {
   const { toast } = useToast();
@@ -26,6 +33,7 @@ export default function PostJobPage() {
   const [jobDescription, setJobDescription] = useState("");
   const [criteria, setCriteria] = useState("");
   const [minimumMarks, setMinimumMarks] = useState("");
+  const [minimumDegree, setMinimumDegree] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [isSaving, setIsSaving] = useState(false);
 
@@ -65,6 +73,7 @@ export default function PostJobPage() {
             description: jobDescription,
             criteria: criteria,
             minimumMarks: minimumMarks,
+            minimumDegree: minimumDegree,
             postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email
         };
 
@@ -133,7 +142,7 @@ export default function PostJobPage() {
               required
             />
           </div>
-           <div className="space-y-2">
+           <div className="space-y-2 md:col-span-2">
             <Label htmlFor="criteria">Key Criteria</Label>
             <Textarea
               id="criteria"
@@ -143,6 +152,22 @@ export default function PostJobPage() {
               placeholder="List key criteria for the ideal candidate (e.g., 5+ years of React experience, Bachelor's degree in CS)..."
               required
             />
+          </div>
+           <div className="space-y-2">
+            <Label htmlFor="minimum-degree">Minimum Degree</Label>
+            <Select value={minimumDegree} onValueChange={setMinimumDegree}>
+                <SelectTrigger id="minimum-degree">
+                    <SelectValue placeholder="Select a minimum degree" />
+                </SelectTrigger>
+                <SelectContent>
+                    <SelectItem value="Not Required">Not Required</SelectItem>
+                    <SelectItem value="High School">High School Diploma</SelectItem>
+                    <SelectItem value="Associate's Degree">Associate's Degree</SelectItem>
+                    <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
+                    <SelectItem value="Master's Degree">Master's Degree</SelectItem>
+                    <SelectItem value="Doctorate">Doctorate (Ph.D.)</SelectItem>
+                </SelectContent>
+            </Select>
           </div>
           <div className="space-y-2">
             <Label htmlFor="minimum-marks">Minimum Academic Marks</Label>

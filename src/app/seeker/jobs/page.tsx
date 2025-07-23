@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +28,7 @@ type JobPosting = {
   description: string;
   criteria?: string;
   minimumMarks?: string;
+  minimumDegree?: string;
 };
 
 export default function JobSearchPage() {
@@ -47,7 +48,7 @@ export default function JobSearchPage() {
   useEffect(() => {
     try {
       const storedJobs = JSON.parse(localStorage.getItem("jobPostings") || "[]");
-      setJobs(storedJobs);
+      setJobs(storedJobs.reverse());
     } catch (e) {
       console.error("Could not retrieve jobs from localStorage", e);
       setJobs([]);
@@ -191,7 +192,7 @@ export default function JobSearchPage() {
             <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{viewingJob?.title}</DialogTitle>
-                     <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
                         <div className="flex items-center gap-2">
                             <Briefcase className="h-4 w-4"/>
                             <span>{viewingJob?.company}</span>
@@ -204,31 +205,47 @@ export default function JobSearchPage() {
                 </DialogHeader>
                 <ScrollArea className="max-h-[60vh] pr-4">
                     <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap space-y-4">
-                       {viewingJob?.criteria && (
-                        <div className="space-y-2">
-                            <h3 className="text-base font-semibold text-foreground">Key Criteria</h3>
-                            <ul className="list-none p-0 space-y-1">
-                                {viewingJob.criteria.split('\n').map((item, index) => item.trim() && (
-                                    <li key={index} className="flex items-start gap-2">
-                                        <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
-                                        <span>{item}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                       )}
-                       {viewingJob?.minimumMarks && (
-                        <>
-                         <Separator />
-                         <div className="space-y-2">
-                            <h3 className="text-base font-semibold text-foreground">Academic Requirement</h3>
-                            <div className="flex items-center gap-2">
-                                <Award className="h-4 w-4 text-primary" />
-                                <span>Minimum Marks: <strong>{viewingJob.minimumMarks}</strong></span>
+                       
+                        {(viewingJob?.criteria || viewingJob?.minimumDegree || viewingJob?.minimumMarks) && (
+                            <div className="space-y-4">
+                                <h3 className="text-base font-semibold text-foreground">Requirements</h3>
+                                <div className="space-y-3">
+                                {viewingJob?.criteria && (
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium text-foreground">Key Criteria</h4>
+                                        <ul className="list-none p-0 space-y-1">
+                                            {viewingJob.criteria.split('\n').map((item, index) => item.trim() && (
+                                                <li key={index} className="flex items-start gap-2">
+                                                    <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+                                                    <span>{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+                                {(viewingJob?.minimumDegree || viewingJob?.minimumMarks) && (
+                                    <div className="space-y-2">
+                                        <h4 className="font-medium text-foreground">Academic</h4>
+                                        <ul className="list-none p-0 space-y-1">
+                                            {viewingJob.minimumDegree && (
+                                                 <li className="flex items-start gap-2">
+                                                    <GraduationCap className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+                                                    <span>{viewingJob.minimumDegree}</span>
+                                                 </li>
+                                            )}
+                                             {viewingJob.minimumMarks && (
+                                                 <li className="flex items-start gap-2">
+                                                    <Award className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
+                                                    <span>Minimum Marks: <strong>{viewingJob.minimumMarks}</strong></span>
+                                                 </li>
+                                            )}
+                                        </ul>
+                                    </div>
+                                )}
+                                </div>
                             </div>
-                         </div>
-                        </>
-                       )}
+                        )}
+
                        <Separator />
                         <div className="space-y-2">
                            <h3 className="text-base font-semibold text-foreground">Job Description</h3>
