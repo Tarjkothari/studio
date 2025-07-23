@@ -72,7 +72,8 @@ export default function SeekerLayout({
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isLoading) {
      return (
@@ -80,6 +81,11 @@ export default function SeekerLayout({
             <Loader2 className="h-10 w-10 animate-spin" />
         </div>
      )
+  }
+
+  if (!loggedInUser) {
+    // Don't render the layout if we are redirecting
+    return null;
   }
 
 

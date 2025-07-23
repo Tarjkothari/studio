@@ -63,7 +63,8 @@ export default function DashboardLayout({
     updateUser();
     
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'loggedInUser' || event.key === null) { // event.key is null on clear
+      // When storage changes, re-validate the user.
+      if (event.key === 'loggedInUser' || event.key === null) { 
         updateUser();
       }
     }
@@ -72,7 +73,8 @@ export default function DashboardLayout({
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  }, [router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   if (isLoading) {
     return (
@@ -80,6 +82,11 @@ export default function DashboardLayout({
         <Loader2 className="h-10 w-10 animate-spin" />
       </div>
     );
+  }
+
+  if (!loggedInUser) {
+    // Don't render the layout if we are redirecting
+    return null;
   }
 
   return (

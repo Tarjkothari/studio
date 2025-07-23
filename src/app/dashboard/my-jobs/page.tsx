@@ -29,6 +29,7 @@ export default function MyJobsPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
+        setIsLoading(true);
         try {
             const userString = localStorage.getItem('loggedInUser');
             if (userString) {
@@ -37,6 +38,8 @@ export default function MyJobsPage() {
             }
         } catch (e) {
             console.error("Failed to load user from local storage", e);
+        } finally {
+            setIsLoading(false);
         }
     }, []);
 
@@ -71,7 +74,6 @@ export default function MyJobsPage() {
     }, [currentUserEmail]);
 
     const handleViewApplicantsClick = (job: JobPosting) => {
-        sessionStorage.setItem('selectedJobForApplicants', JSON.stringify(job));
         router.push(`/dashboard/my-jobs/${job.id}/applicants`);
     };
 

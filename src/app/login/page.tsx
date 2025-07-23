@@ -17,6 +17,7 @@ import { Label } from "@/components/ui/label";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
 import { useToast } from "@/hooks/use-toast";
+import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,7 +38,8 @@ export default function LoginPage() {
       let redirectPath = '';
       let loginSuccess = false;
 
-      if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj@2108') {
+      // Special admin user
+      if (email === 'admin@resumerank.ai' && password === 'password') {
             toast({
             title: "Login Successful",
             description: "Redirecting to admin dashboard.",
@@ -56,7 +58,7 @@ export default function LoginPage() {
                   description: "Redirecting to job provider dashboard.",
               });
               role = "Job Provider";
-              name = "Hiring Manager";
+              name = "Hiring Manager"; // Default name for providers
               redirectPath = '/dashboard';
               loginSuccess = true;
           } else {
@@ -80,7 +82,20 @@ export default function LoginPage() {
         if (loginSuccess) {
             try {
                 const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
-                const userExists = existingUsers.some((user: any) => user.email === email);
+                let userExists = false;
+                
+                // Find and update the user if they exist, otherwise add them.
+                const updatedUsers = existingUsers.map((user: any) => {
+                    if (user.email === email) {
+                        userExists = true;
+                        // Update role and name on login, in case it changed
+                        user.role = role;
+                        user.name = name;
+                        return user;
+                    }
+                    return user;
+                });
+
                 const currentUser = {
                     name: name,
                     email: email,
@@ -91,9 +106,10 @@ export default function LoginPage() {
                 };
 
                 if (!userExists) {
-                    const updatedUsers = [...existingUsers, currentUser];
-                    localStorage.setItem('users', JSON.stringify(updatedUsers));
+                    updatedUsers.push(currentUser);
                 }
+                
+                localStorage.setItem('users', JSON.stringify(updatedUsers));
                 localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
 
             } catch (e) {
@@ -137,6 +153,7 @@ export default function LoginPage() {
                 <Input
                   id="password"
                   type="password"
+                  placeholder="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -145,6 +162,7 @@ export default function LoginPage() {
             </CardContent>
             <CardFooter className="flex flex-col gap-4">
               <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 {isLoading ? "Logging in..." : "Login"}
               </Button>
               <p className="text-center text-sm text-muted-foreground">

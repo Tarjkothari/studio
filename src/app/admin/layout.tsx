@@ -31,17 +31,25 @@ export default function AdminLayout({
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const userString = localStorage.getItem('loggedInUser');
-    if (userString) {
-      const user = JSON.parse(userString);
-      if (user.role === 'Admin') {
-        setUser(user);
-        setIsLoading(false);
-      } else {
+    try {
+        const userString = localStorage.getItem('loggedInUser');
+        if (userString) {
+            const user = JSON.parse(userString);
+            if (user.role === 'Admin') {
+                setUser(user);
+            } else {
+                // If the user is not an admin, they should not be on this page.
+                router.push('/login');
+            }
+        } else {
+            // No user logged in.
+            router.push('/login');
+        }
+    } catch (e) {
+        console.error("Failed to process user session", e);
         router.push('/login');
-      }
-    } else {
-      router.push('/login');
+    } finally {
+        setIsLoading(false);
     }
   }, [router]);
 
@@ -52,6 +60,11 @@ export default function AdminLayout({
           <Loader2 className="h-10 w-10 animate-spin" />
       </div>
       )
+  }
+
+  // Do not render the layout if we are redirecting.
+  if (!user) {
+    return null;
   }
 
   return (

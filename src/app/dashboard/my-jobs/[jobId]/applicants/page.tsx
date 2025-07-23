@@ -49,37 +49,30 @@ export default function ApplicantsPage() {
 
         setIsLoading(true);
         try {
-            // Get job from session storage first, as passed from the previous page
-            const selectedJobString = sessionStorage.getItem('selectedJobForApplicants');
-            let currentJob: JobPosting | null = null;
-
-            if (selectedJobString) {
-                const parsedJob = JSON.parse(selectedJobString);
-                if (parsedJob.id === jobId) {
-                    currentJob = parsedJob;
-                }
-            }
-            
-            if (!currentJob) {
-                const allJobsString = localStorage.getItem('jobPostings');
-                if (allJobsString) {
-                    const allJobs = JSON.parse(allJobsString);
-                    currentJob = allJobs.find((j: JobPosting) => j.id === jobId) || null;
-                }
-            }
-
-            if (currentJob) {
-                setJob(currentJob);
-                const allApplicationsString = localStorage.getItem('jobApplications');
-                 if (allApplicationsString) {
-                    const allApplications = JSON.parse(allApplicationsString);
-                    const jobApplicants = allApplications.filter((app: Application) => app.jobId === jobId);
-                    setApplicants(jobApplicants.map((app: Application) => ({ ...app })));
+            // First, find the job from all job postings.
+            const allJobsString = localStorage.getItem('jobPostings');
+            if (allJobsString) {
+                const allJobs = JSON.parse(allJobsString);
+                const currentJob = allJobs.find((j: JobPosting) => j.id === jobId) || null;
+                
+                if (currentJob) {
+                    setJob(currentJob);
+                    // If job is found, load the applicants for that job.
+                    const allApplicationsString = localStorage.getItem('jobApplications');
+                    if (allApplicationsString) {
+                        const allApplications = JSON.parse(allApplicationsString);
+                        const jobApplicants = allApplications.filter((app: Application) => app.jobId === jobId);
+                        setApplicants(jobApplicants.map((app: Application) => ({ ...app })));
+                    }
+                } else {
+                    toast({ variant: 'destructive', title: 'Error: Job not found' });
+                    router.push('/dashboard/my-jobs');
+                    return;
                 }
             } else {
-                toast({ variant: 'destructive', title: 'Job not found' });
-                router.push('/dashboard/my-jobs');
-                return;
+                 toast({ variant: 'destructive', title: 'Error: Could not load jobs' });
+                 router.push('/dashboard/my-jobs');
+                 return;
             }
 
         } catch (e) {
