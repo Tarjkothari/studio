@@ -73,7 +73,7 @@ export default function SeekerLayout({
       window.removeEventListener('storage', handleStorageChange);
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [router, pathname]);
 
   if (isLoading) {
      return (
