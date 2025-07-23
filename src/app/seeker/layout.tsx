@@ -18,6 +18,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { FileUp, LogOut, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 
 type User = {
   email: string;
@@ -63,24 +64,28 @@ export default function SeekerLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  href="/seeker/improve-resume"
-                  tooltip="Resume Improver"
-                  isActive={pathname.startsWith('/seeker/improve-resume')}
-                >
-                  <FileUp />
-                  <span>Resume Improver</span>
-                </SidebarMenuButton>
+                <Link href="/seeker/improve-resume">
+                    <SidebarMenuButton
+                    tooltip="Resume Improver"
+                    isActive={pathname.startsWith('/seeker/improve-resume')}
+                    asChild
+                    >
+                    <FileUp />
+                    <span>Resume Improver</span>
+                    </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  href="/seeker/account"
-                  tooltip="Account"
-                  isActive={pathname.startsWith('/seeker/account')}
-                >
-                  <Settings />
-                  <span>Account</span>
-                </SidebarMenuButton>
+                 <Link href="/seeker/account">
+                    <SidebarMenuButton
+                    tooltip="Account"
+                    isActive={pathname.startsWith('/seeker/account')}
+                    asChild
+                    >
+                    <Settings />
+                    <span>Account</span>
+                    </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
@@ -105,10 +110,12 @@ export default function SeekerLayout({
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/login" tooltip="Logout">
-                  <LogOut />
-                  <span>Logout</span>
-                </SidebarMenuButton>
+                <Link href="/login">
+                    <SidebarMenuButton tooltip="Logout" asChild>
+                        <LogOut />
+                        <span>Logout</span>
+                    </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
