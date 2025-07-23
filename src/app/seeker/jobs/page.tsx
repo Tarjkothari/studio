@@ -32,6 +32,11 @@ type JobPosting = {
   minimumDegree?: string;
 };
 
+type Application = {
+    jobId: string;
+    applicantEmail: string;
+}
+
 export default function JobSearchPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -41,6 +46,7 @@ export default function JobSearchPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [achievements, setAchievements] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
+  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
 
   // State for the new "View Details" dialog
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -51,8 +57,15 @@ export default function JobSearchPage() {
     try {
       const storedJobs = JSON.parse(localStorage.getItem("jobPostings") || "[]");
       setJobs(storedJobs.reverse());
+
+      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+      const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+      const userApplications = allApplications.filter((app: Application) => app.applicantEmail === loggedInUser.email);
+      const userAppliedJobIds = new Set(userApplications.map((app: Application) => app.jobId));
+      setAppliedJobIds(userAppliedJobIds);
+
     } catch (e) {
-      console.error("Could not retrieve jobs from localStorage", e);
+      console.error("Could not retrieve data from localStorage", e);
       setJobs([]);
     }
   }, []);
@@ -108,6 +121,8 @@ export default function JobSearchPage() {
             allApplications.push(newApplication);
             localStorage.setItem('jobApplications', JSON.stringify(allApplications));
             
+            setAppliedJobIds(prev => new Set(prev).add(selectedJob.id));
+
             toast({
               title: "Application Sent!",
               description: "Your application has been submitted successfully.",
@@ -153,7 +168,9 @@ export default function JobSearchPage() {
         </Card>
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => (
+            {jobs.map((job) => {
+              const hasApplied = appliedJobIds.has(job.id);
+              return (
                 <Card key={job.id} className="flex flex-col">
                     <CardHeader>
                         <CardTitle>{job.title}</CardTitle>
@@ -172,16 +189,25 @@ export default function JobSearchPage() {
                         <p className="line-clamp-4 text-sm text-muted-foreground">{job.description}</p>
                     </CardContent>
                     <CardFooter className="flex-col items-stretch gap-2 sm:flex-row">
-                        <Button variant="outline" onClick={() => handleViewDetailsClick(job)} className="w-full">
-                            <FileText className="mr-2 h-4 w-4" />
-                            View Details
-                        </Button>
-                        <Button onClick={() => handleApplyClick(job)} className="w-full">
-                            Apply Now
-                        </Button>
+                        {hasApplied ? (
+                             <Button disabled className="w-full">
+                                <CheckCircle className="mr-2 h-4 w-4" />
+                                Already Applied
+                            </Button>
+                        ) : (
+                            <>
+                                <Button variant="outline" onClick={() => handleViewDetailsClick(job)} className="w-full">
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    View Details
+                                </Button>
+                                <Button onClick={() => handleApplyClick(job)} className="w-full">
+                                    Apply Now
+                                </Button>
+                            </>
+                        )}
                     </CardFooter>
                 </Card>
-            ))}
+            )})}
         </div>
       )}
     </div>
@@ -247,7 +273,7 @@ export default function JobSearchPage() {
                 <ScrollArea className="max-h-[60vh] pr-4">
                     <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap space-y-4">
                        
-                        {(viewingJob?.criteria || viewingJob?.minimumDegree || viewingJob?.minimumMarks) && (
+                        {(viewingJob?.criteria || viewingJob?.minimumDegree || viewingingJob?.minimumMarks) && (
                             <div className="space-y-4">
                                 <h3 className="text-base font-semibold text-foreground">Requirements</h3>
                                 <div className="space-y-3">
