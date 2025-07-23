@@ -6,6 +6,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Trash2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 type User = {
     name: string;
@@ -31,39 +35,61 @@ const defaultUsers: User[] = [
 
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
+  const { toast } = useToast();
   
   useEffect(() => {
     try {
         const storedUsersString = localStorage.getItem('users');
         const storedUsers = storedUsersString ? JSON.parse(storedUsersString) : [];
 
-        // Create a map of stored users to easily update or add the admin
         const userMap = new Map(storedUsers.map((u: User) => [u.email, u]));
 
-        // Ensure the specified admin user exists and has the correct credentials
         const adminUser = defaultUsers[0];
         userMap.set(adminUser.email, {
-            ...adminUser,
-            // If an admin user already exists, merge to keep any other details but enforce credentials
             ...(userMap.get(adminUser.email) || {}),
             ...adminUser,
         });
 
-        // Convert the map back to an array
         const combinedUsers = Array.from(userMap.values());
         
         setUsers(combinedUsers);
         localStorage.setItem('users', JSON.stringify(combinedUsers));
 
+        const loggedInUserString = localStorage.getItem('loggedInUser');
+        if (loggedInUserString) {
+            const loggedInUser = JSON.parse(loggedInUserString);
+            setLoggedInUserEmail(loggedInUser.email);
+        }
+
     } catch (e) {
         console.error("Could not retrieve or update users from localStorage", e);
-        // If local storage is corrupt or unavailable, ensure at least the default admin is there
         setUsers(defaultUsers);
         localStorage.setItem('users', JSON.stringify(defaultUsers));
     }
   }, []);
 
+  const handleRemoveUser = (emailToRemove: string) => {
+    try {
+        const updatedUsers = users.filter(user => user.email !== emailToRemove);
+        setUsers(updatedUsers);
+        localStorage.setItem('users', JSON.stringify(updatedUsers));
+        toast({
+            title: "User Removed",
+            description: "The user has been successfully removed from the system.",
+        });
+    } catch(e) {
+        console.error("Failed to remove user from localStorage", e);
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "Could not remove the user.",
+        });
+    }
+  };
+
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>User Management</CardTitle>
@@ -76,6 +102,7 @@ export default function UsersPage() {
               <TableHead>User</TableHead>
               <TableHead>Role</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -99,11 +126,39 @@ export default function UsersPage() {
                 <TableCell>
                   <Badge variant={user.status === 'Active' ? 'secondary' : 'destructive' } className={user.status === 'Active' ? 'text-green-700 bg-green-100' : ''}>{user.status}</Badge>
                 </TableCell>
+                <TableCell className="text-right">
+                    {user.email !== loggedInUserEmail ? (
+                         <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <Button variant="destructive" size="icon">
+                                    <Trash2 className="h-4 w-4" />
+                                    <span className="sr-only">Remove User</span>
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    This action cannot be undone. This will permanently delete the user account
+                                    and remove their data from our servers.
+                                </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={() => handleRemoveUser(user.email)}>
+                                    Continue
+                                </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    ) : null}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </CardContent>
     </Card>
+    </>
   );
 }
