@@ -16,6 +16,7 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BarChart2, LogOut, Scale, Settings } from "lucide-react";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export default function DashboardLayout({
   children,
@@ -39,32 +40,38 @@ export default function DashboardLayout({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  href="/dashboard/ranker"
                   tooltip="Candidate Ranker"
                   isActive={pathname.startsWith('/dashboard/ranker')}
+                  asChild
                 >
-                  <BarChart2 />
-                  <span>Candidate Ranker</span>
+                  <Link href="/dashboard/ranker">
+                    <BarChart2 />
+                    <span>Candidate Ranker</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  href="/dashboard/bias-checker"
                   tooltip="Bias Checker"
                   isActive={pathname.startsWith('/dashboard/bias-checker')}
+                  asChild
                 >
-                  <Scale />
-                  <span>Bias Checker</span>
+                  <Link href="/dashboard/bias-checker">
+                    <Scale />
+                    <span>Bias Checker</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  href="/dashboard/account"
                   tooltip="Account"
                   isActive={pathname.startsWith('/dashboard/account')}
+                  asChild
                 >
-                  <Settings />
-                  <span>Account</span>
+                  <Link href="/dashboard/account">
+                    <Settings />
+                    <span>Account</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -90,9 +97,11 @@ export default function DashboardLayout({
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton href="/login" tooltip="Logout">
-                  <LogOut />
-                  <span>Logout</span>
+                <SidebarMenuButton tooltip="Logout" asChild>
+                  <Link href="/login">
+                    <LogOut />
+                    <span>Logout</span>
+                  </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
