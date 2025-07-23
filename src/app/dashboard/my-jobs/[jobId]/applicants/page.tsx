@@ -46,39 +46,42 @@ export default function ApplicantsPage() {
 
     useEffect(() => {
         if (!jobId) return;
-        
+
+        setIsLoading(true);
         try {
+            // Get job from session storage first, as passed from the previous page
             const selectedJobString = sessionStorage.getItem('selectedJobForApplicants');
             let currentJob: JobPosting | null = null;
             if (selectedJobString) {
-                currentJob = JSON.parse(selectedJobString);
-                if (currentJob && currentJob.id === jobId) {
-                    setJob(currentJob);
-                }
-            }
-
-            if (!currentJob) {
-                const allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
-                currentJob = allJobs.find((j: JobPosting) => j.id === jobId);
-                if (currentJob) {
-                    setJob(currentJob);
+                const parsedJob = JSON.parse(selectedJobString);
+                // Ensure the job in session storage matches the current jobId in the URL
+                if (parsedJob.id === jobId) {
+                    currentJob = parsedJob;
                 }
             }
             
+            // If not in session storage or mismatched, try finding it in local storage
             if (!currentJob) {
+                const allJobsString = localStorage.getItem('jobPostings');
+                if (allJobsString) {
+                    const allJobs = JSON.parse(allJobsString);
+                    currentJob = allJobs.find((j: JobPosting) => j.id === jobId) || null;
+                }
+            }
+
+            if (currentJob) {
+                setJob(currentJob);
+                const allApplicationsString = localStorage.getItem('jobApplications');
+                 if (allApplicationsString) {
+                    const allApplications = JSON.parse(allApplicationsString);
+                    const jobApplicants = allApplications.filter((app: Application) => app.jobId === jobId);
+                    setApplicants(jobApplicants.map((app: Application) => ({ ...app })));
+                }
+            } else {
                 toast({ variant: 'destructive', title: 'Job not found' });
                 router.push('/dashboard/my-jobs');
                 return;
             }
-
-            const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
-            const jobApplicants = allApplications.filter((app: Application) => app.jobId === jobId);
-            
-            setApplicants(jobApplicants.map((app: Application) => ({
-                ...app,
-                score: undefined, 
-                justification: undefined
-            })));
 
         } catch (e) {
             console.error('Failed to load data', e);
