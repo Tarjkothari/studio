@@ -64,28 +64,28 @@ export default function SeekerLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/seeker/improve-resume">
-                    <SidebarMenuButton
-                    tooltip="Resume Improver"
-                    isActive={pathname.startsWith('/seeker/improve-resume')}
-                    asChild
-                    >
+                <SidebarMenuButton
+                  tooltip="Resume Improver"
+                  isActive={pathname.startsWith('/seeker/improve-resume')}
+                  asChild
+                >
+                  <Link href="/seeker/improve-resume">
                     <FileUp />
                     <span>Resume Improver</span>
-                    </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                 <Link href="/seeker/account">
-                    <SidebarMenuButton
-                    tooltip="Account"
-                    isActive={pathname.startsWith('/seeker/account')}
-                    asChild
-                    >
+                <SidebarMenuButton
+                  tooltip="Account"
+                  isActive={pathname.startsWith('/seeker/account')}
+                  asChild
+                >
+                  <Link href="/seeker/account">
                     <Settings />
                     <span>Account</span>
-                    </SidebarMenuButton>
-                </Link>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
@@ -110,12 +110,12 @@ export default function SeekerLayout({
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link href="/login">
-                    <SidebarMenuButton tooltip="Logout" asChild>
+                <SidebarMenuButton tooltip="Logout" asChild>
+                    <Link href="/login">
                         <LogOut />
                         <span>Logout</span>
-                    </SidebarMenuButton>
-                </Link>
+                    </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
