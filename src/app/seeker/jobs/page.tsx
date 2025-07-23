@@ -12,8 +12,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin, Loader2, Upload } from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Briefcase, MapPin, Loader2, Upload, FileText } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -36,6 +36,11 @@ export default function JobSearchPage() {
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // State for the new "View Details" dialog
+  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [viewingJob, setViewingJob] = useState<JobPosting | null>(null);
+
+
   useEffect(() => {
     try {
       const storedJobs = JSON.parse(localStorage.getItem("jobPostings") || "[]");
@@ -48,8 +53,14 @@ export default function JobSearchPage() {
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
+    setResumeFile(null); // Reset file input
     setIsApplyDialogOpen(true);
   };
+  
+  const handleViewDetailsClick = (job: JobPosting) => {
+      setViewingJob(job);
+      setIsViewDialogOpen(true);
+  }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -127,7 +138,11 @@ export default function JobSearchPage() {
                     <CardContent className="flex-grow">
                         <p className="line-clamp-4 text-sm text-muted-foreground">{job.description}</p>
                     </CardContent>
-                    <CardFooter>
+                    <CardFooter className="flex-col items-stretch gap-2 sm:flex-row">
+                        <Button variant="outline" onClick={() => handleViewDetailsClick(job)} className="w-full">
+                            <FileText className="mr-2 h-4 w-4" />
+                            View Details
+                        </Button>
                         <Button onClick={() => handleApplyClick(job)} className="w-full">
                             Apply Now
                         </Button>
@@ -169,6 +184,41 @@ export default function JobSearchPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      <Dialog open={isViewDialogOpen} onOpenChange={setIsViewDialogOpen}>
+            <DialogContent className="sm:max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>{viewingJob?.title}</DialogTitle>
+                    <DialogDescription>
+                        <div className="flex items-center gap-4 pt-2">
+                            <div className="flex items-center gap-2">
+                                <Briefcase className="h-4 w-4 text-muted-foreground"/>
+                                <span>{viewingJob?.company}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <MapPin className="h-4 w-4 text-muted-foreground"/>
+                                <span>{viewingJob?.location}</span>
+                            </div>
+                        </div>
+                    </DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-[60vh] pr-4">
+                    <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap">
+                        {viewingJob?.description}
+                    </div>
+                </ScrollArea>
+                <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsViewDialogOpen(false)}>Close</Button>
+                    <Button onClick={() => {
+                        setIsViewDialogOpen(false);
+                        if (viewingJob) {
+                           handleApplyClick(viewingJob);
+                        }
+                    }}>
+                        Apply Now
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
     </>
   );
 }
