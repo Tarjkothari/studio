@@ -37,27 +37,26 @@ export default function UsersPage() {
         const storedUsersString = localStorage.getItem('users');
         const storedUsers = storedUsersString ? JSON.parse(storedUsersString) : [];
 
-        // Create a map of default users for quick lookup
-        const defaultUserMap = new Map(defaultUsers.map(u => [u.email, u]));
-        // Create a map of stored users for quick lookup
-        const storedUserMap = new Map(storedUsers.map((u: User) => [u.email, u]));
+        // Create a map of stored users to easily update or add the admin
+        const userMap = new Map(storedUsers.map((u: User) => [u.email, u]));
 
-        // Combine users, giving precedence to stored users but ensuring defaults are present
-        const combinedUserMap = new Map([...defaultUserMap, ...storedUserMap]);
+        // Ensure the specified admin user exists and has the correct credentials
+        const adminUser = defaultUsers[0];
+        userMap.set(adminUser.email, {
+            ...adminUser,
+            // If an admin user already exists, merge to keep any other details but enforce credentials
+            ...(userMap.get(adminUser.email) || {}),
+            ...adminUser,
+        });
 
-        // Ensure the admin user always has a password
-        const adminUser = combinedUserMap.get('tarjkothari2004@gmail.com');
-        if (adminUser) {
-            adminUser.password = adminUser.password || 'Tarj2108';
-        }
-
-        const combinedUsers = Array.from(combinedUserMap.values());
+        // Convert the map back to an array
+        const combinedUsers = Array.from(userMap.values());
         
         setUsers(combinedUsers);
         localStorage.setItem('users', JSON.stringify(combinedUsers));
 
     } catch (e) {
-        console.error("Could not retrieve users from localStorage", e);
+        console.error("Could not retrieve or update users from localStorage", e);
         // If local storage is corrupt or unavailable, ensure at least the default admin is there
         setUsers(defaultUsers);
         localStorage.setItem('users', JSON.stringify(defaultUsers));

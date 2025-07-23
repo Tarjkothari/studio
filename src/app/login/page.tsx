@@ -37,6 +37,29 @@ export default function LoginPage() {
             const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
             const user = existingUsers.find((user: any) => user.email === email);
 
+            // Special handling for the designated admin user to ensure access
+            if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj2108') {
+                 toast({
+                    title: "Login Successful",
+                    description: `Redirecting to admin dashboard.`,
+                });
+                
+                // Ensure the user object for the session is correct
+                const adminUser = user || {
+                    name: "Admin",
+                    email: "tarjkothari2004@gmail.com",
+                    role: "Admin",
+                    avatar: "https://placehold.co/40x40",
+                    fallback: "AD",
+                    status: "Active",
+                };
+
+                localStorage.setItem('loggedInUser', JSON.stringify(adminUser));
+                router.push('/admin');
+                return;
+            }
+
+
             if (user && user.password && user.password === password) {
                  toast({
                     title: "Login Successful",
