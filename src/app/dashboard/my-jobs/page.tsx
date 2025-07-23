@@ -23,6 +23,7 @@ export default function MyJobsPage() {
     const [myJobs, setMyJobs] = useState<JobPosting[]>([]);
     const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         try {
@@ -31,7 +32,24 @@ export default function MyJobsPage() {
                 const user = JSON.parse(userString);
                 setCurrentUserEmail(user.email);
             }
+        } catch (e) {
+            console.error("Failed to load user from local storage", e);
+        }
+    }, []);
 
+    useEffect(() => {
+        if (!currentUserEmail) {
+            // Wait for the user's email to be loaded
+            if (!isLoading && myJobs.length === 0) {
+                 // only stop loading if we are sure there are no jobs
+            } else if (isLoading && !currentUserEmail) {
+                return;
+            }
+        }
+        
+        setIsLoading(true);
+
+        try {
             const allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
 
@@ -49,6 +67,8 @@ export default function MyJobsPage() {
 
         } catch (e) {
             console.error("Failed to load data from local storage", e);
+        } finally {
+            setIsLoading(false);
         }
     }, [currentUserEmail]);
 
@@ -69,7 +89,13 @@ export default function MyJobsPage() {
                 </CardHeader>
             </Card>
 
-             {myJobs.length === 0 ? (
+             {isLoading ? (
+                 <Card>
+                    <CardContent className="p-6 text-center text-muted-foreground">
+                        Loading your jobs...
+                    </CardContent>
+                </Card>
+             ) : myJobs.length === 0 ? (
                 <Card>
                     <CardContent className="p-6 text-center text-muted-foreground">
                         You haven't posted any jobs yet.
