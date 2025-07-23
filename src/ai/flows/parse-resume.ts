@@ -33,7 +33,7 @@ const ParseResumeOutputSchema = z.object({
         description: z.string().describe('The job description.'),
       })
     )
-    .describe('A list of work experiences extracted from the resume.'),
+    .describe('A list of work experiences, including internships, extracted from the resume.'),
   education: z
     .array(
       z.object({
@@ -57,7 +57,7 @@ const prompt = ai.definePrompt({
   prompt: `You are an expert resume parser. Extract the following information from the resume provided in the document.
 
 Skills: A list of skills mentioned in the resume.
-Experience: A list of work experiences, including job title, company, dates of employment, and job description.
+Experience: A list of work experiences, including internships, with job title, company, dates of employment, and job description.
 Education: A list of education entries, including institution, degree, and dates of attendance.
 
 Resume:
