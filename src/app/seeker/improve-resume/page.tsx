@@ -20,17 +20,39 @@ export default function ImproveResumePage() {
   const [results, setResults] = useState<SuggestResumeImprovementsOutput>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  const parseAndSetResume = async (dataUri: string) => {
+    try {
+        setIsLoading(true);
+        const parsed = await parseResume({ resumeDataUri: dataUri });
+        const experienceText = parsed.experience.map(p => `Title: ${p.title} at ${p.company} (${p.dates}). Description: ${p.description}`).join('\n');
+        const educationText = parsed.education.map(e => `${e.degree} at ${e.institution} (${e.dates})`).join('\n');
+        const skillsText = parsed.skills.join(', ');
+        const synthesizedText = `SKILLS:\n${skillsText}\n\nEXPERIENCE:\n${experienceText}\n\nEDUCATION:\n${educationText}`;
+        setResumeText(synthesizedText);
+        toast({ title: "Resume Parsed", description: "Your resume has been loaded into the text field." });
+    } catch (error) {
+        toast({ variant: "destructive", title: "Failed to parse resume" });
+    } finally {
+        setIsLoading(false);
+    }
+  }
+
   useEffect(() => {
-    // Check session storage for a pre-filled job description
+    // Check session storage for pre-filled data
     const prefilledJd = sessionStorage.getItem('jobDescriptionForImprover');
     if (prefilledJd) {
       setJobDescription(prefilledJd);
-      // Clear it so it doesn't persist across sessions
-      sessionStorage.removeItem('jobDescriptionForImprover');
       toast({
         title: "Job Description Loaded",
         description: "The job description from the listing has been pre-filled for you."
       })
+      sessionStorage.removeItem('jobDescriptionForImprover');
+    }
+
+    const prefilledResume = sessionStorage.getItem('resumeForImprover');
+    if (prefilledResume) {
+        parseAndSetResume(prefilledResume);
+        sessionStorage.removeItem('resumeForImprover');
     }
   }, []);
 
@@ -41,21 +63,8 @@ export default function ImproveResumePage() {
 
     const reader = new FileReader();
     reader.onload = async (e) => {
-      try {
-        const dataUri = e.target?.result as string;
-        setIsLoading(true);
-        const parsed = await parseResume({ resumeDataUri: dataUri });
-        const experienceText = parsed.experience.map(p => `Title: ${p.title} at ${p.company} (${p.dates}). Description: ${p.description}`).join('\n');
-        const educationText = parsed.education.map(e => `${e.degree} at ${e.institution} (${e.dates})`).join('\n');
-        const skillsText = parsed.skills.join(', ');
-        const synthesizedText = `SKILLS:\n${skillsText}\n\nEXPERIENCE:\n${experienceText}\n\nEDUCATION:\n${educationText}`;
-        setResumeText(synthesizedText);
-        toast({ title: "Resume Parsed", description: "Your resume has been loaded into the text field." });
-      } catch (error) {
-        toast({ variant: "destructive", title: "Failed to parse resume" });
-      } finally {
-        setIsLoading(false);
-      }
+      const dataUri = e.target?.result as string;
+      await parseAndSetResume(dataUri);
     };
     reader.readAsDataURL(file);
   };

@@ -13,7 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Briefcase, MapPin } from "lucide-react";
+import { Briefcase, MapPin, Loader2 } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 
 type JobPosting = {
   id: string;
@@ -25,7 +29,12 @@ type JobPosting = {
 
 export default function JobSearchPage() {
   const router = useRouter();
+  const { toast } = useToast();
   const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
+  const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   useEffect(() => {
     try {
@@ -37,13 +46,51 @@ export default function JobSearchPage() {
     }
   }, []);
 
-  const handleApply = (job: JobPosting) => {
-    // Store the job description in session storage to pre-fill the improver page
-    sessionStorage.setItem('jobDescriptionForImprover', job.description);
-    router.push('/seeker/improve-resume');
+  const handleApplyClick = (job: JobPosting) => {
+    setSelectedJob(job);
+    setIsApplyDialogOpen(true);
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setResumeFile(file);
+    }
+  };
+
+  const handleConfirmApplication = () => {
+    if (!selectedJob || !resumeFile) {
+        toast({
+            variant: "destructive",
+            title: "Missing Resume",
+            description: "Please upload your resume to apply.",
+        });
+        return;
+    }
+
+    setIsProcessing(true);
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const resumeDataUri = e.target?.result as string;
+        sessionStorage.setItem('jobDescriptionForImprover', selectedJob.description);
+        sessionStorage.setItem('resumeForImprover', resumeDataUri);
+        router.push('/seeker/improve-resume');
+        setIsProcessing(false);
+        setIsApplyDialogOpen(false);
+    };
+    reader.onerror = () => {
+        toast({
+            variant: "destructive",
+            title: "Error Reading File",
+            description: "There was an issue processing your resume.",
+        });
+        setIsProcessing(false);
+    };
+    reader.readAsDataURL(resumeFile);
   };
 
   return (
+    <>
     <div className="space-y-6">
       <Card>
         <CardHeader>
@@ -81,7 +128,7 @@ export default function JobSearchPage() {
                         <p className="line-clamp-4 text-sm text-muted-foreground">{job.description}</p>
                     </CardContent>
                     <CardFooter>
-                        <Button onClick={() => handleApply(job)} className="w-full">
+                        <Button onClick={() => handleApplyClick(job)} className="w-full">
                             Apply Now
                         </Button>
                     </CardFooter>
@@ -90,5 +137,29 @@ export default function JobSearchPage() {
         </div>
       )}
     </div>
+     <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Apply for {selectedJob?.title}</DialogTitle>
+            <DialogDescription>
+              Upload your resume to get AI-powered suggestions before finalizing your application.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="resume-upload">Upload Resume (PDF)</Label>
+              <Input id="resume-upload" type="file" accept=".pdf" onChange={handleFileChange} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsApplyDialogOpen(false)}>Cancel</Button>
+            <Button onClick={handleConfirmApplication} disabled={!resumeFile || isProcessing}>
+              {isProcessing && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Analyze & Apply
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
