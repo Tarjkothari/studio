@@ -37,40 +37,45 @@ export default function LoginPage() {
       let redirectPath = '';
       let loginSuccess = false;
 
-        if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj@2108') {
-             toast({
-                title: "Login Successful",
-                description: "Redirecting to admin dashboard.",
-             });
-             role = "Admin";
-             name = "Admin";
-             redirectPath = '/admin';
-             loginSuccess = true;
-        } else if (email.endsWith('@company.com')) {
+      if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj@2108') {
             toast({
-                title: "Login Successful",
-                description: "Redirecting to job provider dashboard.",
-             });
-            role = "Job Provider";
-            name = "Hiring Manager";
-            redirectPath = '/dashboard';
+            title: "Login Successful",
+            description: "Redirecting to admin dashboard.",
+            });
+            role = "Admin";
+            name = "Admin";
+            redirectPath = '/admin';
             loginSuccess = true;
-        } else if (email && password) { // Assume other valid emails are job seekers
+      } else if (email.includes('@') && email.split('@')[1].includes('.')) {
+          // A simple check for a valid-looking company email vs a personal one.
+          // In a real app, roles would be stored in a database.
+          const domain = email.split('@')[1];
+          if(domain !== 'gmail.com' && domain !== 'yahoo.com' && domain !== 'outlook.com'){
+              toast({
+                  title: "Login Successful",
+                  description: "Redirecting to job provider dashboard.",
+              });
+              role = "Job Provider";
+              name = "Hiring Manager";
+              redirectPath = '/dashboard';
+              loginSuccess = true;
+          } else {
+              toast({
+                  title: "Login Successful",
+                  description: "Redirecting to job seeker dashboard.",
+              });
+              role = "Job Seeker";
+              name = email.split('@')[0];
+              redirectPath = '/seeker';
+              loginSuccess = true;
+          }
+      } else {
             toast({
-                title: "Login Successful",
-                description: "Redirecting to job seeker dashboard.",
-             });
-            role = "Job Seeker";
-            name = email.split('@')[0];
-            redirectPath = '/seeker';
-            loginSuccess = true;
-        } else {
-             toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: "Invalid credentials.",
-             });
-        }
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid credentials.",
+            });
+      }
         
         if (loginSuccess) {
             try {
