@@ -90,14 +90,45 @@ export default function JobSearchPage() {
     const reader = new FileReader();
     reader.onload = (e) => {
         const resumeDataUri = e.target?.result as string;
-        sessionStorage.setItem('jobDescriptionForImprover', selectedJob.description);
-        sessionStorage.setItem('resumeForImprover', resumeDataUri);
-        if (achievements) {
-            sessionStorage.setItem('achievementsForImprover', achievements);
+
+        try {
+            const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+            
+            const newApplication = {
+                jobId: selectedJob.id,
+                applicantEmail: loggedInUser.email,
+                applicantName: loggedInUser.name,
+                resumeDataUri: resumeDataUri,
+                achievements: achievements,
+                status: 'Applied', // Applied, In Review, Rejected, Hired
+                appliedDate: new Date().toISOString(),
+            };
+
+            const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+            allApplications.push(newApplication);
+            localStorage.setItem('jobApplications', JSON.stringify(allApplications));
+            
+            toast({
+              title: "Application Sent!",
+              description: "We'll now analyze your resume for improvements."
+            });
+            
+            // Pass data to resume improver
+            sessionStorage.setItem('jobDescriptionForImprover', selectedJob.description);
+            sessionStorage.setItem('resumeForImprover', resumeDataUri);
+            if (achievements) {
+                sessionStorage.setItem('achievementsForImprover', achievements);
+            }
+            router.push('/seeker/improve-resume');
+
+        } catch (error) {
+            console.error("Failed to process application", error);
+            toast({ variant: "destructive", title: "Application Failed", description: "Could not save your application." });
+        } finally {
+            setIsProcessing(false);
+            setIsApplyDialogOpen(false);
         }
-        router.push('/seeker/improve-resume');
-        setIsProcessing(false);
-        setIsApplyDialogOpen(false);
+
     };
     reader.onerror = () => {
         toast({
@@ -174,7 +205,7 @@ export default function JobSearchPage() {
             <div className="space-y-2">
               <Label htmlFor="resume-upload">Upload Resume (PDF)</Label>
                <div className="flex items-center gap-2">
-                  <Input id="resume-upload" type="file" accept=".pdf" className="hidden" onChange={handleFileChange} />
+                  <Input id="resume-upload" type="file" accept=".pdf" className="hidden" onChange={handleFileChange} required />
                   <Button asChild variant="outline">
                       <Label htmlFor="resume-upload" className="cursor-pointer">
                           <Upload className="mr-2 h-4 w-4" />

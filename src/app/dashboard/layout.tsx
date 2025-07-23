@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BarChart2, LogOut, Scale, Settings, Send, Loader2 } from "lucide-react";
+import { BarChart2, LogOut, Scale, Settings, Send, Loader2, Briefcase } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -94,6 +94,18 @@ export default function DashboardLayout({
                       <span>Candidate Ranker</span>
                     </Link>
                   </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="My Jobs"
+                  isActive={pathname.startsWith('/dashboard/my-jobs')}
+                  asChild
+                >
+                  <Link href="/dashboard/my-jobs">
+                    <Briefcase />
+                    <span>My Jobs</span>
+                  </Link>
+                </SidebarMenuButton>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
