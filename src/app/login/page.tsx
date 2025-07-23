@@ -32,9 +32,9 @@ export default function LoginPage() {
     // This is a mock login.
     // In a real app, you would have authentication logic here.
     setTimeout(() => {
-      let role = 'Job Seeker';
-      let name = "Job Seeker";
-      let redirectPath = '/seeker';
+      let role = '';
+      let name = "";
+      let redirectPath = '';
       let loginSuccess = false;
 
         if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj@2108') {
@@ -55,7 +55,7 @@ export default function LoginPage() {
             name = "Hiring Manager";
             redirectPath = '/dashboard';
             loginSuccess = true;
-        } else if (email) {
+        } else if (email && password) { // Assume other valid emails are job seekers
             toast({
                 title: "Login Successful",
                 description: "Redirecting to job seeker dashboard.",
