@@ -37,7 +37,7 @@ export default function LoginPage() {
             const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
             const user = existingUsers.find((user: any) => user.email === email);
 
-            if (user && user.password === password) {
+            if (user && user.password && user.password === password) {
                  toast({
                     title: "Login Successful",
                     description: `Redirecting to ${user.role.toLowerCase()} dashboard.`,

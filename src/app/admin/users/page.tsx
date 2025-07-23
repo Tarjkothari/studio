@@ -30,35 +30,29 @@ const defaultUsers: User[] = [
 ];
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>(defaultUsers);
+  const [users, setUsers] = useState<User[]>([]);
   
   useEffect(() => {
     try {
         const storedUsersString = localStorage.getItem('users');
-        let combinedUsers: User[] = [...defaultUsers];
+        const storedUsers = storedUsersString ? JSON.parse(storedUsersString) : [];
 
-        if (storedUsersString) {
-            const storedUsers = JSON.parse(storedUsersString) as User[];
-            const storedUserEmails = new Set(defaultUsers.map(u => u.email));
+        // Create a map of default users for quick lookup
+        const defaultUserMap = new Map(defaultUsers.map(u => [u.email, u]));
+        // Create a map of stored users for quick lookup
+        const storedUserMap = new Map(storedUsers.map((u: User) => [u.email, u]));
 
-            for (const user of storedUsers) {
-                if (!storedUserEmails.has(user.email)) {
-                    combinedUsers.push(user);
-                    storedUserEmails.add(user.email);
-                }
-            }
-        }
-        
-        // Ensure default admin user is always in the list and has a password
-        const adminUser = combinedUsers.find(u => u.email === 'admin@resumerank.ai');
+        // Combine users, giving precedence to stored users but ensuring defaults are present
+        const combinedUserMap = new Map([...defaultUserMap, ...storedUserMap]);
+
+        // Ensure the admin user always has a password
+        const adminUser = combinedUserMap.get('admin@resumerank.ai');
         if (adminUser) {
-            if (!adminUser.password) {
-                adminUser.password = 'password';
-            }
-        } else {
-             // This case should ideally not happen if defaultUsers is set correctly.
+            adminUser.password = adminUser.password || 'password';
         }
 
+        const combinedUsers = Array.from(combinedUserMap.values());
+        
         setUsers(combinedUsers);
         localStorage.setItem('users', JSON.stringify(combinedUsers));
 
