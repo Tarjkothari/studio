@@ -188,18 +188,16 @@ export default function JobSearchPage() {
             <DialogContent className="sm:max-w-2xl">
                 <DialogHeader>
                     <DialogTitle>{viewingJob?.title}</DialogTitle>
-                    <DialogDescription>
-                        <div className="flex items-center gap-4 pt-2">
-                            <div className="flex items-center gap-2">
-                                <Briefcase className="h-4 w-4 text-muted-foreground"/>
-                                <span>{viewingJob?.company}</span>
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <MapPin className="h-4 w-4 text-muted-foreground"/>
-                                <span>{viewingJob?.location}</span>
-                            </div>
+                    <div className="flex items-center gap-4 pt-2 text-sm text-muted-foreground">
+                        <div className="flex items-center gap-2">
+                            <Briefcase className="h-4 w-4"/>
+                            <span>{viewingJob?.company}</span>
                         </div>
-                    </DialogDescription>
+                        <div className="flex items-center gap-2">
+                            <MapPin className="h-4 w-4"/>
+                            <span>{viewingJob?.location}</span>
+                        </div>
+                    </div>
                 </DialogHeader>
                 <ScrollArea className="max-h-[60vh] pr-4">
                     <div className="prose prose-sm dark:prose-invert text-sm text-muted-foreground whitespace-pre-wrap">
