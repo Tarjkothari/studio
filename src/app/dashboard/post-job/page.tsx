@@ -161,7 +161,8 @@ export default function PostJobPage() {
                 </SelectTrigger>
                 <SelectContent>
                     <SelectItem value="Not Required">Not Required</SelectItem>
-                    <SelectItem value="High School">High School Diploma</SelectItem>
+                    <SelectItem value="10th">10th</SelectItem>
+                    <SelectItem value="12th">12th</SelectItem>
                     <SelectItem value="Diploma">Diploma</SelectItem>
                     <SelectItem value="Associate's Degree">Associate's Degree</SelectItem>
                     <SelectItem value="Bachelor's Degree">Bachelor's Degree</SelectItem>
