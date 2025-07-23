@@ -34,7 +34,7 @@ export default function SeekerLayout({
 }) {
   const pathname = usePathname();
   const [loggedInUser, setLoggedInUser] = useState<User>({
-    email: "",
+    email: "seeker@example.com",
     name: "Job Seeker",
     fallback: "JS",
     avatar: "https://placehold.co/40x40"
@@ -45,7 +45,9 @@ export default function SeekerLayout({
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
             const user = JSON.parse(userString);
-            setLoggedInUser(user);
+            if (user.role === 'Job Seeker') {
+              setLoggedInUser(user);
+            }
         }
     } catch(e) {
       console.error("Could not retrieve logged in user from localStorage", e);
