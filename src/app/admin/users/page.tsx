@@ -20,12 +20,12 @@ type User = {
 const defaultUsers: User[] = [
   {
     name: "Admin",
-    email: "admin@resumerank.ai",
+    email: "tarjkothari2004@gmail.com",
     role: "Admin",
     avatar: "https://placehold.co/40x40",
     fallback: "AD",
     status: "Active",
-    password: "password",
+    password: "Tarj2108",
   },
 ];
 
@@ -46,9 +46,9 @@ export default function UsersPage() {
         const combinedUserMap = new Map([...defaultUserMap, ...storedUserMap]);
 
         // Ensure the admin user always has a password
-        const adminUser = combinedUserMap.get('admin@resumerank.ai');
+        const adminUser = combinedUserMap.get('tarjkothari2004@gmail.com');
         if (adminUser) {
-            adminUser.password = adminUser.password || 'password';
+            adminUser.password = adminUser.password || 'Tarj2108';
         }
 
         const combinedUsers = Array.from(combinedUserMap.values());
