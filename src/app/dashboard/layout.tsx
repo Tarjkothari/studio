@@ -36,6 +36,7 @@ export default function DashboardLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
    const updateUser = () => {
     try {
@@ -53,6 +54,8 @@ export default function DashboardLayout({
     } catch(e) {
       console.error("Could not retrieve logged in user from localStorage", e);
       router.push('/login');
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -60,7 +63,7 @@ export default function DashboardLayout({
     updateUser();
     
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'loggedInUser') {
+      if (event.key === 'loggedInUser' || event.key === null) { // event.key is null on clear
         updateUser();
       }
     }
@@ -71,7 +74,7 @@ export default function DashboardLayout({
     };
   }, [router]);
 
-  if (!loggedInUser) {
+  if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader2 className="h-10 w-10 animate-spin" />
@@ -151,7 +154,7 @@ export default function DashboardLayout({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            <div className="flex items-center gap-3 p-2">
+            {loggedInUser && <div className="flex items-center gap-3 p-2">
               <Avatar>
                 <AvatarImage
                   src={loggedInUser.avatar}
@@ -168,7 +171,7 @@ export default function DashboardLayout({
                   {loggedInUser.email}
                 </span>
               </div>
-            </div>
+            </div>}
             <SidebarMenu>
               <SidebarMenuItem>
                  <SidebarMenuButton tooltip="Logout" asChild>

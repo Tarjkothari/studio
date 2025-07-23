@@ -36,6 +36,7 @@ export default function SeekerLayout({
   const pathname = usePathname();
   const router = useRouter();
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const updateUser = () => {
     try {
@@ -53,6 +54,8 @@ export default function SeekerLayout({
     } catch(e) {
       console.error("Could not retrieve logged in user from localStorage", e);
       router.push('/login');
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -60,7 +63,7 @@ export default function SeekerLayout({
     updateUser();
     
     const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'loggedInUser') {
+      if (event.key === 'loggedInUser' || event.key === null) {
         updateUser();
       }
     };
@@ -71,7 +74,7 @@ export default function SeekerLayout({
     };
   }, [router]);
 
-  if (!loggedInUser) {
+  if (isLoading) {
      return (
         <div className="flex h-screen items-center justify-center">
             <Loader2 className="h-10 w-10 animate-spin" />
@@ -128,7 +131,7 @@ export default function SeekerLayout({
             </SidebarMenu>
           </SidebarContent>
           <SidebarFooter>
-            <div className="flex items-center gap-3 p-2">
+            {loggedInUser && <div className="flex items-center gap-3 p-2">
               <Avatar>
                 <AvatarImage
                   src={loggedInUser.avatar}
@@ -145,7 +148,7 @@ export default function SeekerLayout({
                   {loggedInUser.email}
                 </span>
               </div>
-            </div>
+            </div>}
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Logout" asChild>

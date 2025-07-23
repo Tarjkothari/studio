@@ -52,15 +52,14 @@ export default function ApplicantsPage() {
             // Get job from session storage first, as passed from the previous page
             const selectedJobString = sessionStorage.getItem('selectedJobForApplicants');
             let currentJob: JobPosting | null = null;
+
             if (selectedJobString) {
                 const parsedJob = JSON.parse(selectedJobString);
-                // Ensure the job in session storage matches the current jobId in the URL
                 if (parsedJob.id === jobId) {
                     currentJob = parsedJob;
                 }
             }
             
-            // If not in session storage or mismatched, try finding it in local storage
             if (!currentJob) {
                 const allJobsString = localStorage.getItem('jobPostings');
                 if (allJobsString) {
@@ -97,7 +96,6 @@ export default function ApplicantsPage() {
 
         const applicant = applicants[applicantIndex];
 
-        // Set loading state for this specific applicant
         setApplicants(prev => {
             const newApplicants = [...prev];
             newApplicants[applicantIndex].score = -1; // Use -1 to signify loading
@@ -124,7 +122,6 @@ export default function ApplicantsPage() {
         } catch (error) {
             console.error('Ranking failed', error);
             toast({ variant: 'destructive', title: 'AI Ranking Failed' });
-            // Reset loading state on error
             setApplicants(prev => {
                 const newApplicants = [...prev];
                 newApplicants[applicantIndex].score = undefined;

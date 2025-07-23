@@ -42,10 +42,7 @@ export default function MyJobsPage() {
 
     useEffect(() => {
         if (!currentUserEmail) {
-            if (!isLoading && myJobs.length === 0) {
-            } else if (isLoading && !currentUserEmail) {
-                return;
-            }
+            return;
         }
         
         setIsLoading(true);
