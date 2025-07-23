@@ -15,8 +15,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileUp, LogOut, Settings, Briefcase } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { FileUp, LogOut, Settings, Briefcase, Loader2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 
@@ -33,36 +33,44 @@ export default function SeekerLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [loggedInUser, setLoggedInUser] = useState<User>({
-    email: "seeker@example.com",
-    name: "Job Seeker",
-    fallback: "JS",
-    avatar: "https://placehold.co/40x40"
-  });
+  const router = useRouter();
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
 
   const updateUser = () => {
     try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
             const user = JSON.parse(userString);
-            if (user.role === 'Job Seeker') {
+            if (user.role === 'Job Seeker' || user.role === 'Admin') {
               setLoggedInUser(user);
+            } else {
+              router.push('/login');
             }
+        } else {
+          router.push('/login');
         }
     } catch(e) {
       console.error("Could not retrieve logged in user from localStorage", e);
+      router.push('/login');
     }
   };
 
   useEffect(() => {
     updateUser();
-    // Listen for the custom storage event
     window.addEventListener('storage', updateUser);
     return () => {
-      // Clean up the event listener
       window.removeEventListener('storage', updateUser);
     };
-  }, []);
+  }, [router]);
+
+  if (!loggedInUser) {
+     return (
+        <div className="flex h-screen items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin" />
+        </div>
+     )
+  }
+
 
   return (
     <SidebarProvider>

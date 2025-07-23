@@ -14,8 +14,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BarChart2, LogOut, Scale, Settings, Send } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { BarChart2, LogOut, Scale, Settings, Send, Loader2 } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
@@ -33,22 +33,25 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const [loggedInUser, setLoggedInUser] = useState<User>({
-    email: "manager@company.com",
-    name: "Hiring Manager",
-    fallback: "HM",
-    avatar: "https://placehold.co/40x40"
-  });
+  const router = useRouter();
+  const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
 
    const updateUser = () => {
     try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
             const user = JSON.parse(userString);
-            setLoggedInUser(user);
+            if (user.role === 'Job Provider') {
+              setLoggedInUser(user);
+            } else {
+              router.push('/login');
+            }
+        } else {
+          router.push('/login');
         }
     } catch(e) {
       console.error("Could not retrieve logged in user from localStorage", e);
+      router.push('/login');
     }
   };
 
@@ -58,7 +61,15 @@ export default function DashboardLayout({
     return () => {
       window.removeEventListener('storage', updateUser);
     };
-  }, []);
+  }, [router]);
+
+  if (!loggedInUser) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <Loader2 className="h-10 w-10 animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <SidebarProvider>

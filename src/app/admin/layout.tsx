@@ -1,6 +1,8 @@
 
 "use client";
 
+import { useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Logo } from "@/components/logo";
 import {
   SidebarProvider,
@@ -14,8 +16,8 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, Users } from "lucide-react";
-import { usePathname } from "next/navigation";
+import { LogOut, Settings, Users, Loader2 } from "lucide-react";
+
 
 export default function AdminLayout({
   children,
@@ -23,10 +25,33 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    const userString = localStorage.getItem('loggedInUser');
+    if (userString) {
+      const user = JSON.parse(userString);
+      if (user.role !== 'Admin') {
+        router.push('/login');
+      }
+    } else {
+      router.push('/login');
+    }
+  }, [router]);
+
   const loggedInUser = {
     email: "tarjkothari2004@gmail.com",
     name: "Admin"
   };
+
+  const userString = typeof window !== 'undefined' ? localStorage.getItem('loggedInUser') : null;
+    if (!userString || JSON.parse(userString).role !== 'Admin') {
+       return (
+        <div className="flex h-screen items-center justify-center">
+            <Loader2 className="h-10 w-10 animate-spin" />
+        </div>
+       )
+    }
 
   return (
     <SidebarProvider>
