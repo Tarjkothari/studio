@@ -39,40 +39,37 @@ export default function DashboardLayout({
           <SidebarContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Candidate Ranker"
-                  isActive={pathname.startsWith('/dashboard/ranker')}
-                  asChild
-                >
-                  <Link href="/dashboard/ranker">
+                <Link href="/dashboard/ranker" passHref>
+                  <SidebarMenuButton
+                    tooltip="Candidate Ranker"
+                    isActive={pathname.startsWith('/dashboard/ranker')}
+                  >
                     <BarChart2 />
                     <span>Candidate Ranker</span>
-                  </Link>
-                </SidebarMenuButton>
+                  </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Bias Checker"
-                  isActive={pathname.startsWith('/dashboard/bias-checker')}
-                  asChild
-                >
-                  <Link href="/dashboard/bias-checker">
+                <Link href="/dashboard/bias-checker" passHref>
+                  <SidebarMenuButton
+                    tooltip="Bias Checker"
+                    isActive={pathname.startsWith('/dashboard/bias-checker')}
+                  >
                     <Scale />
                     <span>Bias Checker</span>
-                  </Link>
-                </SidebarMenuButton>
+                  </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Account"
-                  isActive={pathname.startsWith('/dashboard/account')}
-                  asChild
-                >
-                  <Link href="/dashboard/account">
+                <Link href="/dashboard/account" passHref>
+                  <SidebarMenuButton
+                    tooltip="Account"
+                    isActive={pathname.startsWith('/dashboard/account')}
+                  >
                     <Settings />
                     <span>Account</span>
-                  </Link>
-                </SidebarMenuButton>
+                  </SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarContent>
@@ -97,12 +94,12 @@ export default function DashboardLayout({
             </div>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Logout" asChild>
-                  <Link href="/login">
-                    <LogOut />
-                    <span>Logout</span>
-                  </Link>
-                </SidebarMenuButton>
+                 <Link href="/login" passHref>
+                    <SidebarMenuButton tooltip="Logout">
+                        <LogOut />
+                        <span>Logout</span>
+                    </SidebarMenuButton>
+                 </Link>
               </SidebarMenuItem>
             </SidebarMenu>
           </SidebarFooter>
