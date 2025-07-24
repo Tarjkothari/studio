@@ -48,6 +48,8 @@ export default function ApplicantsPage() {
         if (!jobId) {
             return;
         }
+        
+        setIsLoading(true);
 
         try {
             const allJobsString = localStorage.getItem('jobPostings');
@@ -63,34 +65,24 @@ export default function ApplicantsPage() {
                         description: 'Job not found.',
                     });
                     router.push('/dashboard/my-jobs');
+                    return;
                 }
+            }
+
+            const allApplicationsString = localStorage.getItem('jobApplications');
+            if (allApplicationsString) {
+                const allApplications = JSON.parse(allApplicationsString) as Application[];
+                const jobApplicants = allApplications.filter((app) => app.jobId === jobId);
+                setApplicants(jobApplicants.map((app) => ({ ...app })));
             }
         } catch (e) {
             console.error('Failed to load job data', e);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not load job data.' });
             router.push('/dashboard/my-jobs');
-        }
-    }, [jobId, router, toast]);
-
-    useEffect(() => {
-        if (!job) {
-            return;
-        }
-
-        try {
-            const allApplicationsString = localStorage.getItem('jobApplications');
-            if (allApplicationsString) {
-                const allApplications = JSON.parse(allApplicationsString) as Application[];
-                const jobApplicants = allApplications.filter((app) => app.jobId === job.id);
-                setApplicants(jobApplicants.map((app) => ({ ...app })));
-            }
-        } catch (e) {
-             console.error('Failed to load applicant data', e);
-             toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicant data.' });
         } finally {
             setIsLoading(false);
         }
-    }, [job, toast]);
+    }, [jobId, router, toast]);
 
     const handleRankApplicant = async (applicantEmail: string) => {
         const applicantIndex = applicants.findIndex(a => a.applicantEmail === applicantEmail);
