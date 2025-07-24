@@ -46,10 +46,10 @@ export default function ApplicantsPage() {
 
     useEffect(() => {
         if (!jobId) {
-            setIsLoading(true);
             return;
         }
 
+        setIsLoading(true);
         let currentJob: JobPosting | undefined;
         try {
             const allJobsString = localStorage.getItem('jobPostings');
@@ -57,6 +57,7 @@ export default function ApplicantsPage() {
                 const allJobs = JSON.parse(allJobsString) as JobPosting[];
                 currentJob = allJobs.find((j) => j.id === jobId);
             }
+
             if (currentJob) {
                 setJob(currentJob);
                 const allApplicationsString = localStorage.getItem('jobApplications');
@@ -122,7 +123,7 @@ export default function ApplicantsPage() {
         }
     };
     
-    if (isLoading || !job) {
+    if (isLoading) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 

@@ -61,10 +61,10 @@ export default function EditJobPage() {
 
   useEffect(() => {
     if (!jobId) {
-        setIsLoading(true);
         return;
     };
 
+    setIsLoading(true);
     try {
       const existingJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
       const jobToEdit = existingJobs.find(j => j.id === jobId);
@@ -80,7 +80,7 @@ export default function EditJobPage() {
             setDeadline(new Date(jobToEdit.deadline));
         }
       } else {
-        toast({ variant: 'destructive', title: 'Job not found.' });
+        toast({ variant: 'destructive', title: 'Error', description: 'Job not found.' });
         router.push('/dashboard/my-jobs');
       }
     } catch (e) {
@@ -136,7 +136,7 @@ export default function EditJobPage() {
     }
   };
 
-  if (isLoading || !job) {
+  if (isLoading) {
     return (
         <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin" />
