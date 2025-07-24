@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle, Trophy } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -33,7 +33,8 @@ type Application = {
     resumeDataUri: string;
     achievements: string;
     appliedDate: string;
-    status: 'Applied' | 'Selected for Test' | 'Not Selected';
+    status: 'Applied' | 'Selected for Test' | 'Test Completed' | 'Not Selected';
+    testScore?: number;
 };
 
 type RankedApplication = Application & {
@@ -83,31 +84,15 @@ export default function MyJobsPage() {
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    useEffect(() => {
-        try {
-            const userString = localStorage.getItem('loggedInUser');
-            if (userString) {
-                const user = JSON.parse(userString);
-                setCurrentUserEmail(user.email);
-            }
-        } catch (e) {
-            console.error("Failed to load user from local storage", e);
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!currentUserEmail) {
-            if (!isLoading && !currentUserEmail) setIsLoading(false);
+    const loadJobsAndApplicants = () => {
+         if (!currentUserEmail) {
             return;
         }
-
         setIsLoading(true);
-
         try {
             let allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]') as JobPosting[];
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]') as Application[];
             
-            // Add default jobs if they don't exist for the default provider
             if (currentUserEmail === 'provider@example.com') {
                 const existingDefaultJobIds = new Set(allJobs.map((j: JobPosting) => j.id));
                 const jobsToAdd = defaultJobs.filter(dj => !existingDefaultJobIds.has(dj.id));
@@ -131,6 +116,23 @@ export default function MyJobsPage() {
         } finally {
             setIsLoading(false);
         }
+    }
+
+    useEffect(() => {
+        try {
+            const userString = localStorage.getItem('loggedInUser');
+            if (userString) {
+                const user = JSON.parse(userString);
+                setCurrentUserEmail(user.email);
+            }
+        } catch (e) {
+            console.error("Failed to load user from local storage", e);
+        }
+    }, []);
+
+    useEffect(() => {
+        loadJobsAndApplicants();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUserEmail, pathname]);
 
     const handleSelectForTest = (jobId: string, applicantEmail: string) => {
@@ -142,7 +144,6 @@ export default function MyJobsPage() {
                 allApplications[appIndex].status = 'Selected for Test';
                 localStorage.setItem('jobApplications', JSON.stringify(allApplications));
 
-                // Update local state to reflect the change immediately
                 setMyJobs(prevJobs => {
                     return prevJobs.map(job => {
                         if (job.id === jobId) {
@@ -179,7 +180,7 @@ export default function MyJobsPage() {
 
         setMyJobs(prev => {
             const newJobs = [...prev];
-            newJobs[jobIndex].applicants[applicantIndex].score = -1; // Loading state
+            newJobs[jobIndex].applicants[applicantIndex].score = -1; 
             return newJobs;
         });
 
@@ -215,6 +216,44 @@ export default function MyJobsPage() {
         }
     };
 
+    const getStatusComponent = (applicant: RankedApplication, jobId: string) => {
+        switch(applicant.status) {
+            case 'Applied':
+                return (
+                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(jobId, applicant.applicantEmail)}>
+                        Select for Test
+                    </Button>
+                );
+            case 'Selected for Test':
+                 return (
+                    <Badge variant="default">
+                        Test Pending
+                    </Badge>
+                );
+            case 'Test Completed':
+                return (
+                    <div className="flex items-center gap-2">
+                         <Badge variant="default" className="bg-green-600">
+                           Test Completed
+                         </Badge>
+                         <div className="flex items-center gap-1 font-semibold">
+                            <Trophy className="h-4 w-4 text-amber-400" />
+                            <span>{applicant.testScore}/100</span>
+                         </div>
+                    </div>
+                   
+                );
+            case 'Not Selected':
+                return <Badge variant="destructive">Not Selected</Badge>;
+            default:
+                 return (
+                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(jobId, applicant.applicantEmail)}>
+                        Select for Test
+                    </Button>
+                );
+        }
+    }
+
 
     return (
         <div className="space-y-6">
@@ -248,7 +287,7 @@ export default function MyJobsPage() {
             ) : (
                 <div className="space-y-6">
                     {myJobs.map((job) => (
-                        <Collapsible key={job.id} asChild>
+                        <Collapsible key={job.id} asChild onOpenChange={loadJobsAndApplicants}>
                             <Card className="flex flex-col">
                                 <CardHeader>
                                     <CardTitle>{job.title}</CardTitle>
@@ -340,16 +379,7 @@ export default function MyJobsPage() {
                                                                 )}
                                                             </TableCell>
                                                             <TableCell className="text-right space-x-2">
-                                                                {applicant.status === 'Selected for Test' ? (
-                                                                    <Button variant="ghost" disabled size="sm" className="text-green-500">
-                                                                        <CheckCircle className="mr-2 h-4 w-4" />
-                                                                        Selected
-                                                                    </Button>
-                                                                ) : (
-                                                                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(job.id, applicant.applicantEmail)}>
-                                                                        Select for Test
-                                                                    </Button>
-                                                                )}
+                                                               {getStatusComponent(applicant, job.id)}
                                                                 <Button variant="ghost" size="icon" asChild>
                                                                     <a href={applicant.resumeDataUri} download={`${applicant.applicantName}_Resume.pdf`}>
                                                                         <Download className="h-4 w-4" />
@@ -372,5 +402,3 @@ export default function MyJobsPage() {
         </div>
     );
 }
-
-    

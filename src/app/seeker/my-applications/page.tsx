@@ -2,16 +2,18 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
 type Application = {
     jobId: string;
     applicantEmail: string;
     appliedDate: string;
-    status: 'Applied' | 'Selected for Test' | 'Not Selected';
+    status: 'Applied' | 'Selected for Test' | 'Test Completed' | 'Not Selected';
 };
 
 type JobPosting = {
@@ -64,16 +66,24 @@ export default function MyApplicationsPage() {
         }
     }, []);
 
-    const getStatusVariant = (status: string) => {
-        switch (status) {
+    const getStatusComponent = (app: EnrichedApplication) => {
+        switch (app.status) {
             case 'Selected for Test':
-                return 'default';
+                return (
+                    <Button asChild size="sm">
+                        <Link href={`/seeker/test/${app.jobId}`}>
+                           Start Test
+                        </Link>
+                    </Button>
+                )
             case 'Applied':
-                return 'secondary';
+                return <Badge variant="secondary">Applied</Badge>;
+            case 'Test Completed':
+                return <Badge variant='default' className="bg-green-600">Test Completed</Badge>
             case 'Not Selected':
-                return 'destructive';
+                return <Badge variant="destructive">Not Selected</Badge>;
             default:
-                return 'outline';
+                return <Badge variant="outline">{app.status}</Badge>;
         }
     };
 
@@ -115,9 +125,7 @@ export default function MyApplicationsPage() {
                                     <TableCell>{app.companyName}</TableCell>
                                     <TableCell>{new Date(app.appliedDate).toLocaleDateString()}</TableCell>
                                     <TableCell>
-                                        <Badge variant={getStatusVariant(app.status)}>
-                                            {app.status}
-                                        </Badge>
+                                        {getStatusComponent(app)}
                                     </TableCell>
                                 </TableRow>
                             ))
@@ -128,5 +136,3 @@ export default function MyApplicationsPage() {
         </Card>
     );
 }
-
-    
