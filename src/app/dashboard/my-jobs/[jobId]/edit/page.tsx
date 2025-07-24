@@ -60,12 +60,9 @@ export default function EditJobPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!jobId) {
-        return;
-    }
-    
-    setIsLoading(true);
+    if (!jobId) return;
 
+    setIsLoading(true);
     try {
       const existingJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
       const jobToEdit = existingJobs.find(j => j.id === jobId);
@@ -83,7 +80,6 @@ export default function EditJobPage() {
       } else {
         toast({ variant: 'destructive', title: 'Job not found.' });
         router.push('/dashboard/my-jobs');
-        return;
       }
     } catch (e) {
       console.error("Failed to load job", e);

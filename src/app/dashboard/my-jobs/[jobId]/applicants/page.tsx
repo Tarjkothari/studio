@@ -45,35 +45,30 @@ export default function ApplicantsPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!jobId) {
-            return;
-        }
-        
-        setIsLoading(true);
+        if (!jobId) return;
 
+        let currentJob: JobPosting | undefined;
         try {
             const allJobsString = localStorage.getItem('jobPostings');
             if (allJobsString) {
                 const allJobs = JSON.parse(allJobsString) as JobPosting[];
-                const currentJob = allJobs.find((j) => j.id === jobId);
-                if (currentJob) {
-                    setJob(currentJob);
-                } else {
-                    toast({
-                        variant: 'destructive',
-                        title: 'Error',
-                        description: 'Job not found.',
-                    });
-                    router.push('/dashboard/my-jobs');
-                    return;
-                }
+                currentJob = allJobs.find((j) => j.id === jobId);
             }
-
-            const allApplicationsString = localStorage.getItem('jobApplications');
-            if (allApplicationsString) {
-                const allApplications = JSON.parse(allApplicationsString) as Application[];
-                const jobApplicants = allApplications.filter((app) => app.jobId === jobId);
-                setApplicants(jobApplicants.map((app) => ({ ...app })));
+            if (currentJob) {
+                setJob(currentJob);
+                const allApplicationsString = localStorage.getItem('jobApplications');
+                if (allApplicationsString) {
+                    const allApplications = JSON.parse(allApplicationsString) as Application[];
+                    const jobApplicants = allApplications.filter((app) => app.jobId === jobId);
+                    setApplicants(jobApplicants.map((app) => ({ ...app })));
+                }
+            } else {
+                toast({
+                    variant: 'destructive',
+                    title: 'Error',
+                    description: 'Job not found.',
+                });
+                router.push('/dashboard/my-jobs');
             }
         } catch (e) {
             console.error('Failed to load job data', e);

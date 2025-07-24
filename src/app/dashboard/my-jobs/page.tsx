@@ -23,6 +23,36 @@ type Application = {
     jobId: string;
 }
 
+const defaultJobs: JobPosting[] = [
+    {
+        id: '1',
+        title: 'Senior Frontend Developer',
+        company: 'Tech Solutions Inc.',
+        location: 'Remote',
+        postedBy: 'provider@example.com',
+        description: 'We are looking for an experienced frontend developer to join our team. You will be responsible for building and maintaining our web applications.',
+        deadline: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+    },
+    {
+        id: '2',
+        title: 'UX/UI Designer',
+        company: 'Creative Minds LLC',
+        location: 'New York, NY',
+        postedBy: 'provider@example.com',
+        description: 'Creative Minds is seeking a talented UX/UI designer to create amazing user experiences. The ideal candidate should have an eye for clean and artful design.',
+        deadline: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
+    },
+    {
+        id: '3',
+        title: 'Backend Engineer (Go)',
+        company: 'ScaleFast',
+        location: 'San Francisco, CA',
+        postedBy: 'provider@example.com',
+        description: 'Join our backend team to build scalable and reliable services. We are looking for a Go developer with experience in microservices architecture.',
+        deadline: new Date(new Date().setDate(new Date().getDate() + 45)).toISOString(),
+    }
+];
+
 export default function MyJobsPage() {
     const router = useRouter();
     const pathname = usePathname();
@@ -38,6 +68,22 @@ export default function MyJobsPage() {
             if (userString) {
                 const user = JSON.parse(userString);
                 setCurrentUserEmail(user.email);
+
+                // Add default user if not exists for testing
+                const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+                const providerExists = allUsers.some((u: any) => u.email === 'provider@example.com');
+                if (!providerExists) {
+                    allUsers.push({
+                        name: "Default Provider",
+                        email: "provider@example.com",
+                        password: "password",
+                        role: "Job Provider",
+                        avatar: "https://placehold.co/40x40",
+                        fallback: "DP",
+                        status: "Active",
+                    });
+                    localStorage.setItem('users', JSON.stringify(allUsers));
+                }
             }
         } catch (e) {
             console.error("Failed to load user from local storage", e);
@@ -54,7 +100,19 @@ export default function MyJobsPage() {
         setIsLoading(true);
 
         try {
-            const allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
+            const allJobsString = localStorage.getItem('jobPostings');
+            let allJobs = allJobsString ? JSON.parse(allJobsString) : [];
+
+            // Add default jobs if they don't exist for the default provider
+            if (currentUserEmail === 'provider@example.com') {
+                const existingDefaultJobIds = new Set(allJobs.map((j: JobPosting) => j.id));
+                const jobsToAdd = defaultJobs.filter(dj => !existingDefaultJobIds.has(dj.id));
+                if (jobsToAdd.length > 0) {
+                    allJobs = [...allJobs, ...jobsToAdd];
+                    localStorage.setItem('jobPostings', JSON.stringify(allJobs));
+                }
+            }
+            
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
 
             const counts: Record<string, number> = {};
