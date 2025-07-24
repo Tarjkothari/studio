@@ -65,7 +65,7 @@ export default function Home() {
             Hire Smarter, Not Harder
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-            Unlock your hiring potential with AI-powered resume analysis. ResumeRank AI helps you find the perfect candidate, faster.
+            Unlock your hiring potential with AI-powered resume analysis. SmartHire helps you find the perfect candidate, faster.
           </p>
           <div className="mt-8 flex justify-center gap-4">
             <Button size="lg" asChild>
@@ -108,7 +108,7 @@ export default function Home() {
         <div className="container mx-auto flex flex-col items-center justify-between px-4 md:flex-row">
           <Logo />
           <p className="mt-4 text-sm text-muted-foreground md:mt-0">
-            © {new Date().getFullYear()} ResumeRank AI. All rights reserved.
+            © {new Date().getFullYear()} SmartHire. All rights reserved.
           </p>
         </div>
       </footer>

@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 
 export const metadata: Metadata = {
-  title: 'ResumeRank AI',
+  title: 'SmartHire',
   description: 'AI-Powered Resume Analysis and Candidate Ranking',
 };
 
