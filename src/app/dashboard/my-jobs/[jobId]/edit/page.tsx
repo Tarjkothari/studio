@@ -60,9 +60,11 @@ export default function EditJobPage() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    if (!jobId) return;
+    if (!jobId) {
+        setIsLoading(true);
+        return;
+    };
 
-    setIsLoading(true);
     try {
       const existingJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
       const jobToEdit = existingJobs.find(j => j.id === jobId);

@@ -45,7 +45,10 @@ export default function ApplicantsPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!jobId) return;
+        if (!jobId) {
+            setIsLoading(true);
+            return;
+        }
 
         let currentJob: JobPosting | undefined;
         try {
