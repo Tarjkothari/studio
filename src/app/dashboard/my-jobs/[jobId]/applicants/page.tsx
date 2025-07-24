@@ -41,56 +41,46 @@ export default function ApplicantsPage() {
 
     const [job, setJob] = useState<JobPosting | null>(null);
     const [applicants, setApplicants] = useState<RankedApplication[]>([]);
-    const [isLoadingJob, setIsLoadingJob] = useState(true);
-    const [isLoadingApplicants, setIsLoadingApplicants] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!jobId) return;
-
-        setIsLoadingJob(true);
-        try {
-            const allJobsString = localStorage.getItem('jobPostings');
-            if (allJobsString) {
-                const allJobs = JSON.parse(allJobsString) as JobPosting[];
-                const currentJob = allJobs.find((j) => j.id === jobId);
-                if (currentJob) {
-                    setJob(currentJob);
-                } else {
-                     toast({
-                        variant: 'destructive',
-                        title: 'Error',
-                        description: 'Job not found.',
-                    });
-                    router.push('/dashboard/my-jobs');
+        if (jobId) {
+            try {
+                const allJobsString = localStorage.getItem('jobPostings');
+                if (allJobsString) {
+                    const allJobs = JSON.parse(allJobsString) as JobPosting[];
+                    const currentJob = allJobs.find((j) => j.id === jobId);
+                    if (currentJob) {
+                        setJob(currentJob);
+                    } else {
+                        toast({ variant: 'destructive', title: 'Error', description: 'Job not found.' });
+                        router.push('/dashboard/my-jobs');
+                    }
                 }
+            } catch (e) {
+                console.error('Failed to load job data', e);
+                toast({ variant: 'destructive', title: 'Error', description: 'Could not load job data.' });
             }
-        } catch (e) {
-            console.error('Failed to load job data', e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not load job data.' });
-            router.push('/dashboard/my-jobs');
-        } finally {
-            setIsLoadingJob(false);
         }
     }, [jobId, router, toast]);
     
     useEffect(() => {
-        if (!job) return;
-
-        setIsLoadingApplicants(true);
-        try {
-            const allApplicationsString = localStorage.getItem('jobApplications');
-            if (allApplicationsString) {
-                const allApplications = JSON.parse(allApplicationsString) as Application[];
+        if (job) {
+            try {
+                const allApplicationsString = localStorage.getItem('jobApplications');
+                const allApplications = allApplicationsString ? JSON.parse(allApplicationsString) as Application[] : [];
                 const jobApplicants = allApplications.filter((app) => app.jobId === job.id);
-                setApplicants(jobApplicants.map((app) => ({ ...app })));
+                setApplicants(jobApplicants);
+            } catch (e) {
+                console.error('Failed to load applicants data', e);
+                toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicants data.' });
+            } finally {
+                setIsLoading(false);
             }
-        } catch (e) {
-            console.error('Failed to load applicants data', e);
-            toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicants data.' });
-        } finally {
-            setIsLoadingApplicants(false);
+        } else if (jobId) {
+             setIsLoading(true);
         }
-    }, [job, toast]);
+    }, [job, jobId, toast]);
 
     const handleRankApplicant = async (applicantEmail: string) => {
         const applicantIndex = applicants.findIndex(a => a.applicantEmail === applicantEmail);
@@ -132,7 +122,7 @@ export default function ApplicantsPage() {
         }
     };
     
-    if (isLoadingJob || isLoadingApplicants) {
+    if (isLoading) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 
