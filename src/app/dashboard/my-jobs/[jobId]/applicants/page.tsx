@@ -41,12 +41,13 @@ export default function ApplicantsPage() {
 
     const [job, setJob] = useState<JobPosting | null>(null);
     const [applicants, setApplicants] = useState<RankedApplication[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoadingJob, setIsLoadingJob] = useState(true);
+    const [isLoadingApplicants, setIsLoadingApplicants] = useState(true);
 
     useEffect(() => {
         if (!jobId) return;
 
-        setIsLoading(true);
+        setIsLoadingJob(true);
         try {
             const allJobsString = localStorage.getItem('jobPostings');
             if (allJobsString) {
@@ -67,12 +68,15 @@ export default function ApplicantsPage() {
             console.error('Failed to load job data', e);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not load job data.' });
             router.push('/dashboard/my-jobs');
-        } 
+        } finally {
+            setIsLoadingJob(false);
+        }
     }, [jobId, router, toast]);
     
     useEffect(() => {
         if (!job) return;
 
+        setIsLoadingApplicants(true);
         try {
             const allApplicationsString = localStorage.getItem('jobApplications');
             if (allApplicationsString) {
@@ -84,7 +88,7 @@ export default function ApplicantsPage() {
             console.error('Failed to load applicants data', e);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicants data.' });
         } finally {
-            setIsLoading(false);
+            setIsLoadingApplicants(false);
         }
     }, [job, toast]);
 
@@ -128,7 +132,7 @@ export default function ApplicantsPage() {
         }
     };
     
-    if (isLoading) {
+    if (isLoadingJob || isLoadingApplicants) {
         return <div className="flex justify-center p-8"><Loader2 className="h-8 w-8 animate-spin" /></div>;
     }
 
@@ -152,7 +156,7 @@ export default function ApplicantsPage() {
                         <TableBody>
                             {applicants.length === 0 ? (
                                 <TableRow>
-                                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                                    <TableCell colSpan={4} className="text-center text-muted-foreground py-8">
                                         No applicants yet.
                                     </TableCell>
                                 </TableRow>
