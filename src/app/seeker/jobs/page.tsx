@@ -31,12 +31,52 @@ type JobPosting = {
   minimumMarks?: string;
   minimumDegree?: string;
   deadline?: string;
+  postedBy: string;
 };
 
 type Application = {
     jobId: string;
     applicantEmail: string;
 }
+
+const defaultJobs: JobPosting[] = [
+    {
+        id: '1',
+        title: 'Senior Frontend Developer',
+        company: 'Tech Solutions Inc.',
+        location: 'Remote',
+        postedBy: 'provider@example.com',
+        description: 'We are looking for an experienced frontend developer to join our team. You will be responsible for building and maintaining our web applications.',
+        deadline: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+        criteria: "5+ years of React experience\nExperience with TypeScript\nStrong understanding of RESTful APIs",
+        minimumDegree: "Bachelor's Degree",
+        minimumMarks: "Not Required"
+    },
+    {
+        id: '2',
+        title: 'UX/UI Designer',
+        company: 'Creative Minds LLC',
+        location: 'New York, NY',
+        postedBy: 'provider@example.com',
+        description: 'Creative Minds is seeking a talented UX/UI designer to create amazing user experiences. The ideal candidate should have an eye for clean and artful design.',
+        deadline: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
+        criteria: "Portfolio of design projects\nProficiency in Figma or Sketch\nUnderstanding of user-centered design principles",
+        minimumDegree: "Bachelor's Degree",
+        minimumMarks: "Not Required"
+    },
+    {
+        id: '3',
+        title: 'Backend Engineer (Go)',
+        company: 'ScaleFast',
+        location: 'San Francisco, CA',
+        postedBy: 'provider@example.com',
+        description: 'Join our backend team to build scalable and reliable services. We are looking for a Go developer with experience in microservices architecture.',
+        deadline: new Date(new Date().setDate(new Date().getDate() + 45)).toISOString(),
+        criteria: "3+ years of experience with Go\nExperience with Docker and Kubernetes\nKnowledge of SQL and NoSQL databases",
+        minimumDegree: "Master's Degree",
+        minimumMarks: "8.0 CGPA"
+    }
+];
 
 export default function JobSearchPage() {
   const router = useRouter();
@@ -56,8 +96,17 @@ export default function JobSearchPage() {
 
   useEffect(() => {
     try {
-      const storedJobs = JSON.parse(localStorage.getItem("jobPostings") || "[]");
-      setJobs(storedJobs.reverse());
+      let allJobsString = localStorage.getItem('jobPostings');
+      let allJobs = allJobsString ? JSON.parse(allJobsString) : [];
+
+      const existingDefaultJobIds = new Set(allJobs.map((j: JobPosting) => j.id));
+      const jobsToAdd = defaultJobs.filter(dj => !existingDefaultJobIds.has(dj.id));
+      if (jobsToAdd.length > 0) {
+          allJobs = [...allJobs, ...jobsToAdd];
+          localStorage.setItem('jobPostings', JSON.stringify(allJobs));
+      }
+
+      setJobs(allJobs.reverse());
 
       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
       const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
@@ -357,3 +406,5 @@ export default function JobSearchPage() {
     </>
   );
 }
+
+    
