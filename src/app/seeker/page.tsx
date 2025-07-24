@@ -1,8 +1,22 @@
+
+"use client"
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
 
 export default function SeekerDashboardPage() {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, [])
+
+    if (!isClient) {
+        return null;
+    }
+
     return (
         <div className="flex flex-col gap-6">
             <Card>

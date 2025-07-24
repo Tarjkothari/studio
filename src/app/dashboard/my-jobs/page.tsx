@@ -87,15 +87,17 @@ export default function MyJobsPage() {
             }
         } catch (e) {
             console.error("Failed to load user from local storage", e);
-        } finally {
-            setIsLoading(false);
         }
     }, []);
 
     useEffect(() => {
         if (!currentUserEmail) {
+            // Wait for currentUserEmail to be set
+            if (!isLoading && !currentUserEmail) {
+                setIsLoading(false);
+            }
             return;
-        }
+        };
         
         setIsLoading(true);
 
@@ -120,11 +122,8 @@ export default function MyJobsPage() {
                 counts[app.jobId] = (counts[app.jobId] || 0) + 1;
             }
             
-            if (currentUserEmail) {
-                const filteredJobs = allJobs.filter((job: JobPosting) => job.postedBy === currentUserEmail);
-                setMyJobs(filteredJobs.reverse());
-            }
-
+            const filteredJobs = allJobs.filter((job: JobPosting) => job.postedBy === currentUserEmail);
+            setMyJobs(filteredJobs.reverse());
             setApplicationCounts(counts);
 
         } catch (e) {
