@@ -5,8 +5,9 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 type JobPosting = {
     id: string;
@@ -24,6 +25,7 @@ type Application = {
 
 export default function MyJobsPage() {
     const router = useRouter();
+    const pathname = usePathname();
     const [myJobs, setMyJobs] = useState<JobPosting[]>([]);
     const [applicationCounts, setApplicationCounts] = useState<Record<string, number>>({});
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
@@ -72,7 +74,7 @@ export default function MyJobsPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [currentUserEmail]);
+    }, [currentUserEmail, pathname]);
 
     const handleViewApplicantsClick = (job: JobPosting) => {
         router.push(`/dashboard/my-jobs/${job.id}/applicants`);
@@ -97,8 +99,8 @@ export default function MyJobsPage() {
 
              {isLoading ? (
                  <Card>
-                    <CardContent className="p-6 text-center text-muted-foreground">
-                        Loading your jobs...
+                    <CardContent className="p-6 text-center flex justify-center items-center">
+                        <Loader2 className="mr-2 h-6 w-6 animate-spin" /> Loading your jobs...
                     </CardContent>
                 </Card>
              ) : myJobs.length === 0 ? (

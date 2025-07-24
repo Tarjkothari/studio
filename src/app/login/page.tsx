@@ -35,28 +35,8 @@ export default function LoginPage() {
         const existingUsers = JSON.parse(localStorage.getItem('users') || '[]');
         const user = existingUsers.find((user: any) => user.email === email);
 
-        if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj2108') {
-            toast({
-                title: "Login Successful",
-                description: `Redirecting to admin dashboard.`,
-            });
-            
-            const adminUser = user || {
-                name: "Admin",
-                email: "tarjkothari2004@gmail.com",
-                role: "Admin",
-                avatar: "https://placehold.co/40x40",
-                fallback: "AD",
-                status: "Active",
-            };
-
-            localStorage.setItem('loggedInUser', JSON.stringify(adminUser));
-            router.push('/admin');
-            return;
-        }
-
-        if (user && user.password && user.password === password) {
-            toast({
+        if (user && user.password === password) {
+             toast({
                 title: "Login Successful",
                 description: `Redirecting to ${user.role.toLowerCase()} dashboard.`,
             });
@@ -72,14 +52,43 @@ export default function LoginPage() {
                 redirectPath = '/seeker';
             }
             router.push(redirectPath);
-
-        } else {
-            toast({
-                variant: "destructive",
-                title: "Login Failed",
-                description: "Invalid credentials. Please check your email and password.",
-            });
+            return;
         }
+
+        // Fallback for original hardcoded admin, in case the user isn't in localStorage
+        if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj2108' && !user) {
+            toast({
+                title: "Login Successful",
+                description: `Redirecting to admin dashboard.`,
+            });
+            
+            const adminUser = {
+                name: "Admin",
+                email: "tarjkothari2004@gmail.com",
+                password: "Tarj2108",
+                role: "Admin",
+                avatar: "https://placehold.co/40x40",
+                fallback: "AD",
+                status: "Active",
+            };
+
+            // Ensure admin user exists in users list
+            const adminExists = existingUsers.some((u: any) => u.email === adminUser.email);
+            if (!adminExists) {
+                localStorage.setItem('users', JSON.stringify([...existingUsers, adminUser]));
+            }
+
+            localStorage.setItem('loggedInUser', JSON.stringify(adminUser));
+            router.push('/admin');
+            return;
+        }
+        
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid credentials. Please check your email and password.",
+        });
+
     } catch(e) {
         console.error("Login error:", e);
         toast({

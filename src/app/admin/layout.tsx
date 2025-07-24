@@ -27,22 +27,20 @@ export default function AdminLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{name: string, email: string} | null>(null);
+  const [user, setUser] = useState<{name: string, email: string, avatar: string, fallback: string} | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    try {
+  const updateUser = () => {
+     try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
             const user = JSON.parse(userString);
             if (user.role === 'Admin') {
                 setUser(user);
             } else {
-                // If the user is not an admin, they should not be on this page.
                 router.push('/login');
             }
         } else {
-            // No user logged in.
             router.push('/login');
         }
     } catch (e) {
@@ -51,7 +49,23 @@ export default function AdminLayout({
     } finally {
         setIsLoading(false);
     }
-  }, [router]);
+  }
+
+  useEffect(() => {
+    updateUser();
+    
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'loggedInUser' || event.key === null) { 
+        updateUser();
+      }
+    }
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router, pathname]);
 
 
   if (isLoading) {
@@ -106,11 +120,11 @@ export default function AdminLayout({
             <div className="flex items-center gap-3 p-2">
               <Avatar>
                 <AvatarImage
-                  src="https://placehold.co/40x40"
+                  src={user.avatar}
                   alt="User Avatar"
                   data-ai-hint="avatar"
                 />
-                <AvatarFallback>AD</AvatarFallback>
+                <AvatarFallback>{user.fallback}</AvatarFallback>
               </Avatar>
               <div className="flex flex-col text-sm">
                 <span className="font-semibold text-sidebar-foreground">
