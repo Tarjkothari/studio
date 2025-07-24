@@ -12,7 +12,6 @@ import { rankCandidates } from '@/ai/flows/rank-candidates';
 import { parseResume } from '@/ai/flows/parse-resume';
 import { Loader2, Star, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
 
 type Application = {
     jobId: string;
@@ -45,43 +44,49 @@ export default function ApplicantsPage() {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        if (!jobId) {
-            return;
-        }
+        if (!jobId) return;
 
         setIsLoading(true);
-        let currentJob: JobPosting | undefined;
         try {
             const allJobsString = localStorage.getItem('jobPostings');
             if (allJobsString) {
                 const allJobs = JSON.parse(allJobsString) as JobPosting[];
-                currentJob = allJobs.find((j) => j.id === jobId);
-            }
-
-            if (currentJob) {
-                setJob(currentJob);
-                const allApplicationsString = localStorage.getItem('jobApplications');
-                if (allApplicationsString) {
-                    const allApplications = JSON.parse(allApplicationsString) as Application[];
-                    const jobApplicants = allApplications.filter((app) => app.jobId === jobId);
-                    setApplicants(jobApplicants.map((app) => ({ ...app })));
+                const currentJob = allJobs.find((j) => j.id === jobId);
+                if (currentJob) {
+                    setJob(currentJob);
+                } else {
+                     toast({
+                        variant: 'destructive',
+                        title: 'Error',
+                        description: 'Job not found.',
+                    });
+                    router.push('/dashboard/my-jobs');
                 }
-            } else {
-                toast({
-                    variant: 'destructive',
-                    title: 'Error',
-                    description: 'Job not found.',
-                });
-                router.push('/dashboard/my-jobs');
             }
         } catch (e) {
             console.error('Failed to load job data', e);
             toast({ variant: 'destructive', title: 'Error', description: 'Could not load job data.' });
             router.push('/dashboard/my-jobs');
+        } 
+    }, [jobId, router, toast]);
+    
+    useEffect(() => {
+        if (!job) return;
+
+        try {
+            const allApplicationsString = localStorage.getItem('jobApplications');
+            if (allApplicationsString) {
+                const allApplications = JSON.parse(allApplicationsString) as Application[];
+                const jobApplicants = allApplications.filter((app) => app.jobId === job.id);
+                setApplicants(jobApplicants.map((app) => ({ ...app })));
+            }
+        } catch (e) {
+            console.error('Failed to load applicants data', e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not load applicants data.' });
         } finally {
             setIsLoading(false);
         }
-    }, [jobId, router, toast]);
+    }, [job, toast]);
 
     const handleRankApplicant = async (applicantEmail: string) => {
         const applicantIndex = applicants.findIndex(a => a.applicantEmail === applicantEmail);
