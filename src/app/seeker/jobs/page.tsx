@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap, Calendar } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -30,6 +30,7 @@ type JobPosting = {
   criteria?: string;
   minimumMarks?: string;
   minimumDegree?: string;
+  deadline?: string;
 };
 
 type Application = {
@@ -170,6 +171,8 @@ export default function JobSearchPage() {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {jobs.map((job) => {
               const hasApplied = appliedJobIds.has(job.id);
+              const isDeadlinePassed = job.deadline ? new Date(job.deadline) < new Date() : false;
+
               return (
                 <Card key={job.id} className="flex flex-col">
                     <CardHeader>
@@ -183,6 +186,14 @@ export default function JobSearchPage() {
                              <MapPin className="h-4 w-4 text-muted-foreground"/>
                              <span>{job.location}</span>
                            </div>
+                           {job.deadline && (
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4 text-muted-foreground" />
+                                    <span className={isDeadlinePassed ? 'text-destructive' : ''}>
+                                        {new Date(job.deadline).toLocaleDateString()}
+                                    </span>
+                                </div>
+                            )}
                         </CardDescription>
                     </CardHeader>
                     <CardContent className="flex-grow">
@@ -193,6 +204,10 @@ export default function JobSearchPage() {
                              <Button disabled className="w-full">
                                 <CheckCircle className="mr-2 h-4 w-4" />
                                 Already Applied
+                            </Button>
+                        ) : isDeadlinePassed ? (
+                            <Button disabled className="w-full">
+                                Deadline Passed
                             </Button>
                         ) : (
                             <>
@@ -267,6 +282,12 @@ export default function JobSearchPage() {
                                 <MapPin className="h-4 w-4"/>
                                 <span>{viewingJob?.location}</span>
                             </div>
+                             {viewingJob?.deadline && (
+                                <div className="flex items-center gap-2">
+                                    <Calendar className="h-4 w-4" />
+                                    <span>Deadline: {new Date(viewingJob.deadline).toLocaleDateString()}</span>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </DialogHeader>
@@ -327,7 +348,7 @@ export default function JobSearchPage() {
                         if (viewingJob) {
                            handleApplyClick(viewingJob);
                         }
-                    }}>
+                    }} disabled={viewingJob?.deadline ? new Date(viewingJob.deadline) < new Date() : false}>
                         Apply Now
                     </Button>
                 </DialogFooter>

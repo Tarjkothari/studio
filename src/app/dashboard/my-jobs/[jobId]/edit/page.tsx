@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Send, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, Save, Calendar as CalendarIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -29,94 +29,126 @@ import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 
+type JobPosting = {
+    id: string;
+    title: string;
+    company: string;
+    location: string;
+    description: string;
+    criteria: string;
+    minimumMarks: string;
+    minimumDegree: string;
+    deadline?: string | null;
+    postedBy: string;
+};
 
-export default function PostJobPage() {
+export default function EditJobPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const params = useParams();
+  const jobId = params.jobId as string;
+
+  const [job, setJob] = useState<JobPosting | null>(null);
   const [jobTitle, setJobTitle] = useState("");
   const [location, setLocation] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [criteria, setCriteria] = useState("");
   const [minimumMarks, setMinimumMarks] = useState("");
   const [minimumDegree, setMinimumDegree] = useState("");
-  const [companyName, setCompanyName] = useState("");
-  const [deadline, setDeadline] = useState<Date>();
+  const [deadline, setDeadline] = useState<Date | undefined>();
   const [isSaving, setIsSaving] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Get the job provider's name from localStorage
+    if (!jobId) return;
     try {
-        const loggedInUserString = localStorage.getItem("loggedInUser");
-        if (loggedInUserString) {
-            const loggedInUser = JSON.parse(loggedInUserString);
-            setCompanyName(loggedInUser.name);
+      const existingJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
+      const jobToEdit = existingJobs.find(j => j.id === jobId);
+      if (jobToEdit) {
+        setJob(jobToEdit);
+        setJobTitle(jobToEdit.title);
+        setLocation(jobToEdit.location);
+        setJobDescription(jobToEdit.description);
+        setCriteria(jobToEdit.criteria);
+        setMinimumMarks(jobToEdit.minimumMarks);
+        setMinimumDegree(jobToEdit.minimumDegree);
+        if (jobToEdit.deadline) {
+            setDeadline(new Date(jobToEdit.deadline));
         }
-    } catch(e) {
-        console.error("Failed to load user from local storage", e)
+      } else {
+        toast({ variant: 'destructive', title: 'Job not found.' });
+        router.push('/dashboard/my-jobs');
+      }
+    } catch (e) {
+      console.error("Failed to load job", e);
+      toast({ variant: 'destructive', title: 'Error loading job data.' });
+    } finally {
+        setIsLoading(false);
     }
-  }, [])
+  }, [jobId, router, toast]);
 
-  const handlePostJob = (event: React.FormEvent) => {
+  const handleUpdateJob = (event: React.FormEvent) => {
     event.preventDefault();
     setIsSaving(true);
 
-    if (!jobTitle || !location || !jobDescription || !criteria) {
-      toast({
-        variant: "destructive",
-        title: "Missing Information",
-        description: "Please fill out all fields.",
-      });
-      setIsSaving(false);
-      return;
+    if (!job) {
+        toast({ variant: 'destructive', title: 'Cannot update job.' });
+        setIsSaving(false);
+        return;
     }
 
     try {
-        const newJob = {
-            id: new Date().toISOString(),
+        const updatedJob: JobPosting = {
+            ...job,
             title: jobTitle,
-            company: companyName,
             location: location,
             description: jobDescription,
             criteria: criteria,
             minimumMarks: minimumMarks,
             minimumDegree: minimumDegree,
             deadline: deadline ? deadline.toISOString() : null,
-            postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email
         };
 
-        const existingJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
-        const updatedJobs = [...existingJobs, newJob];
+        const existingJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
+        const updatedJobs = existingJobs.map(j => (j.id === jobId ? updatedJob : j));
         localStorage.setItem('jobPostings', JSON.stringify(updatedJobs));
 
         toast({
-            title: "Job Posted Successfully",
-            description: "Your job opening is now live for seekers to view.",
+            title: "Job Updated Successfully",
+            description: "Your job opening has been updated.",
         });
 
-        // Optionally redirect or clear form
         router.push("/dashboard/my-jobs"); 
 
     } catch (e) {
-      console.error("Failed to save job posting to local storage", e);
+      console.error("Failed to update job posting", e);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not save your job posting.",
+        description: "Could not update your job posting.",
       });
     } finally {
       setIsSaving(false);
     }
   };
 
+  if (isLoading || !job) {
+    return (
+        <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Post a New Job Opening</CardTitle>
+        <CardTitle>Edit Job Opening</CardTitle>
         <CardDescription>
-          Fill out the details below to create a new job listing.
+          Update the details for your job listing below.
         </CardDescription>
       </CardHeader>
-      <form onSubmit={handlePostJob}>
+      <form onSubmit={handleUpdateJob}>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="space-y-2">
             <Label htmlFor="job-title">Job Title</Label>
@@ -124,7 +156,6 @@ export default function PostJobPage() {
               id="job-title"
               value={jobTitle}
               onChange={(e) => setJobTitle(e.target.value)}
-              placeholder="e.g., Senior Software Engineer"
               required
             />
           </div>
@@ -134,7 +165,6 @@ export default function PostJobPage() {
               id="location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              placeholder="e.g., San Francisco, CA or Remote"
               required
             />
           </div>
@@ -145,7 +175,6 @@ export default function PostJobPage() {
               rows={8}
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Describe the role, responsibilities, and qualifications..."
               required
             />
           </div>
@@ -156,7 +185,6 @@ export default function PostJobPage() {
               rows={4}
               value={criteria}
               onChange={(e) => setCriteria(e.target.value)}
-              placeholder="List key criteria for the ideal candidate (e.g., 5+ years of React experience, Bachelor's degree in CS)..."
               required
             />
           </div>
@@ -184,10 +212,9 @@ export default function PostJobPage() {
               id="minimum-marks"
               value={minimumMarks}
               onChange={(e) => setMinimumMarks(e.target.value)}
-              placeholder="e.g., 75% or 8.0 CGPA"
             />
           </div>
-            <div className="space-y-2">
+           <div className="space-y-2">
                 <Label htmlFor="deadline">Application Deadline</Label>
                  <Popover>
                     <PopoverTrigger asChild>
@@ -213,14 +240,17 @@ export default function PostJobPage() {
                 </Popover>
             </div>
         </CardContent>
-        <CardFooter>
+        <CardFooter className="flex gap-2">
           <Button type="submit" disabled={isSaving}>
             {isSaving ? (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             ) : (
-              <Send className="mr-2 h-4 w-4" />
+              <Save className="mr-2 h-4 w-4" />
             )}
-            Post Job
+            Save Changes
+          </Button>
+          <Button variant="outline" onClick={() => router.back()}>
+            Cancel
           </Button>
         </CardFooter>
       </form>

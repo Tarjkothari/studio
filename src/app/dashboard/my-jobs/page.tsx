@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil } from 'lucide-react';
 import Link from 'next/link';
 
 type JobPosting = {
@@ -15,6 +15,7 @@ type JobPosting = {
     location: string;
     postedBy: string;
     description: string;
+    deadline?: string;
 };
 
 type Application = {
@@ -121,6 +122,12 @@ export default function MyJobsPage() {
                                         <MapPin className="h-4 w-4 text-muted-foreground" />
                                         <span>{job.location}</span>
                                     </div>
+                                     {job.deadline && (
+                                        <div className="flex items-center gap-2">
+                                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                                            <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
+                                        </div>
+                                    )}
                                 </CardDescription>
                             </CardHeader>
                             <CardContent className="flex-grow">
@@ -131,10 +138,16 @@ export default function MyJobsPage() {
                                     </span>
                                 </div>
                             </CardContent>
-                            <CardFooter>
+                            <CardFooter className="flex gap-2">
                                 <Button onClick={() => handleViewApplicantsClick(job)} className="w-full">
                                     <Users className="mr-2 h-4 w-4" />
                                     View Applicants
+                                </Button>
+                                <Button variant="outline" size="icon" asChild>
+                                    <Link href={`/dashboard/my-jobs/${job.id}/edit`}>
+                                        <Pencil className="h-4 w-4" />
+                                        <span className="sr-only">Edit Job</span>
+                                    </Link>
                                 </Button>
                             </CardFooter>
                         </Card>
