@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
-import { rankCandidates, RankCandidatesOutput } from '@/ai/flows/rank-candidates';
+import { rankCandidates } from '@/ai/flows/rank-candidates';
 import { parseResume } from '@/ai/flows/parse-resume';
 import { Loader2, Star, Download } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
