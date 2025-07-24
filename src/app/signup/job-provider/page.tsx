@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function JobProviderSignUpPage() {
   const router = useRouter();
@@ -17,6 +18,8 @@ export default function JobProviderSignUpPage() {
   const [email, setEmail] = useState('');
   const [companyName, setCompanyName] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+
 
   const handleSignUp = (event: React.FormEvent) => {
     event.preventDefault();
@@ -93,8 +96,26 @@ export default function JobProviderSignUpPage() {
                     <Input id="email" type="email" placeholder="name@company.com" required value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="space-y-2">
-                    <Label htmlFor="password">Password</Label>
-                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+                        <Label htmlFor="password">Password</Label>
+                        <div className="relative">
+                            <Input
+                                id="password"
+                                type={showPassword ? "text" : "password"}
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-1 top-1/2 h-7 w-7 -translate-y-1/2 text-muted-foreground"
+                                onClick={() => setShowPassword((prev) => !prev)}
+                            >
+                                {showPassword ? <EyeOff /> : <Eye />}
+                                <span className="sr-only">{showPassword ? "Hide password" : "Show password"}</span>
+                            </Button>
+                        </div>
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
