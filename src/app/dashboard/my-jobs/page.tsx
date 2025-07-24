@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -33,6 +33,7 @@ type Application = {
     resumeDataUri: string;
     achievements: string;
     appliedDate: string;
+    status: 'Applied' | 'Selected for Test' | 'Not Selected';
 };
 
 type RankedApplication = Application & {
@@ -132,6 +133,40 @@ export default function MyJobsPage() {
         }
     }, [currentUserEmail, pathname]);
 
+    const handleSelectForTest = (jobId: string, applicantEmail: string) => {
+        try {
+            const allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+            const appIndex = allApplications.findIndex(app => app.jobId === jobId && app.applicantEmail === applicantEmail);
+
+            if (appIndex !== -1) {
+                allApplications[appIndex].status = 'Selected for Test';
+                localStorage.setItem('jobApplications', JSON.stringify(allApplications));
+
+                // Update local state to reflect the change immediately
+                setMyJobs(prevJobs => {
+                    return prevJobs.map(job => {
+                        if (job.id === jobId) {
+                            return {
+                                ...job,
+                                applicants: job.applicants.map(app => {
+                                    if (app.applicantEmail === applicantEmail) {
+                                        return { ...app, status: 'Selected for Test' };
+                                    }
+                                    return app;
+                                })
+                            };
+                        }
+                        return job;
+                    });
+                });
+                toast({ title: "Candidate Selected", description: "The candidate has been selected for the aptitude test." });
+            }
+        } catch (e) {
+            toast({ variant: 'destructive', title: 'Error', description: 'Failed to update candidate status.' });
+            console.error(e);
+        }
+    };
+
     const handleRankApplicant = async (jobId: string, applicantEmail: string) => {
         const jobIndex = myJobs.findIndex(j => j.id === jobId);
         if (jobIndex === -1) return;
@@ -229,7 +264,7 @@ export default function MyJobsPage() {
                                         {job.deadline && (
                                             <div className="flex items-center gap-2">
                                                 <Calendar className="h-4 w-4 text-muted-foreground" />
-                                                <span>Deadline: {new Date(job.deadline).toLocaleDate-String()}</span>
+                                                <span>Deadline: {new Date(job.deadline).toLocaleDateString()}</span>
                                             </div>
                                         )}
                                     </CardDescription>
@@ -304,7 +339,17 @@ export default function MyJobsPage() {
                                                                     </div>
                                                                 )}
                                                             </TableCell>
-                                                            <TableCell className="text-right">
+                                                            <TableCell className="text-right space-x-2">
+                                                                {applicant.status === 'Selected for Test' ? (
+                                                                    <Button variant="ghost" disabled size="sm" className="text-green-500">
+                                                                        <CheckCircle className="mr-2 h-4 w-4" />
+                                                                        Selected
+                                                                    </Button>
+                                                                ) : (
+                                                                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(job.id, applicant.applicantEmail)}>
+                                                                        Select for Test
+                                                                    </Button>
+                                                                )}
                                                                 <Button variant="ghost" size="icon" asChild>
                                                                     <a href={applicant.resumeDataUri} download={`${applicant.applicantName}_Resume.pdf`}>
                                                                         <Download className="h-4 w-4" />
@@ -327,3 +372,5 @@ export default function MyJobsPage() {
         </div>
     );
 }
+
+    

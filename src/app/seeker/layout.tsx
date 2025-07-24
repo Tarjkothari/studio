@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Logo } from "@/components/logo";
@@ -14,7 +15,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileUp, LogOut, Settings, Briefcase, Loader2 } from "lucide-react";
+import { FileUp, LogOut, Settings, Briefcase, Loader2, FileCheck2 } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -109,6 +110,18 @@ export default function SeekerLayout({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
+                  tooltip="My Applications"
+                  isActive={pathname.startsWith('/seeker/my-applications')}
+                  asChild
+                >
+                  <Link href="/seeker/my-applications">
+                    <FileCheck2 />
+                    <span>My Applications</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
                   tooltip="Resume Improver"
                   isActive={pathname.startsWith('/seeker/improve-resume')}
                   asChild
@@ -179,3 +192,5 @@ export default function SeekerLayout({
     </SidebarProvider>
   );
 }
+
+    

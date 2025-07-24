@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -37,6 +38,7 @@ type JobPosting = {
 type Application = {
     jobId: string;
     applicantEmail: string;
+    status: 'Applied' | 'Selected for Test' | 'Not Selected';
 }
 
 const defaultJobs: JobPosting[] = [
@@ -88,6 +90,7 @@ export default function JobSearchPage() {
   const [achievements, setAchievements] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
+  const [isClient, setIsClient] = useState(false);
 
   // State for the new "View Details" dialog
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
@@ -95,6 +98,7 @@ export default function JobSearchPage() {
 
 
   useEffect(() => {
+    setIsClient(true);
     try {
       let allJobsString = localStorage.getItem('jobPostings');
       let allJobs = allJobsString ? JSON.parse(allJobsString) : [];
@@ -163,7 +167,7 @@ export default function JobSearchPage() {
                 applicantName: loggedInUser.name,
                 resumeDataUri: resumeDataUri,
                 achievements: achievements,
-                status: 'Applied', // Applied, In Review, Rejected, Hired
+                status: 'Applied', // Applied, Selected for Test, Not Selected
                 appliedDate: new Date().toISOString(),
             };
 
@@ -197,6 +201,14 @@ export default function JobSearchPage() {
     };
     reader.readAsDataURL(resumeFile);
   };
+
+  if (!isClient) {
+      return (
+        <div className="flex items-center justify-center p-8">
+            <Loader2 className="h-8 w-8 animate-spin" />
+        </div>
+      )
+  }
 
   return (
     <>
@@ -406,5 +418,7 @@ export default function JobSearchPage() {
     </>
   );
 }
+
+    
 
     
