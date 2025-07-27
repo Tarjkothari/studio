@@ -61,7 +61,7 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-float">
             Hire Smarter, Not Harder
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
