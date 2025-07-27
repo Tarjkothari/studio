@@ -257,7 +257,7 @@ export default function MyJobsPage() {
 
     return (
         <div className="space-y-6">
-            <Card>
+            <Card className="transition-shadow hover:shadow-lg">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>My Job Postings</CardTitle>
@@ -288,7 +288,7 @@ export default function MyJobsPage() {
                 <div className="space-y-6">
                     {myJobs.map((job) => (
                         <Collapsible key={job.id} asChild onOpenChange={loadJobsAndApplicants}>
-                            <Card className="flex flex-col">
+                            <Card className="flex flex-col transition-shadow hover:shadow-lg">
                                 <CardHeader>
                                     <CardTitle>{job.title}</CardTitle>
                                     <CardDescription className="space-y-2 pt-2">
@@ -343,7 +343,7 @@ export default function MyJobsPage() {
                                                     </TableRow>
                                                 ) : (
                                                     job.applicants.map((applicant) => (
-                                                        <TableRow key={applicant.applicantEmail}>
+                                                        <TableRow key={applicant.applicantEmail} className="transition-colors hover:bg-muted/50">
                                                             <TableCell>
                                                                 <div className="flex items-center gap-3">
                                                                     <Avatar>
