@@ -52,7 +52,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down" style={{animationDuration: '1.5s'}}>
         <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
           <Logo />
           <div className="flex items-center gap-2">
@@ -124,23 +124,45 @@ export default function Home() {
               ))}
             </p>
           </div>
-          <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature, i) => (
-              <Link href={feature.href} key={feature.title}>
-                 <Card 
-                   className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow animate-float"
-                   style={{animationDelay: `${i * 300}ms`}}
-                 >
-                  <CardHeader className="p-0">
-                    {feature.icon}
-                    <CardTitle className="mt-4">{feature.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="p-0 mt-2">
-                    <p className="text-muted-foreground">{feature.description}</p>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+           <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-marquee">
+                {features.map((feature, i) => (
+                <li key={feature.title + '-1'} className="flex-shrink-0">
+                    <Link href={feature.href}>
+                        <Card 
+                        className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
+                        >
+                        <CardHeader className="p-0">
+                            {feature.icon}
+                            <CardTitle className="mt-4">{feature.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 mt-2">
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </CardContent>
+                        </Card>
+                    </Link>
+                </li>
+                ))}
+            </ul>
+             <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-marquee" aria-hidden="true">
+                {features.map((feature, i) => (
+                <li key={feature.title + '-2'} className="flex-shrink-0">
+                    <Link href={feature.href}>
+                        <Card 
+                        className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
+                        >
+                        <CardHeader className="p-0">
+                            {feature.icon}
+                            <CardTitle className="mt-4">{feature.title}</CardTitle>
+                        </CardHeader>
+                        <CardContent className="p-0 mt-2">
+                            <p className="text-muted-foreground">{feature.description}</p>
+                        </CardContent>
+                        </Card>
+                    </Link>
+                </li>
+                ))}
+            </ul>
           </div>
         </section>
       </main>
