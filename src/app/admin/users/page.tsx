@@ -90,7 +90,7 @@ export default function UsersPage() {
 
   return (
     <>
-    <Card>
+    <Card className="transition-shadow hover:shadow-lg">
       <CardHeader>
         <CardTitle>User Management</CardTitle>
         <CardDescription>A list of all users in the system.</CardDescription>
@@ -107,7 +107,7 @@ export default function UsersPage() {
           </TableHeader>
           <TableBody>
             {users.map((user) => (
-              <TableRow key={user.email}>
+              <TableRow key={user.email} className="transition-colors hover:bg-muted/50">
                 <TableCell>
                   <div className="flex items-center gap-3">
                     <Avatar>

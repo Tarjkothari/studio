@@ -96,7 +96,7 @@ export default function MyApplicationsPage() {
     }
 
     return (
-        <Card>
+        <Card className="transition-shadow hover:shadow-lg">
             <CardHeader>
                 <CardTitle>My Applications</CardTitle>
                 <CardDescription>Track the status of all your job applications.</CardDescription>
@@ -120,7 +120,7 @@ export default function MyApplicationsPage() {
                             </TableRow>
                         ) : (
                             applications.map((app) => (
-                                <TableRow key={app.jobId + app.applicantEmail}>
+                                <TableRow key={app.jobId + app.applicantEmail} className="transition-colors hover:bg-muted/50">
                                     <TableCell className="font-medium">{app.jobTitle}</TableCell>
                                     <TableCell>{app.companyName}</TableCell>
                                     <TableCell>{new Date(app.appliedDate).toLocaleDateString()}</TableCell>

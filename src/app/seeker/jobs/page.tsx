@@ -213,7 +213,7 @@ export default function JobSearchPage() {
   return (
     <>
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-shadow hover:shadow-lg">
         <CardHeader>
           <CardTitle>Find Your Next Opportunity</CardTitle>
           <CardDescription>
@@ -235,7 +235,7 @@ export default function JobSearchPage() {
               const isDeadlinePassed = job.deadline ? new Date(job.deadline) < new Date() : false;
 
               return (
-                <Card key={job.id} className="flex flex-col">
+                <Card key={job.id} className="flex flex-col transition-all hover:shadow-xl hover:border-primary/50">
                     <CardHeader>
                         <CardTitle>{job.title}</CardTitle>
                         <CardDescription className="space-y-2">
