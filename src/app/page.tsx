@@ -126,48 +126,25 @@ export default function Home() {
               ))}
             </p>
           </div>
-           <div className="group mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
-            <div className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-marquee group-hover:[animation-play-state:paused]">
-                <ul className="flex items-center justify-center [&_li]:mx-4">
-                    {features.map((feature, index) => (
-                    <li key={feature.title + '-1'} className="flex-shrink-0 h-full">
-                        <Link href={feature.href}>
-                            <Card 
-                            className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
-                            >
-                            <CardHeader className="p-0">
-                                {feature.icon}
-                                <CardTitle className="mt-4">{feature.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-0 mt-2">
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </CardContent>
-                            </Card>
-                        </Link>
-                    </li>
-                    ))}
-                </ul>
-                <ul className="flex items-center justify-center [&_li]:mx-4" aria-hidden="true">
-                    {features.map((feature, index) => (
-                    <li key={feature.title + '-2'} className="flex-shrink-0 h-full">
-                        <Link href={feature.href}>
-                            <Card 
-                            className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
-                            >
-                            <CardHeader className="p-0">
-                                {feature.icon}
-                                <CardTitle className="mt-4">{feature.title}</CardTitle>
-                            </CardHeader>
-                            <CardContent className="p-0 mt-2">
-                                <p className="text-muted-foreground">{feature.description}</p>
-                            </CardContent>
-                            </Card>
-                        </Link>
-                    </li>
-                    ))}
-                </ul>
-            </div>
-          </div>
+           <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature, index) => (
+                  <Link href={feature.href} key={index}>
+                      <Card 
+                      className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg"
+                      >
+                      <CardHeader className="p-0">
+                          {feature.icon}
+                          <CardTitle className="mt-4">{feature.title}</CardTitle>
+                      </CardHeader>
+                      <CardContent className="p-0 mt-2">
+                          <p className="text-muted-foreground">{feature.description}</p>
+                      </CardContent>
+                      </Card>
+                  </Link>
+              ))}
+              {/* This is a trick to center the last two items on a 3-column grid for 5 items */}
+              <div className="hidden lg:block"></div>
+           </div>
         </section>
       </main>
 

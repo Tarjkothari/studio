@@ -119,10 +119,6 @@ export default {
             transform: 'translateY(-10px)',
           },
         },
-        'marquee': {
-          from: { transform: 'translateX(0)' },
-          to: { transform: 'translateX(-50%)' },
-        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -132,7 +128,6 @@ export default {
         'fade-in-down': 'fade-in-down 0.6s ease-in-out forwards',
         'fade-in-up': 'fade-in-up 0.6s ease-in-out forwards',
         'text-3d': 'text-3d 3s ease-in-out infinite both',
-        'marquee': 'marquee 40s linear infinite',
       },
     },
   },
