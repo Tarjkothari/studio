@@ -83,3 +83,12 @@
     @apply bg-background text-foreground;
   }
 }
+
+@layer utilities {
+  .animation-delay-300 {
+    animation-delay: 300ms;
+  }
+  .animation-delay-600 {
+    animation-delay: 600ms;
+  }
+}

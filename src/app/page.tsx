@@ -46,7 +46,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down">
         <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
           <Logo />
           <div className="flex items-center gap-2">
@@ -64,10 +64,10 @@ export default function Home() {
           <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-float">
             Hire Smarter, Not Harder
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-in animation-delay-300">
             Unlock your hiring potential with AI-powered resume analysis. SmartHire helps you find the perfect candidate, faster.
           </p>
-          <div className="mt-8 flex justify-center gap-4">
+          <div className="mt-8 flex justify-center gap-4 animate-fade-in-up animation-delay-600">
             <Button size="lg" asChild>
               <Link href="/signup/job-provider">Get Started as a Job Provider</Link>
             </Button>
@@ -78,7 +78,7 @@ export default function Home() {
         </section>
 
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
-          <div className="text-center">
+          <div className="text-center animate-fade-in-up">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               Everything You Need for Modern Recruitment
             </h2>
@@ -87,9 +87,12 @@ export default function Home() {
             </p>
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {features.map((feature) => (
+            {features.map((feature, i) => (
               <Link href={feature.href} key={feature.title}>
-                 <Card className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl">
+                 <Card 
+                   className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl animate-fade-in-up"
+                   style={{animationDelay: `${i * 150}ms`}}
+                 >
                   <CardHeader className="p-0">
                     {feature.icon}
                     <CardTitle className="mt-4">{feature.title}</CardTitle>
@@ -104,7 +107,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t py-6">
+      <footer className="border-t py-6 animate-fade-in">
         <div className="container mx-auto flex flex-col items-center justify-between px-4 md:flex-row">
           <Logo />
           <p className="mt-4 text-sm text-muted-foreground md:mt-0">
