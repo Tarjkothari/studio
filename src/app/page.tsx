@@ -124,45 +124,47 @@ export default function Home() {
               ))}
             </p>
           </div>
-           <div className="mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
-            <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-marquee">
-                {features.map((feature, i) => (
-                <li key={feature.title + '-1'} className="flex-shrink-0">
-                    <Link href={feature.href}>
-                        <Card 
-                        className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
-                        >
-                        <CardHeader className="p-0">
-                            {feature.icon}
-                            <CardTitle className="mt-4">{feature.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 mt-2">
-                            <p className="text-muted-foreground">{feature.description}</p>
-                        </CardContent>
-                        </Card>
-                    </Link>
-                </li>
-                ))}
-            </ul>
-             <ul className="flex items-center justify-center md:justify-start [&_li]:mx-4 [&_img]:max-w-none animate-marquee" aria-hidden="true">
-                {features.map((feature, i) => (
-                <li key={feature.title + '-2'} className="flex-shrink-0">
-                    <Link href={feature.href}>
-                        <Card 
-                        className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
-                        >
-                        <CardHeader className="p-0">
-                            {feature.icon}
-                            <CardTitle className="mt-4">{feature.title}</CardTitle>
-                        </CardHeader>
-                        <CardContent className="p-0 mt-2">
-                            <p className="text-muted-foreground">{feature.description}</p>
-                        </CardContent>
-                        </Card>
-                    </Link>
-                </li>
-                ))}
-            </ul>
+           <div className="group mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
+            <div className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-marquee group-hover:[animation-play-state:paused]">
+                <ul className="flex items-center justify-center [&_li]:mx-4">
+                    {features.map((feature) => (
+                    <li key={feature.title + '-1'} className="flex-shrink-0">
+                        <Link href={feature.href}>
+                            <Card 
+                            className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
+                            >
+                            <CardHeader className="p-0">
+                                {feature.icon}
+                                <CardTitle className="mt-4">{feature.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0 mt-2">
+                                <p className="text-muted-foreground">{feature.description}</p>
+                            </CardContent>
+                            </Card>
+                        </Link>
+                    </li>
+                    ))}
+                </ul>
+                <ul className="flex items-center justify-center [&_li]:mx-4" aria-hidden="true">
+                    {features.map((feature) => (
+                    <li key={feature.title + '-2'} className="flex-shrink-0">
+                        <Link href={feature.href}>
+                            <Card 
+                            className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
+                            >
+                            <CardHeader className="p-0">
+                                {feature.icon}
+                                <CardTitle className="mt-4">{feature.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent className="p-0 mt-2">
+                                <p className="text-muted-foreground">{feature.description}</p>
+                            </CardContent>
+                            </Card>
+                        </Link>
+                    </li>
+                    ))}
+                </ul>
+            </div>
           </div>
         </section>
       </main>
