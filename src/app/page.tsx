@@ -1,3 +1,4 @@
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -45,6 +46,7 @@ export default function Home() {
   ];
 
   const headline = "Hire Smarter, Not Harder";
+  const subheadline = "Unlock your hiring potential with AI-powered resume analysis. SmartHire helps you find the perfect candidate, faster.";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -74,8 +76,16 @@ export default function Home() {
                 </span>
             ))}
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-in animation-delay-300">
-            Unlock your hiring potential with AI-powered resume analysis. SmartHire helps you find the perfect candidate, faster.
+          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
+             {subheadline.split("").map((letter, index) => (
+                <span
+                    key={index}
+                    className="inline-block animate-text-3d"
+                    style={{ animationDelay: `${(headline.length + index) * 25}ms`, whiteSpace: 'pre' }}
+                >
+                    {letter}
+                </span>
+            ))}
           </p>
           <div className="mt-8 flex justify-center gap-4 animate-fade-in-up animation-delay-600">
             <Button size="lg" asChild>
