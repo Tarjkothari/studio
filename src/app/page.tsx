@@ -44,6 +44,8 @@ export default function Home() {
     },
   ];
 
+  const headline = "Hire Smarter, Not Harder";
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down">
@@ -61,8 +63,16 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-float">
-            Hire Smarter, Not Harder
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
+            {headline.split("").map((letter, index) => (
+                <span
+                    key={index}
+                    className="inline-block animate-text-3d"
+                    style={{ animationDelay: `${index * 50}ms`, whiteSpace: 'pre' }}
+                >
+                    {letter}
+                </span>
+            ))}
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-in animation-delay-300">
             Unlock your hiring potential with AI-powered resume analysis. SmartHire helps you find the perfect candidate, faster.
@@ -90,7 +100,7 @@ export default function Home() {
             {features.map((feature, i) => (
               <Link href={feature.href} key={feature.title}>
                  <Card 
-                   className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg animate-fade-in-up"
+                   className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg animate-fade-in-up transition-shadow hover:shadow-lg"
                    style={{animationDelay: `${i * 150}ms`}}
                  >
                   <CardHeader className="p-0">
