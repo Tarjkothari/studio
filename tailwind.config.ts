@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -101,12 +102,22 @@ export default {
           'to': { opacity: '1' },
         },
         'fade-in-down': {
-          'from': { opacity: '0', transform: 'translateY(-10px)' },
+          'from': { opacity: '0', transform: 'translateY(-20px)' },
           'to': { opacity: '1', transform: 'translateY(0)' },
         },
         'fade-in-up': {
           'from': { opacity: '0', transform: 'translateY(10px)' },
           'to': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'text-3d': {
+          '0%, 100%': {
+            'text-shadow': '0 0 0 transparent, 0 0 0 transparent',
+            transform: 'translateY(0)',
+          },
+          '50%': {
+            'text-shadow': '3px 3px 0px hsl(var(--primary) / 0.5), 6px 6px 0px hsl(var(--secondary) / 0.5)',
+            transform: 'translateY(-10px)',
+          },
         },
       },
       animation: {
@@ -116,6 +127,7 @@ export default {
         'fade-in': 'fade-in 1s ease-in-out forwards',
         'fade-in-down': 'fade-in-down 0.6s ease-in-out forwards',
         'fade-in-up': 'fade-in-up 0.6s ease-in-out forwards',
+        'text-3d': 'text-3d 3s ease-in-out infinite both',
       },
     },
   },
