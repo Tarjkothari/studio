@@ -130,7 +130,7 @@ export default function Home() {
             <div className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-marquee group-hover:[animation-play-state:paused]">
                 <ul className="flex items-center justify-center [&_li]:mx-4">
                     {features.map((feature, index) => (
-                    <li key={feature.title + '-1'} className="flex-shrink-0">
+                    <li key={feature.title + '-1'} className="flex-shrink-0 h-full">
                         <Link href={feature.href}>
                             <Card 
                             className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
@@ -149,7 +149,7 @@ export default function Home() {
                 </ul>
                 <ul className="flex items-center justify-center [&_li]:mx-4" aria-hidden="true">
                     {features.map((feature, index) => (
-                    <li key={feature.title + '-2'} className="flex-shrink-0">
+                    <li key={feature.title + '-2'} className="flex-shrink-0 h-full">
                         <Link href={feature.href}>
                             <Card 
                             className="flex h-full w-80 flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg transition-shadow"
