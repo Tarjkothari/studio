@@ -101,19 +101,19 @@ export default function Home() {
 
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
           <div className="text-center animate-fade-in-up">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              <div className="flex justify-center">
-                {featuresHeadline.split("").map((letter, index) => (
-                    <span
-                        key={index}
-                        className="inline-block animate-text-3d"
-                        style={{ animationDelay: `${index * 25}ms`, whiteSpace: 'pre' }}
-                    >
-                        {letter}
-                    </span>
-                ))}
-              </div>
-            </h2>
+            <div className="flex justify-center">
+                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                    {featuresHeadline.split("").map((letter, index) => (
+                        <span
+                            key={index}
+                            className="inline-block animate-text-3d"
+                            style={{ animationDelay: `${index * 25}ms`, whiteSpace: 'pre' }}
+                        >
+                            {letter}
+                        </span>
+                    ))}
+                </h2>
+            </div>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
               {featuresSubheadline.split("").map((letter, index) => (
                   <span
