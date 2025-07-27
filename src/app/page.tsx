@@ -127,7 +127,7 @@ export default function Home() {
            <div className="group mt-12 w-full inline-flex flex-nowrap overflow-hidden [mask-image:_linear-gradient(to_right,transparent_0,_black_128px,_black_calc(100%-128px),transparent_100%)]">
             <div className="flex items-center justify-center md:justify-start [&_li]:mx-4 animate-marquee group-hover:[animation-play-state:paused]">
                 <ul className="flex items-center justify-center [&_li]:mx-4">
-                    {features.map((feature) => (
+                    {features.map((feature, index) => (
                     <li key={feature.title + '-1'} className="flex-shrink-0">
                         <Link href={feature.href}>
                             <Card 
@@ -146,7 +146,7 @@ export default function Home() {
                     ))}
                 </ul>
                 <ul className="flex items-center justify-center [&_li]:mx-4" aria-hidden="true">
-                    {features.map((feature) => (
+                    {features.map((feature, index) => (
                     <li key={feature.title + '-2'} className="flex-shrink-0">
                         <Link href={feature.href}>
                             <Card 
