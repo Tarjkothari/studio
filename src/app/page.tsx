@@ -47,6 +47,8 @@ export default function Home() {
 
   const headline = "Hire Smarter, Not Harder";
   const subheadline = "Unlock your hiring potential with AI-powered resume analysis. SmartHire helps you find the perfect candidate, faster.";
+  const featuresHeadline = "Everything You Need for Modern Recruitment";
+  const featuresSubheadline = "From parsing and ranking to bias detection, our suite of tools is designed to streamline your hiring process.";
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -100,10 +102,26 @@ export default function Home() {
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
           <div className="text-center animate-fade-in-up">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              Everything You Need for Modern Recruitment
+              {featuresHeadline.split("").map((letter, index) => (
+                  <span
+                      key={index}
+                      className="inline-block animate-text-3d"
+                      style={{ animationDelay: `${index * 25}ms`, whiteSpace: 'pre' }}
+                  >
+                      {letter}
+                  </span>
+              ))}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              From parsing and ranking to bias detection, our suite of tools is designed to streamline your hiring process.
+              {featuresSubheadline.split("").map((letter, index) => (
+                  <span
+                      key={index}
+                      className="inline-block animate-text-3d"
+                      style={{ animationDelay: `${(featuresHeadline.length + index) * 20}ms`, whiteSpace: 'pre' }}
+                  >
+                      {letter}
+                  </span>
+              ))}
             </p>
           </div>
           <div className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-3">
