@@ -90,7 +90,7 @@ export default function Home() {
             {features.map((feature, i) => (
               <Link href={feature.href} key={feature.title}>
                  <Card 
-                   className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl animate-fade-in-up"
+                   className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg animate-fade-in-up"
                    style={{animationDelay: `${i * 150}ms`}}
                  >
                   <CardHeader className="p-0">
