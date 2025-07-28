@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -26,6 +26,54 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    // Seed default users if they don't exist
+    try {
+        const existingUsersString = localStorage.getItem('users');
+        let existingUsers = existingUsersString ? JSON.parse(existingUsersString) : [];
+        
+        const providerEmail = "hiering@yksolution.com";
+        const seekerEmail = "kotharitarj08@gmail.com";
+
+        const providerExists = existingUsers.some((user: any) => user.email === providerEmail);
+        const seekerExists = existingUsers.some((user: any) => user.email === seekerEmail);
+
+        if (!providerExists) {
+            existingUsers.push({
+                name: "YK Solution",
+                email: providerEmail,
+                password: "Hiering@123",
+                role: "Job Provider",
+                avatar: "https://placehold.co/40x40",
+                fallback: "YK",
+                status: "Active",
+                createdAt: new Date().toISOString(),
+            });
+        }
+
+        if (!seekerExists) {
+             existingUsers.push({
+                name: "Tarj Kothari",
+                email: seekerEmail,
+                password: "T@rj2108",
+                role: "Job Seeker",
+                avatar: "https://placehold.co/40x40",
+                fallback: "TK",
+                status: "Active",
+                createdAt: new Date().toISOString(),
+            });
+        }
+        
+        // Only update if we added a new user
+        if (!providerExists || !seekerExists) {
+            localStorage.setItem('users', JSON.stringify(existingUsers));
+        }
+
+    } catch (e) {
+        console.error("Failed to seed default users:", e);
+    }
+  }, []);
 
   const handleLogin = (event: React.FormEvent) => {
     event.preventDefault();
