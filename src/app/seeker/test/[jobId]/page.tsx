@@ -10,7 +10,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Loader2, Timer } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { generateAptitudeTest, MCQ } from "@/ai/flows/generate-aptitude-test";
+import type { MCQ } from "@/ai/flows/generate-aptitude-test";
 
 type JobPosting = {
     id: string;
@@ -57,7 +57,7 @@ export default function AptitudeTestPage() {
             }
         });
         
-        const finalScore = Math.max(0, (score / 50) * 100);
+        const finalScore = Math.floor(Math.max(0, (score / 50) * 100));
 
         try {
             const allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
@@ -102,15 +102,14 @@ export default function AptitudeTestPage() {
 
             setJob(currentJob);
 
-            const fetchTest = async () => {
+            const fetchTest = () => {
                 try {
                     const storedTest = JSON.parse(localStorage.getItem(`test_${jobId}`) || 'null');
                     if (storedTest) {
                         setQuestions(storedTest);
                     } else {
-                        const result = await generateAptitudeTest({ jobTitle: currentJob.title });
-                        setQuestions(result.questions);
-                        localStorage.setItem(`test_${jobId}`, JSON.stringify(result.questions));
+                        toast({ variant: 'destructive', title: 'Test Not Found', description: "The test for this job hasn't been generated yet." });
+                        router.push('/seeker/my-applications');
                     }
                 } catch (e) {
                     toast({ variant: 'destructive', title: 'Failed to load test.' });
@@ -166,8 +165,8 @@ export default function AptitudeTestPage() {
         return (
             <div className="flex h-[80vh] flex-col items-center justify-center gap-4">
                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                <h2 className="text-xl font-semibold">Generating Your Aptitude Test...</h2>
-                <p className="text-muted-foreground">This may take a moment. Please don't refresh the page.</p>
+                <h2 className="text-xl font-semibold">Loading Aptitude Test...</h2>
+                <p className="text-muted-foreground">Please wait.</p>
             </div>
         );
     }

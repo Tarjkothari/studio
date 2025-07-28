@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Send, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, Send, Calendar as CalendarIcon, Wand2 } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,6 +28,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { generateAptitudeTest } from "@/ai/flows/generate-aptitude-test";
 
 
 export default function PostJobPage() {
@@ -41,6 +43,7 @@ export default function PostJobPage() {
   const [minimumDegree, setMinimumDegree] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [deadline, setDeadline] = useState<Date>();
+  const [generateTest, setGenerateTest] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export default function PostJobPage() {
     }
   }, [])
 
-  const handlePostJob = (event: React.FormEvent) => {
+  const handlePostJob = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsSaving(true);
 
@@ -84,6 +87,12 @@ export default function PostJobPage() {
             postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email
         };
 
+        if (generateTest) {
+            toast({ title: "Generating Aptitude Test...", description: "This may take a moment. Please don't navigate away." });
+            const testResult = await generateAptitudeTest({ jobTitle });
+            localStorage.setItem(`test_${newJob.id}`, JSON.stringify(testResult.questions));
+        }
+
         const existingJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]');
         const updatedJobs = [...existingJobs, newJob];
         localStorage.setItem('jobPostings', JSON.stringify(updatedJobs));
@@ -93,15 +102,14 @@ export default function PostJobPage() {
             description: "Your job opening is now live for seekers to view.",
         });
 
-        // Optionally redirect or clear form
         router.push("/dashboard/my-jobs"); 
 
     } catch (e) {
-      console.error("Failed to save job posting to local storage", e);
+      console.error("Failed to save job posting", e);
       toast({
         variant: "destructive",
         title: "Error",
-        description: "Could not save your job posting.",
+        description: "Could not save your job posting. If test generation was enabled, it may have failed.",
       });
     } finally {
       setIsSaving(false);
@@ -211,6 +219,22 @@ export default function PostJobPage() {
                         />
                     </PopoverContent>
                 </Popover>
+            </div>
+            <div className="space-y-2 flex flex-row items-center justify-between rounded-lg border p-4 md:col-span-2">
+                <div className="space-y-0.5">
+                    <Label className="text-base flex items-center gap-2" htmlFor="generate-test">
+                        <Wand2 className="h-5 w-5 text-primary"/>
+                        Generate Aptitude Test
+                    </Label>
+                    <CardDescription>
+                       Automatically create a 50-question aptitude test for this role.
+                    </CardDescription>
+                </div>
+                <Switch
+                    id="generate-test"
+                    checked={generateTest}
+                    onCheckedChange={setGenerateTest}
+                />
             </div>
         </CardContent>
         <CardFooter>
