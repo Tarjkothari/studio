@@ -81,55 +81,63 @@ export default function UsersPage() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.map((user) => (
-              <TableRow key={user.email} className="transition-colors hover:bg-muted/50">
-                <TableCell>
-                  <div className="flex items-center gap-3">
-                    <Avatar>
-                       <AvatarImage src={user.avatar} data-ai-hint="avatar" />
-                       <AvatarFallback>{user.fallback}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                        <p className="font-medium">{user.name}</p>
-                        <p className="text-sm text-muted-foreground">{user.email}</p>
+            {users.length === 0 ? (
+                 <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                        No users found.
+                    </TableCell>
+                </TableRow>
+            ) : (
+                users.map((user) => (
+                <TableRow key={user.email} className="transition-colors hover:bg-muted/50">
+                    <TableCell>
+                    <div className="flex items-center gap-3">
+                        <Avatar>
+                        <AvatarImage src={user.avatar} data-ai-hint="avatar" />
+                        <AvatarFallback>{user.fallback}</AvatarFallback>
+                        </Avatar>
+                        <div>
+                            <p className="font-medium">{user.name}</p>
+                            <p className="text-sm text-muted-foreground">{user.email}</p>
+                        </div>
                     </div>
-                  </div>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.role === 'Admin' ? 'default' : user.role === 'Job Provider' ? 'secondary' : 'outline'}>{user.role}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={user.status === 'Active' ? 'secondary' : 'destructive' } className={user.status === 'Active' ? 'text-green-700 bg-green-100' : ''}>{user.status}</Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                    {user.email !== loggedInUserEmail ? (
-                         <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <Button variant="destructive" size="icon">
-                                    <Trash2 className="h-4 w-4" />
-                                    <span className="sr-only">Remove User</span>
-                                </Button>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                <AlertDialogDescription>
-                                    This action cannot be undone. This will permanently delete the user account
-                                    and remove their data from our servers.
-                                </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                <AlertDialogAction onClick={() => handleRemoveUser(user.email)}>
-                                    Continue
-                                </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                        </AlertDialog>
-                    ) : null}
-                </TableCell>
-              </TableRow>
-            ))}
+                    </TableCell>
+                    <TableCell>
+                    <Badge variant={user.role === 'Admin' ? 'default' : user.role === 'Job Provider' ? 'secondary' : 'outline'}>{user.role}</Badge>
+                    </TableCell>
+                    <TableCell>
+                    <Badge variant={user.status === 'Active' ? 'secondary' : 'destructive' } className={user.status === 'Active' ? 'text-green-700 bg-green-100' : ''}>{user.status}</Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                        {user.email !== loggedInUserEmail ? (
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <Button variant="destructive" size="icon">
+                                        <Trash2 className="h-4 w-4" />
+                                        <span className="sr-only">Remove User</span>
+                                    </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the user account
+                                        and remove their data from our servers.
+                                    </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleRemoveUser(user.email)}>
+                                        Continue
+                                    </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                        ) : null}
+                    </TableCell>
+                </TableRow>
+                ))
+            )}
           </TableBody>
         </Table>
       </CardContent>

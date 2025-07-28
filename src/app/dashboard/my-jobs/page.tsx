@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter }
 import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle, Trophy, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -16,6 +15,8 @@ import { useToast } from '@/hooks/use-toast';
 import { rankCandidates } from '@/ai/flows/rank-candidates';
 import { parseResume } from '@/ai/flows/parse-resume';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+
 
 type JobPosting = {
     id: string;
@@ -293,7 +294,7 @@ export default function MyJobsPage() {
             ) : (
                 <div className="space-y-6">
                     {myJobs.map((job) => (
-                        <Collapsible key={job.id} asChild onOpenChange={loadJobsAndApplicants}>
+                        <Collapsible key={job.id} asChild>
                             <Card className="flex flex-col transition-shadow hover:shadow-lg">
                                 <CardHeader>
                                     <CardTitle>{job.title}</CardTitle>

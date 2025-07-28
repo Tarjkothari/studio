@@ -55,34 +55,6 @@ export default function LoginPage() {
             return;
         }
 
-        // Fallback for original hardcoded admin, in case the user isn't in localStorage
-        if (email === 'tarjkothari2004@gmail.com' && password === 'Tarj2108' && !user) {
-            toast({
-                title: "Login Successful",
-                description: `Redirecting to admin dashboard.`,
-            });
-            
-            const adminUser = {
-                name: "Admin",
-                email: "tarjkothari2004@gmail.com",
-                password: "Tarj2108",
-                role: "Admin",
-                avatar: "https://placehold.co/40x40",
-                fallback: "AD",
-                status: "Active",
-            };
-
-            // Ensure admin user exists in users list
-            const adminExists = existingUsers.some((u: any) => u.email === adminUser.email);
-            if (!adminExists) {
-                localStorage.setItem('users', JSON.stringify([...existingUsers, adminUser]));
-            }
-
-            localStorage.setItem('loggedInUser', JSON.stringify(adminUser));
-            router.push('/admin');
-            return;
-        }
-        
         toast({
             variant: "destructive",
             title: "Login Failed",

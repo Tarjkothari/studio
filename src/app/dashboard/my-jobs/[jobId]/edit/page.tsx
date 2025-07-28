@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Calendar as CalendarIcon } from "lucide-react";
+import { Loader2, Save, Calendar as CalendarIcon, ArrowLeft } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -28,6 +28,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Calendar } from "@/components/ui/calendar";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 type JobPosting = {
     id: string;
@@ -148,10 +149,20 @@ export default function EditJobPage() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Edit Job Opening</CardTitle>
-        <CardDescription>
-          Update the details for your job listing below.
-        </CardDescription>
+        <div className="flex items-center gap-4">
+            <Button variant="outline" size="icon" className="h-8 w-8" asChild>
+                <Link href="/dashboard/my-jobs">
+                    <ArrowLeft className="h-4 w-4" />
+                    <span className="sr-only">Back</span>
+                </Link>
+            </Button>
+            <div>
+                <CardTitle>Edit Job Opening</CardTitle>
+                <CardDescription>
+                Update the details for your job listing below.
+                </CardDescription>
+            </div>
+        </div>
       </CardHeader>
       <form onSubmit={handleUpdateJob}>
         <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
