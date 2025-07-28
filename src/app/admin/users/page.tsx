@@ -21,18 +21,6 @@ type User = {
     password?: string;
 };
 
-const defaultUsers: User[] = [
-  {
-    name: "Admin",
-    email: "tarjkothari2004@gmail.com",
-    role: "Admin",
-    avatar: "https://placehold.co/40x40",
-    fallback: "AD",
-    status: "Active",
-    password: "Tarj2108",
-  },
-];
-
 export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([]);
   const [loggedInUserEmail, setLoggedInUserEmail] = useState<string | null>(null);
@@ -42,19 +30,7 @@ export default function UsersPage() {
     try {
         const storedUsersString = localStorage.getItem('users');
         const storedUsers = storedUsersString ? JSON.parse(storedUsersString) : [];
-
-        const userMap = new Map(storedUsers.map((u: User) => [u.email, u]));
-
-        const adminUser = defaultUsers[0];
-        userMap.set(adminUser.email, {
-            ...(userMap.get(adminUser.email) || {}),
-            ...adminUser,
-        });
-
-        const combinedUsers = Array.from(userMap.values());
-        
-        setUsers(combinedUsers);
-        localStorage.setItem('users', JSON.stringify(combinedUsers));
+        setUsers(storedUsers);
 
         const loggedInUserString = localStorage.getItem('loggedInUser');
         if (loggedInUserString) {
@@ -63,9 +39,8 @@ export default function UsersPage() {
         }
 
     } catch (e) {
-        console.error("Could not retrieve or update users from localStorage", e);
-        setUsers(defaultUsers);
-        localStorage.setItem('users', JSON.stringify(defaultUsers));
+        console.error("Could not retrieve users from localStorage", e);
+        setUsers([]);
     }
   }, []);
 
