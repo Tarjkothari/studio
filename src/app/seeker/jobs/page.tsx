@@ -212,7 +212,7 @@ export default function JobSearchPage() {
                             <FileText className="mr-2 h-4 w-4" />
                             View Details
                         </Button>
-                        <Button onClick={() => handleApplyClick(job)} className="w-full">
+                        <Button onClick={() => handleApplyClick(job)} className="w-full" disabled={isDeadlinePassed}>
                             Apply Now
                         </Button>
                     </>
@@ -412,3 +412,4 @@ export default function JobSearchPage() {
   );
 }
 
+    
