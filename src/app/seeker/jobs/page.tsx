@@ -14,7 +14,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap, Calendar } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap, Calendar, ListChecks, History } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -44,39 +44,48 @@ type Application = {
 export default function JobSearchPage() {
   const router = useRouter();
   const { toast } = useToast();
-  const [jobs, setJobs] = useState<JobPosting[]>([]);
+  const [openJobs, setOpenJobs] = useState<JobPosting[]>([]);
+  const [appliedJobs, setAppliedJobs] = useState<JobPosting[]>([]);
   const [selectedJob, setSelectedJob] = useState<JobPosting | null>(null);
   const [isApplyDialogOpen, setIsApplyDialogOpen] = useState(false);
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [achievements, setAchievements] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set());
-  const [isClient, setIsClient] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // State for the new "View Details" dialog
+  // State for the "View Details" dialog
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewingJob, setViewingJob] = useState<JobPosting | null>(null);
 
 
   useEffect(() => {
-    setIsClient(true);
+    setIsLoading(true);
     try {
       const allJobsString = localStorage.getItem('jobPostings');
-      const allJobs: JobPosting[] = allJobsString ? JSON.parse(allJobsString) : [];
+      let allJobs: JobPosting[] = allJobsString ? JSON.parse(allJobsString) : [];
       
-      setJobs(allJobs.reverse());
+      const now = new Date();
+      const activeJobs = allJobs.filter(job => !job.deadline || new Date(job.deadline) >= now);
 
       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
       const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
       const userApplications = allApplications.filter((app: Application) => app.applicantEmail === loggedInUser.email);
       const userAppliedJobIds = new Set(userApplications.map((app: Application) => app.jobId));
-      setAppliedJobIds(userAppliedJobIds);
+      
+      const openForApplication = activeJobs.filter(job => !userAppliedJobIds.has(job.id));
+      const alreadyApplied = activeJobs.filter(job => userAppliedJobIds.has(job.id));
+
+      setOpenJobs(openForApplication.reverse());
+      setAppliedJobs(alreadyApplied.reverse());
 
     } catch (e) {
       console.error("Could not retrieve data from localStorage", e);
-      setJobs([]);
+      setOpenJobs([]);
+      setAppliedJobs([]);
+    } finally {
+        setIsLoading(false);
     }
-  }, []);
+  }, [isProcessing]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
@@ -121,15 +130,13 @@ export default function JobSearchPage() {
                 applicantName: loggedInUser.name,
                 resumeDataUri: resumeDataUri,
                 achievements: achievements,
-                status: 'Applied', // Applied, Selected for Test, Not Selected
+                status: 'Applied', 
                 appliedDate: new Date().toISOString(),
             };
 
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
             allApplications.push(newApplication);
             localStorage.setItem('jobApplications', JSON.stringify(allApplications));
-            
-            setAppliedJobIds(prev => new Set(prev).add(selectedJob.id));
 
             toast({
               title: "Application Sent!",
@@ -156,7 +163,7 @@ export default function JobSearchPage() {
     reader.readAsDataURL(resumeFile);
   };
 
-  if (!isClient) {
+  if (isLoading) {
       return (
         <div className="flex items-center justify-center p-8">
             <Loader2 className="h-8 w-8 animate-spin" />
@@ -164,9 +171,60 @@ export default function JobSearchPage() {
       )
   }
 
+  const renderJobCard = (job: JobPosting, hasApplied: boolean) => {
+    const isDeadlinePassed = job.deadline ? new Date(job.deadline) < new Date() : false;
+
+    return (
+        <Card key={job.id} className="flex flex-col transition-all hover:shadow-xl hover:border-primary/50">
+            <CardHeader>
+                <CardTitle>{job.title}</CardTitle>
+                <CardDescription className="space-y-2">
+                   <div className="flex items-center gap-2 pt-2">
+                     <Briefcase className="h-4 w-4 text-muted-foreground"/>
+                     <span>{job.company}</span>
+                   </div>
+                   <div className="flex items-center gap-2">
+                     <MapPin className="h-4 w-4 text-muted-foreground"/>
+                     <span>{job.location}</span>
+                   </div>
+                   {job.deadline && (
+                        <div className="flex items-center gap-2">
+                            <Calendar className="h-4 w-4 text-muted-foreground" />
+                            <span className={isDeadlinePassed ? 'text-destructive' : ''}>
+                                {new Date(job.deadline).toLocaleDateString()}
+                            </span>
+                        </div>
+                    )}
+                </CardDescription>
+            </CardHeader>
+            <CardContent className="flex-grow">
+                <p className="line-clamp-4 text-sm text-muted-foreground">{job.description}</p>
+            </CardContent>
+            <CardFooter className="flex-col items-stretch gap-2 sm:flex-row">
+                {hasApplied ? (
+                     <Button disabled className="w-full">
+                        <CheckCircle className="mr-2 h-4 w-4" />
+                        Applied
+                    </Button>
+                ) : (
+                    <>
+                        <Button variant="outline" onClick={() => handleViewDetailsClick(job)} className="w-full">
+                            <FileText className="mr-2 h-4 w-4" />
+                            View Details
+                        </Button>
+                        <Button onClick={() => handleApplyClick(job)} className="w-full">
+                            Apply Now
+                        </Button>
+                    </>
+                )}
+            </CardFooter>
+        </Card>
+    );
+  }
+
   return (
     <>
-    <div className="space-y-6">
+    <div className="space-y-8">
       <Card className="transition-shadow hover:shadow-lg">
         <CardHeader>
           <CardTitle>Find Your Next Opportunity</CardTitle>
@@ -176,70 +234,48 @@ export default function JobSearchPage() {
         </CardHeader>
       </Card>
 
-      {jobs.length === 0 ? (
-        <Card>
-            <CardContent className="p-6">
-                <p className="text-center text-muted-foreground">No job openings have been posted yet. Check back soon!</p>
-            </CardContent>
-        </Card>
-      ) : (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {jobs.map((job) => {
-              const hasApplied = appliedJobIds.has(job.id);
-              const isDeadlinePassed = job.deadline ? new Date(job.deadline) < new Date() : false;
+        {openJobs.length === 0 && appliedJobs.length === 0 ? (
+            <Card>
+                <CardContent className="p-6">
+                    <p className="text-center text-muted-foreground">No job openings have been posted yet. Check back soon!</p>
+                </CardContent>
+            </Card>
+        ) : (
+            <>
+                {/* Open for Application Section */}
+                <div>
+                     <div className="mb-4 flex items-center gap-3">
+                        <ListChecks className="h-6 w-6 text-primary" />
+                        <h2 className="text-2xl font-bold">Open for Application</h2>
+                    </div>
+                    {openJobs.length > 0 ? (
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                           {openJobs.map((job) => renderJobCard(job, false))}
+                        </div>
+                    ) : (
+                         <Card>
+                            <CardContent className="p-6">
+                                <p className="text-center text-muted-foreground">You have applied to all available jobs. Great work!</p>
+                            </CardContent>
+                        </Card>
+                    )}
+                </div>
 
-              return (
-                <Card key={job.id} className="flex flex-col transition-all hover:shadow-xl hover:border-primary/50">
-                    <CardHeader>
-                        <CardTitle>{job.title}</CardTitle>
-                        <CardDescription className="space-y-2">
-                           <div className="flex items-center gap-2 pt-2">
-                             <Briefcase className="h-4 w-4 text-muted-foreground"/>
-                             <span>{job.company}</span>
-                           </div>
-                           <div className="flex items-center gap-2">
-                             <MapPin className="h-4 w-4 text-muted-foreground"/>
-                             <span>{job.location}</span>
-                           </div>
-                           {job.deadline && (
-                                <div className="flex items-center gap-2">
-                                    <Calendar className="h-4 w-4 text-muted-foreground" />
-                                    <span className={isDeadlinePassed ? 'text-destructive' : ''}>
-                                        {new Date(job.deadline).toLocaleDateString()}
-                                    </span>
-                                </div>
-                            )}
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex-grow">
-                        <p className="line-clamp-4 text-sm text-muted-foreground">{job.description}</p>
-                    </CardContent>
-                    <CardFooter className="flex-col items-stretch gap-2 sm:flex-row">
-                        {hasApplied ? (
-                             <Button disabled className="w-full">
-                                <CheckCircle className="mr-2 h-4 w-4" />
-                                Already Applied
-                            </Button>
-                        ) : isDeadlinePassed ? (
-                            <Button disabled className="w-full">
-                                Deadline Passed
-                            </Button>
-                        ) : (
-                            <>
-                                <Button variant="outline" onClick={() => handleViewDetailsClick(job)} className="w-full">
-                                    <FileText className="mr-2 h-4 w-4" />
-                                    View Details
-                                </Button>
-                                <Button onClick={() => handleApplyClick(job)} className="w-full">
-                                    Apply Now
-                                </Button>
-                            </>
-                        )}
-                    </CardFooter>
-                </Card>
-            )})}
-        </div>
-      )}
+                {/* Applied Jobs Section */}
+                {appliedJobs.length > 0 && (
+                    <div>
+                        <Separator className="my-8" />
+                        <div className="mb-4 flex items-center gap-3">
+                            <History className="h-6 w-6 text-primary" />
+                            <h2 className="text-2xl font-bold">Applied Jobs</h2>
+                        </div>
+                        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                            {appliedJobs.map((job) => renderJobCard(job, true))}
+                        </div>
+                    </div>
+                )}
+            </>
+        )}
     </div>
      <Dialog open={isApplyDialogOpen} onOpenChange={setIsApplyDialogOpen}>
         <DialogContent>
