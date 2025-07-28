@@ -1,3 +1,4 @@
+
 import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Logo } from "@/components/logo";
 import Link from "next/link";
@@ -10,7 +11,7 @@ export default function SignupPage() {
         <Logo />
       </div>
       <div className="w-full max-w-3xl text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Join ResumeRank AI</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Join SmartHire</h1>
         <p className="mt-2 text-muted-foreground">
           Choose your path to get started. Are you looking to hire or get hired?
         </p>

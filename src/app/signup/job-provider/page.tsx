@@ -10,7 +10,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 export default function JobProviderSignUpPage() {
   const router = useRouter();
@@ -19,10 +19,12 @@ export default function JobProviderSignUpPage() {
   const [companyName, setCompanyName] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
 
   const handleSignUp = (event: React.FormEvent) => {
     event.preventDefault();
+    setIsLoading(true);
     
     if (!email || !companyName || !password) {
         toast({
@@ -30,6 +32,7 @@ export default function JobProviderSignUpPage() {
             title: "Missing Information",
             description: "Please fill out all fields.",
         });
+        setIsLoading(false);
         return;
     }
 
@@ -43,13 +46,14 @@ export default function JobProviderSignUpPage() {
                 title: "User Exists",
                 description: "An account with this email already exists.",
             });
+            setIsLoading(false);
             return;
         }
 
         const newUser = {
             name: companyName,
             email: email,
-            password: password, // Storing password
+            password: password,
             role: "Job Provider",
             avatar: "https://placehold.co/40x40",
             fallback: companyName.substring(0,2).toUpperCase(),
@@ -71,6 +75,8 @@ export default function JobProviderSignUpPage() {
             title: "Sign-up Failed",
             description: "An unexpected error occurred.",
         });
+    } finally {
+        setIsLoading(false);
     }
   };
 
@@ -119,7 +125,8 @@ export default function JobProviderSignUpPage() {
                     </div>
                 </CardContent>
                 <CardFooter className="flex flex-col gap-4">
-                    <Button type="submit" className="w-full">
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Create Account
                     </Button>
                     <p className="text-center text-sm text-muted-foreground">
