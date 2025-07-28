@@ -41,45 +41,6 @@ type Application = {
     status: 'Applied' | 'Selected for Test' | 'Not Selected';
 }
 
-const defaultJobs: JobPosting[] = [
-    {
-        id: '1',
-        title: 'Senior Frontend Developer',
-        company: 'Tech Solutions Inc.',
-        location: 'Remote',
-        postedBy: 'provider@example.com',
-        description: 'We are looking for an experienced frontend developer to join our team. You will be responsible for building and maintaining our web applications.',
-        deadline: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
-        criteria: "5+ years of React experience\nExperience with TypeScript\nStrong understanding of RESTful APIs",
-        minimumDegree: "Bachelor's Degree",
-        minimumMarks: "Not Required"
-    },
-    {
-        id: '2',
-        title: 'UX/UI Designer',
-        company: 'Creative Minds LLC',
-        location: 'New York, NY',
-        postedBy: 'provider@example.com',
-        description: 'Creative Minds is seeking a talented UX/UI designer to create amazing user experiences. The ideal candidate should have an eye for clean and artful design.',
-        deadline: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
-        criteria: "Portfolio of design projects\nProficiency in Figma or Sketch\nUnderstanding of user-centered design principles",
-        minimumDegree: "Bachelor's Degree",
-        minimumMarks: "Not Required"
-    },
-    {
-        id: '3',
-        title: 'Backend Engineer (Go)',
-        company: 'ScaleFast',
-        location: 'San Francisco, CA',
-        postedBy: 'provider@example.com',
-        description: 'Join our backend team to build scalable and reliable services. We are looking for a Go developer with experience in microservices architecture.',
-        deadline: new Date(new Date().setDate(new Date().getDate() + 45)).toISOString(),
-        criteria: "3+ years of experience with Go\nExperience with Docker and Kubernetes\nKnowledge of SQL and NoSQL databases",
-        minimumDegree: "Master's Degree",
-        minimumMarks: "8.0 CGPA"
-    }
-];
-
 export default function JobSearchPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -100,21 +61,10 @@ export default function JobSearchPage() {
   useEffect(() => {
     setIsClient(true);
     try {
-      let allJobsString = localStorage.getItem('jobPostings');
-      let allJobs: JobPosting[] = allJobsString ? JSON.parse(allJobsString) : [];
-
-      // Use a map to ensure default jobs are only added if they don't exist
-      const jobMap = new Map(allJobs.map(job => [job.id, job]));
-      for (const defaultJob of defaultJobs) {
-          if (!jobMap.has(defaultJob.id)) {
-              jobMap.set(defaultJob.id, defaultJob);
-          }
-      }
+      const allJobsString = localStorage.getItem('jobPostings');
+      const allJobs: JobPosting[] = allJobsString ? JSON.parse(allJobsString) : [];
       
-      const combinedJobs = Array.from(jobMap.values());
-      
-      localStorage.setItem('jobPostings', JSON.stringify(combinedJobs));
-      setJobs(combinedJobs.reverse());
+      setJobs(allJobs.reverse());
 
       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
       const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
@@ -367,7 +317,7 @@ export default function JobSearchPage() {
                                     <div className="space-y-2">
                                         <h4 className="font-medium text-foreground">Key Criteria</h4>
                                         <ul className="list-none p-0 space-y-1">
-                                            {viewingJob.criteria.split('\n').map((item, index) => item.trim() && (
+                                            {viewingJob.criteria.split('\\n').map((item, index) => item.trim() && (
                                                 <li key={index} className="flex items-start gap-2">
                                                     <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
                                                     <span>{item}</span>
