@@ -234,7 +234,11 @@ export default function JobSearchPage() {
         </CardHeader>
       </Card>
 
-        {openJobs.length === 0 && appliedJobs.length === 0 ? (
+        {isLoading ? (
+             <div className="flex items-center justify-center p-8">
+                <Loader2 className="h-8 w-8 animate-spin" />
+            </div>
+        ) : openJobs.length === 0 && appliedJobs.length === 0 ? (
             <Card>
                 <CardContent className="p-6">
                     <p className="text-center text-muted-foreground">No job openings have been posted yet. Check back soon!</p>
@@ -352,11 +356,10 @@ export default function JobSearchPage() {
                                 {viewingJob?.criteria && (
                                     <div className="space-y-2">
                                         <h4 className="font-medium text-foreground">Key Criteria</h4>
-                                        <ul className="list-none p-0 space-y-1">
-                                            {viewingJob.criteria.split('\\n').map((item, index) => item.trim() && (
-                                                <li key={index} className="flex items-start gap-2">
-                                                    <CheckCircle className="h-4 w-4 mt-0.5 flex-shrink-0 text-primary" />
-                                                    <span>{item}</span>
+                                        <ul className="list-disc pl-5 space-y-1">
+                                            {viewingJob.criteria.split('\n').map((item, index) => item.trim() && (
+                                                <li key={index}>
+                                                   <span>{item}</span>
                                                 </li>
                                             ))}
                                         </ul>
@@ -408,3 +411,4 @@ export default function JobSearchPage() {
     </>
   );
 }
+
