@@ -68,6 +68,8 @@ export default function MyApplicationsPage() {
 
     const getStatusComponent = (app: EnrichedApplication) => {
         switch (app.status) {
+            case 'Applied':
+                return <Badge variant="secondary">Applied</Badge>;
             case 'Selected for Test':
                 return (
                     <Button asChild size="sm">
@@ -75,11 +77,9 @@ export default function MyApplicationsPage() {
                            Start Test
                         </Link>
                     </Button>
-                )
-            case 'Applied':
-                return <Badge variant="secondary">Applied</Badge>;
+                );
             case 'Test Completed':
-                return <Badge variant='default' className="bg-green-600">Test Completed</Badge>
+                return <Badge variant='default' className="bg-green-600">Test Completed</Badge>;
             case 'Not Selected':
                 return <Badge variant="destructive">Not Selected</Badge>;
             default:
