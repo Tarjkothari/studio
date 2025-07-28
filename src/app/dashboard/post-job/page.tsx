@@ -84,7 +84,8 @@ export default function PostJobPage() {
             minimumMarks: minimumMarks,
             minimumDegree: minimumDegree,
             deadline: deadline ? deadline.toISOString() : null,
-            postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email
+            postedBy: JSON.parse(localStorage.getItem("loggedInUser") || "{}").email,
+            createdAt: new Date().toISOString()
         };
 
         if (generateTest) {

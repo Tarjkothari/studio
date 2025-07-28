@@ -58,6 +58,7 @@ export default function JobProviderSignUpPage() {
             avatar: "https://placehold.co/40x40",
             fallback: companyName.substring(0,2).toUpperCase(),
             status: "Active",
+            createdAt: new Date().toISOString(),
         };
         const updatedUsers = [...existingUsers, newUser];
         localStorage.setItem('users', JSON.stringify(updatedUsers));

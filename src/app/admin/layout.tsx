@@ -16,7 +16,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { LogOut, Settings, Users, Loader2 } from "lucide-react";
+import { LogOut, Settings, Users, Loader2, History } from "lucide-react";
 import Link from "next/link";
 
 
@@ -99,6 +99,18 @@ export default function AdminLayout({
                   <Link href="/admin/users">
                     <Users />
                     <span>Users</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Activity"
+                  isActive={pathname.startsWith('/admin/activity')}
+                  asChild
+                >
+                  <Link href="/admin/activity">
+                    <History />
+                    <span>Activity</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
