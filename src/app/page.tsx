@@ -50,6 +50,34 @@ export default function Home() {
   const featuresHeadline = "Everything You Need for Modern Recruitment";
   const featuresSubheadline = "From parsing and ranking to bias detection, our suite of tools is designed to streamline your hiring process.";
 
+  const AnimatedText = ({ text, el: El = 'span', className, stagger = 0 }: { text: string, el?: keyof JSX.IntrinsicElements, className?: string, stagger?: number }) => {
+    const words = text.split(' ');
+    let charCount = 0;
+    return (
+        <El className={className}>
+            {words.map((word, wordIndex) => (
+                <span key={wordIndex} className="inline-block">
+                    {word.split('').map((char, charIndex) => {
+                        const delay = (charCount + stagger) * 25;
+                        charCount++;
+                        return (
+                            <span
+                                key={charIndex}
+                                className="inline-block animate-text-3d"
+                                style={{ animationDelay: `${delay}ms` }}
+                            >
+                                {char}
+                            </span>
+                        );
+                    })}
+                    {wordIndex < words.length - 1 ? ' ' : ''}
+                </span>
+            ))}
+        </El>
+    );
+};
+
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down" style={{animationDuration: '1.5s'}}>
@@ -67,29 +95,10 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl">
-            {headline.split("").map((letter, index) => (
-                <span
-                    key={index}
-                    className="inline-block animate-text-3d"
-                    style={{ animationDelay: `${index * 50}ms`, whiteSpace: 'pre' }}
-                >
-                    {letter}
-                </span>
-            ))}
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl">
-             {subheadline.split("").map((letter, index) => (
-                <span
-                    key={index}
-                    className="inline-block animate-text-3d"
-                    style={{ animationDelay: `${(headline.length + index) * 25}ms`, whiteSpace: 'pre' }}
-                >
-                    {letter}
-                </span>
-            ))}
-          </p>
-          <div className="mt-8 flex justify-center gap-4 animate-fade-in-up animation-delay-600">
+          <AnimatedText text={headline} el="h1" className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl" />
+          <AnimatedText text={subheadline} el="p" className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl" stagger={headline.length} />
+
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-600">
             <Button size="lg" asChild>
               <Link href="/signup/job-provider">Get Started as a Job Provider</Link>
             </Button>
@@ -101,35 +110,13 @@ export default function Home() {
 
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
            <div className="text-center">
-            <div className="flex justify-center">
-                <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-                    {featuresHeadline.split("").map((letter, index) => (
-                        <span
-                            key={index}
-                            className="inline-block animate-text-3d"
-                            style={{ animationDelay: `${index * 25}ms`, whiteSpace: 'pre' }}
-                        >
-                            {letter}
-                        </span>
-                    ))}
-                </h2>
-            </div>
-            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              {featuresSubheadline.split("").map((letter, index) => (
-                  <span
-                      key={index}
-                      className="inline-block animate-text-3d"
-                      style={{ animationDelay: `${(featuresHeadline.length + index) * 20}ms`, whiteSpace: 'pre' }}
-                  >
-                      {letter}
-                  </span>
-              ))}
-            </p>
+            <AnimatedText text={featuresHeadline} el="h2" className="text-3xl font-bold tracking-tight sm:text-4xl" />
+            <AnimatedText text={featuresSubheadline} el="p" className="mx-auto mt-4 max-w-2xl text-muted-foreground" stagger={featuresHeadline.length}/>
           </div>
            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
                   <Link href={feature.href} key={index}>
-                      <Card 
+                      <Card
                       className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg"
                       >
                       <CardHeader className="p-0">
