@@ -1,5 +1,4 @@
 
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -39,6 +38,9 @@ type Application = {
     jobId: string;
     applicantEmail: string;
     status: 'Applied' | 'Selected for Test' | 'Not Selected';
+    resumeDataUri: string;
+    achievements: string;
+    appliedDate: string;
 }
 
 export default function JobSearchPage() {
@@ -162,14 +164,6 @@ export default function JobSearchPage() {
     };
     reader.readAsDataURL(resumeFile);
   };
-
-  if (isLoading) {
-      return (
-        <div className="flex items-center justify-center p-8">
-            <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
-      )
-  }
 
   const renderJobCard = (job: JobPosting, hasApplied: boolean) => {
     const isDeadlinePassed = job.deadline ? new Date(job.deadline) < new Date() : false;
@@ -357,7 +351,7 @@ export default function JobSearchPage() {
                                     <div className="space-y-2">
                                         <h4 className="font-medium text-foreground">Key Criteria</h4>
                                         <ul className="list-disc pl-5 space-y-1">
-                                            {viewingJob.criteria.split('\n').map((item, index) => item.trim() && (
+                                            {viewingJob.criteria.split('\\n').map((item, index) => item.trim() && (
                                                 <li key={index}>
                                                    <span>{item}</span>
                                                 </li>
