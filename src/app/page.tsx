@@ -70,7 +70,7 @@ export default function Home() {
                             </span>
                         );
                     })}
-                    {wordIndex < words.length - 1 ? ' ' : ''}
+                    {wordIndex < words.length - 1 ? '\u00A0' : ''}
                 </span>
             ))}
         </El>
@@ -110,8 +110,12 @@ export default function Home() {
 
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
            <div className="text-center">
-            <AnimatedText text={featuresHeadline} el="h2" className="text-3xl font-bold tracking-tight sm:text-4xl" />
-            <AnimatedText text={featuresSubheadline} el="p" className="mx-auto mt-4 max-w-2xl text-muted-foreground" stagger={featuresHeadline.length}/>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              <AnimatedText text={featuresHeadline} />
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
+              <AnimatedText text={featuresSubheadline} stagger={featuresHeadline.length}/>
+            </p>
           </div>
            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
