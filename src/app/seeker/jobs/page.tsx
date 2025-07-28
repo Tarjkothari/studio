@@ -61,6 +61,7 @@ export default function JobSearchPage() {
 
   const loadJobs = useCallback(() => {
     if (!currentUserEmail) {
+      setIsLoading(false);
       return; 
     }
     
