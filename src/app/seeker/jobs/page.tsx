@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,7 +45,6 @@ type Application = {
 
 export default function JobSearchPage() {
   const router = useRouter();
-  const pathname = usePathname();
   const { toast } = useToast();
   const [openJobs, setOpenJobs] = useState<JobPosting[]>([]);
   const [appliedJobs, setAppliedJobs] = useState<JobPosting[]>([]);
@@ -58,7 +57,7 @@ export default function JobSearchPage() {
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewingJob, setViewingJob] = useState<JobPosting | null>(null);
 
-  const loadJobs = () => {
+  const loadJobs = useCallback(() => {
     setIsLoading(true);
     try {
       const allJobsString = localStorage.getItem('jobPostings');
@@ -85,7 +84,7 @@ export default function JobSearchPage() {
     } finally {
         setIsLoading(false);
     }
-  }
+  }, []);
   
   useEffect(() => {
     loadJobs();
@@ -100,13 +99,13 @@ export default function JobSearchPage() {
     return () => {
         window.removeEventListener('storage', handleStorageChange);
     };
-  }, [pathname]);
+  }, [loadJobs]);
 
   useEffect(() => {
     if(!isApplyDialogOpen) {
       loadJobs();
     }
-  },[isApplyDialogOpen]);
+  },[isApplyDialogOpen, loadJobs]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
@@ -422,5 +421,3 @@ export default function JobSearchPage() {
     </>
   );
 }
-
-    
