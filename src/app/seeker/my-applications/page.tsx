@@ -83,7 +83,7 @@ export default function MyApplicationsPage() {
             case 'Not Selected':
                 return <Badge variant="destructive">Not Selected</Badge>;
             default:
-                return <Badge variant="outline">{app.status || 'Applied'}</Badge>;
+                return <Badge variant="secondary">{app.status || 'Applied'}</Badge>;
         }
     };
 
