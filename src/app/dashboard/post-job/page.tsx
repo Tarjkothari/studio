@@ -102,6 +102,9 @@ export default function PostJobPage() {
             title: "Job Posted Successfully",
             description: "Your job opening is now live for seekers to view.",
         });
+        
+        // Dispatch a storage event so other tabs can update
+        window.dispatchEvent(new Event('storage'));
 
         router.push("/dashboard/my-jobs"); 
 
@@ -252,3 +255,5 @@ export default function PostJobPage() {
     </Card>
   );
 }
+
+    

@@ -90,7 +90,7 @@ export default function JobSearchPage() {
     loadJobs();
     
     const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'jobPostings' || event.key === 'jobApplications') {
+        if (event.key === 'jobPostings' || event.key === 'jobApplications' || event.key === null) {
             loadJobs();
         }
     };

@@ -43,21 +43,15 @@ export default function AptitudeTestPage() {
 
     const submitTest = useCallback(() => {
         setIsSubmitting(true);
-        let score = 0;
-        const finalAnswers = [...answers];
+        let correctAnswers = 0;
 
         questions.forEach((q, index) => {
-            const selectedAnswer = finalAnswers[index];
-            if (selectedAnswer) {
-                if (selectedAnswer === q.correctAnswer) {
-                    score += 1;
-                } else {
-                    score -= 0.25;
-                }
+            if (answers[index] === q.correctAnswer) {
+                correctAnswers += 1;
             }
         });
         
-        const finalScore = Math.floor(Math.max(0, (score / 50) * 100));
+        const finalScore = Math.floor(correctAnswers);
 
         try {
             const allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
@@ -74,6 +68,7 @@ export default function AptitudeTestPage() {
                 title: "Test Submitted Successfully!",
                 description: "Your results have been sent to the job provider.",
             });
+            window.dispatchEvent(new Event('storage'));
             router.push('/seeker/my-applications');
 
         } catch (e) {
@@ -234,3 +229,5 @@ export default function AptitudeTestPage() {
         </Card>
     );
 }
+
+    

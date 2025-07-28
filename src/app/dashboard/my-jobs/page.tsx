@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle, Trophy, Trash2 } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -138,6 +138,7 @@ export default function MyJobsPage() {
                     });
                 });
                 toast({ title: "Candidate Selected", description: "The candidate has been selected for the aptitude test." });
+                 window.dispatchEvent(new Event('storage'));
             }
         } catch (e) {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to update candidate status.' });
@@ -164,7 +165,7 @@ export default function MyJobsPage() {
                 title: "Job Deleted",
                 description: "The job posting has been successfully removed.",
             });
-
+            window.dispatchEvent(new Event('storage'));
         } catch (e) {
             console.error("Failed to delete job", e);
             toast({
@@ -245,7 +246,7 @@ export default function MyJobsPage() {
                          </Badge>
                          <div className="flex items-center gap-1 font-semibold">
                             <Trophy className="h-4 w-4 text-amber-400" />
-                            <span>{applicant.testScore}/100</span>
+                            <span>{applicant.testScore}/50</span>
                          </div>
                     </div>
                    
