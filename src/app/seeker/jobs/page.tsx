@@ -108,19 +108,19 @@ export default function JobSearchPage() {
   }, []);
   
   useEffect(() => {
-    loadJobs();
+    if (currentUserEmail) {
+      loadJobs();
+    }
     
-    const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'jobPostings' || event.key === 'jobApplications' || event.key === null) {
-            loadJobs();
-        }
+    const handleStorageChange = () => {
+        loadJobs();
     };
 
     window.addEventListener('storage', handleStorageChange);
     return () => {
         window.removeEventListener('storage', handleStorageChange);
     };
-  }, [loadJobs]);
+  }, [currentUserEmail, loadJobs]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
