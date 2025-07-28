@@ -84,7 +84,7 @@ export default function JobSeekerSignUpPage() {
         <div className="mb-8 flex justify-center">
           <Logo />
         </div>
-        <Card>
+        <Card className="transition-shadow hover:shadow-lg">
           <form onSubmit={handleSignUp}>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Create a Job Seeker Account</CardTitle>
