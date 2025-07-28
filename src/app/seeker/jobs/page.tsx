@@ -55,13 +55,10 @@ export default function JobSearchPage() {
   const [achievements, setAchievements] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-
-  // State for the "View Details" dialog
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewingJob, setViewingJob] = useState<JobPosting | null>(null);
 
-
-  useEffect(() => {
+  const loadJobs = () => {
     setIsLoading(true);
     try {
       const allJobsString = localStorage.getItem('jobPostings');
@@ -88,12 +85,28 @@ export default function JobSearchPage() {
     } finally {
         setIsLoading(false);
     }
+  }
+  
+  useEffect(() => {
+    loadJobs();
+    
+    const handleStorageChange = (event: StorageEvent) => {
+        if (event.key === 'jobPostings' || event.key === 'jobApplications' || event.key === null) {
+            loadJobs();
+        }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+        window.removeEventListener('storage', handleStorageChange);
+    };
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isProcessing, pathname]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
-    setResumeFile(null); // Reset file input
-    setAchievements(""); // Reset achievements
+    setResumeFile(null);
+    setAchievements("");
     setIsApplyDialogOpen(true);
   };
   
@@ -241,7 +254,6 @@ export default function JobSearchPage() {
             </Card>
         ) : (
             <>
-                {/* Open for Application Section */}
                 <div>
                      <div className="mb-4 flex items-center gap-3">
                         <ListChecks className="h-6 w-6 text-primary" />
@@ -260,7 +272,6 @@ export default function JobSearchPage() {
                     )}
                 </div>
 
-                {/* Applied Jobs Section */}
                 {appliedJobs.length > 0 && (
                     <div>
                         <Separator className="my-8" />
@@ -406,5 +417,3 @@ export default function JobSearchPage() {
     </>
   );
 }
-
-    

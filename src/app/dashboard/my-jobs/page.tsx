@@ -97,6 +97,17 @@ export default function MyJobsPage() {
 
     useEffect(() => {
         loadJobsAndApplicants();
+        
+        const handleStorageChange = (event: StorageEvent) => {
+            if (event.key === 'jobPostings' || event.key === 'jobApplications' || event.key === null) {
+                loadJobsAndApplicants();
+            }
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+        };
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentUserEmail, pathname]);
 

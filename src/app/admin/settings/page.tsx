@@ -14,8 +14,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2, Upload, Trash2 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Separator } from "@/components/ui/separator";
 
 type User = {
   name: string;
@@ -113,7 +115,6 @@ export default function SettingsPage() {
                 description: "Your account details have been updated.",
             });
 
-            // This is a bit of a hack to let the layout know to update the user details
             window.dispatchEvent(new Event('storage'));
 
         } catch (e) {
@@ -128,6 +129,35 @@ export default function SettingsPage() {
         }
     };
 
+    const handleClearAllJobs = () => {
+        try {
+            localStorage.removeItem('jobPostings');
+            localStorage.removeItem('jobApplications');
+            // Also remove all generated tests associated with jobs
+             const keysToRemove = [];
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('test_')) {
+                    keysToRemove.push(key);
+                }
+            }
+            keysToRemove.forEach(key => localStorage.removeItem(key));
+            
+            toast({
+                title: "All Jobs Cleared",
+                description: "All job postings and related applications have been removed.",
+            });
+            window.dispatchEvent(new Event('storage'));
+        } catch (e) {
+            console.error("Failed to clear job data", e);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Could not clear job data.",
+            });
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center p-8">
@@ -137,61 +167,100 @@ export default function SettingsPage() {
     }
   
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>System Settings</CardTitle>
-                <CardDescription>Manage your administrator account details.</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleSaveChanges}>
-                <CardContent className="space-y-6">
-                     <div className="flex items-center gap-6">
-                        <Avatar className="h-20 w-20">
-                            <AvatarImage src={avatarPreview || undefined} data-ai-hint="avatar" />
-                            <AvatarFallback>
-                                {user?.fallback}
-                            </AvatarFallback>
-                        </Avatar>
-                        <div className="space-y-2">
-                             <Label htmlFor="profile-picture-upload">Profile Picture</Label>
-                             <div className="flex items-center gap-2">
-                                <Input id="profile-picture-upload" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
-                                <Button asChild variant="outline">
-                                    <Label htmlFor="profile-picture-upload" className="cursor-pointer">
-                                        <Upload className="mr-2 h-4 w-4" />
-                                        Choose File
-                                    </Label>
-                                </Button>
-                                <p className="text-xs text-muted-foreground">Upload your profile picture.</p>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader>
+                    <CardTitle>Administrator Account</CardTitle>
+                    <CardDescription>Manage your administrator account details.</CardDescription>
+                </CardHeader>
+                <form onSubmit={handleSaveChanges}>
+                    <CardContent className="space-y-6">
+                        <div className="flex items-center gap-6">
+                            <Avatar className="h-20 w-20">
+                                <AvatarImage src={avatarPreview || undefined} data-ai-hint="avatar" />
+                                <AvatarFallback>
+                                    {user?.fallback}
+                                </AvatarFallback>
+                            </Avatar>
+                            <div className="space-y-2">
+                                <Label htmlFor="profile-picture-upload">Profile Picture</Label>
+                                <div className="flex items-center gap-2">
+                                    <Input id="profile-picture-upload" type="file" className="hidden" accept="image/*" onChange={handleFileChange} />
+                                    <Button asChild variant="outline">
+                                        <Label htmlFor="profile-picture-upload" className="cursor-pointer">
+                                            <Upload className="mr-2 h-4 w-4" />
+                                            Choose File
+                                        </Label>
+                                    </Button>
+                                    <p className="text-xs text-muted-foreground">Upload your profile picture.</p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="admin-name">Name</Label>
-                        <Input
-                        id="admin-name"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        required
-                        />
-                    </div>
-                    <div className="space-y-2">
-                        <Label htmlFor="email">Email Address</Label>
-                        <Input
-                        id="email"
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        />
+                        <div className="space-y-2">
+                            <Label htmlFor="admin-name">Name</Label>
+                            <Input
+                            id="admin-name"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                            required
+                            />
+                        </div>
+                        <div className="space-y-2">
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input
+                            id="email"
+                            type="email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            />
+                        </div>
+                    </CardContent>
+                    <CardFooter>
+                        <Button type="submit" disabled={isSaving}>
+                            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                            Save Changes
+                        </Button>
+                    </CardFooter>
+                </form>
+            </Card>
+
+            <Card>
+                <CardHeader>
+                    <CardTitle>System Actions</CardTitle>
+                    <CardDescription>Perform administrative actions on the system. These actions are irreversible.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <div className="flex items-center justify-between rounded-lg border border-destructive/50 p-4">
+                        <div>
+                            <h3 className="font-semibold">Clear All Job Postings</h3>
+                            <p className="text-sm text-muted-foreground">This will permanently delete all jobs and their associated applications.</p>
+                        </div>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                 <Button variant="destructive">
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Clear All Jobs
+                                </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete all job postings, applications, and test data from the system.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={handleClearAllJobs}>
+                                        Continue
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
                     </div>
                 </CardContent>
-                <CardFooter>
-                    <Button type="submit" disabled={isSaving}>
-                        {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save Changes
-                    </Button>
-                </CardFooter>
-            </form>
-        </Card>
+            </Card>
+        </div>
     );
 }
