@@ -2,7 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -45,6 +45,7 @@ type Application = {
 
 export default function JobSearchPage() {
   const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
   const [openJobs, setOpenJobs] = useState<JobPosting[]>([]);
   const [appliedJobs, setAppliedJobs] = useState<JobPosting[]>([]);
@@ -87,7 +88,7 @@ export default function JobSearchPage() {
     } finally {
         setIsLoading(false);
     }
-  }, [isProcessing]);
+  }, [isProcessing, pathname]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
