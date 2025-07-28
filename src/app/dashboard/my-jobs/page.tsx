@@ -94,12 +94,14 @@ export default function MyJobsPage() {
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]') as Application[];
             
             if (currentUserEmail === 'provider@example.com') {
-                const existingDefaultJobIds = new Set(allJobs.map((j: JobPosting) => j.id));
-                const jobsToAdd = defaultJobs.filter(dj => !existingDefaultJobIds.has(dj.id));
-                if (jobsToAdd.length > 0) {
-                    allJobs = [...allJobs, ...jobsToAdd];
-                    localStorage.setItem('jobPostings', JSON.stringify(allJobs));
+                const jobMap = new Map(allJobs.map(j => [j.id, j]));
+                for (const defaultJob of defaultJobs) {
+                    if (!jobMap.has(defaultJob.id)) {
+                        jobMap.set(defaultJob.id, defaultJob);
+                    }
                 }
+                allJobs = Array.from(jobMap.values());
+                localStorage.setItem('jobPostings', JSON.stringify(allJobs));
             }
 
             const jobsWithApplicants = allJobs

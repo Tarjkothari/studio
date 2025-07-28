@@ -101,16 +101,20 @@ export default function JobSearchPage() {
     setIsClient(true);
     try {
       let allJobsString = localStorage.getItem('jobPostings');
-      let allJobs = allJobsString ? JSON.parse(allJobsString) : [];
+      let allJobs: JobPosting[] = allJobsString ? JSON.parse(allJobsString) : [];
 
-      const existingDefaultJobIds = new Set(allJobs.map((j: JobPosting) => j.id));
-      const jobsToAdd = defaultJobs.filter(dj => !existingDefaultJobIds.has(dj.id));
-      if (jobsToAdd.length > 0) {
-          allJobs = [...allJobs, ...jobsToAdd];
-          localStorage.setItem('jobPostings', JSON.stringify(allJobs));
+      // Use a map to ensure default jobs are only added if they don't exist
+      const jobMap = new Map(allJobs.map(job => [job.id, job]));
+      for (const defaultJob of defaultJobs) {
+          if (!jobMap.has(defaultJob.id)) {
+              jobMap.set(defaultJob.id, defaultJob);
+          }
       }
-
-      setJobs(allJobs.reverse());
+      
+      const combinedJobs = Array.from(jobMap.values());
+      
+      localStorage.setItem('jobPostings', JSON.stringify(combinedJobs));
+      setJobs(combinedJobs.reverse());
 
       const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
       const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
