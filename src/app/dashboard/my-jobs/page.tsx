@@ -24,6 +24,9 @@ type JobPosting = {
     postedBy: string;
     description: string;
     deadline?: string;
+    criteria?: string;
+    minimumMarks?: string;
+    minimumDegree?: string;
 };
 
 type Application = {
@@ -55,6 +58,9 @@ const defaultJobs: JobPosting[] = [
         postedBy: 'provider@example.com',
         description: 'We are looking for an experienced frontend developer to join our team. You will be responsible for building and maintaining our web applications.',
         deadline: new Date(new Date().setDate(new Date().getDate() + 30)).toISOString(),
+        criteria: "5+ years of React experience\nExperience with TypeScript\nStrong understanding of RESTful APIs",
+        minimumDegree: "Bachelor's Degree",
+        minimumMarks: "Not Required"
     },
     {
         id: '2',
@@ -64,6 +70,9 @@ const defaultJobs: JobPosting[] = [
         postedBy: 'provider@example.com',
         description: 'Creative Minds is seeking a talented UX/UI designer to create amazing user experiences. The ideal candidate should have an eye for clean and artful design.',
         deadline: new Date(new Date().setDate(new Date().getDate() + 15)).toISOString(),
+        criteria: "Portfolio of design projects\nProficiency in Figma or Sketch\nUnderstanding of user-centered design principles",
+        minimumDegree: "Bachelor's Degree",
+        minimumMarks: "Not Required"
     },
     {
         id: '3',
@@ -73,6 +82,9 @@ const defaultJobs: JobPosting[] = [
         postedBy: 'provider@example.com',
         description: 'Join our backend team to build scalable and reliable services. We are looking for a Go developer with experience in microservices architecture.',
         deadline: new Date(new Date().setDate(new Date().getDate() + 45)).toISOString(),
+        criteria: "3+ years of experience with Go\nExperience with Docker and Kubernetes\nKnowledge of SQL and NoSQL databases",
+        minimumDegree: "Master's Degree",
+        minimumMarks: "8.0 CGPA"
     }
 ];
 
@@ -93,16 +105,16 @@ export default function MyJobsPage() {
             let allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]') as JobPosting[];
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]') as Application[];
             
+            const jobMap = new Map(allJobs.map(j => [j.id, j]));
             if (currentUserEmail === 'provider@example.com') {
-                const jobMap = new Map(allJobs.map(j => [j.id, j]));
                 for (const defaultJob of defaultJobs) {
                     if (!jobMap.has(defaultJob.id)) {
                         jobMap.set(defaultJob.id, defaultJob);
                     }
                 }
-                allJobs = Array.from(jobMap.values());
-                localStorage.setItem('jobPostings', JSON.stringify(allJobs));
             }
+            allJobs = Array.from(jobMap.values());
+            localStorage.setItem('jobPostings', JSON.stringify(allJobs));
 
             const jobsWithApplicants = allJobs
                 .filter((job: JobPosting) => job.postedBy === currentUserEmail)
