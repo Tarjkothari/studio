@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle, Trophy } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, CheckCircle, Trophy, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { rankCandidates } from '@/ai/flows/rank-candidates';
 import { parseResume } from '@/ai/flows/parse-resume';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 
 type JobPosting = {
     id: string;
@@ -181,6 +182,36 @@ export default function MyJobsPage() {
             console.error(e);
         }
     };
+    
+    const handleDeleteJob = (jobId: string) => {
+        try {
+            let allJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
+            let allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+
+            // Filter out the job to delete
+            const updatedJobs = allJobs.filter(job => job.id !== jobId);
+            const updatedApplications = allApplications.filter(app => app.jobId !== jobId);
+            
+            localStorage.setItem('jobPostings', JSON.stringify(updatedJobs));
+            localStorage.setItem('jobApplications', JSON.stringify(updatedApplications));
+            localStorage.removeItem(`test_${jobId}`); // Remove associated test
+
+            setMyJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+
+            toast({
+                title: "Job Deleted",
+                description: "The job posting has been successfully removed.",
+            });
+
+        } catch (e) {
+            console.error("Failed to delete job", e);
+            toast({
+                variant: "destructive",
+                title: "Error",
+                description: "Could not delete the job posting.",
+            });
+        }
+    };
 
     const handleRankApplicant = async (jobId: string, applicantEmail: string) => {
         const jobIndex = myJobs.findIndex(j => j.id === jobId);
@@ -335,6 +366,28 @@ export default function MyJobsPage() {
                                             <span className="sr-only">Edit Job</span>
                                         </Link>
                                     </Button>
+                                    <AlertDialog>
+                                        <AlertDialogTrigger asChild>
+                                            <Button variant="destructive" size="icon">
+                                                <Trash2 className="h-4 w-4" />
+                                                <span className="sr-only">Delete Job</span>
+                                            </Button>
+                                        </AlertDialogTrigger>
+                                        <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure you want to delete this job?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                    This action cannot be undone. This will permanently delete the job posting and all associated applicant data.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction onClick={() => handleDeleteJob(job.id)}>
+                                                    Continue
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                        </AlertDialogContent>
+                                    </AlertDialog>
                                 </CardFooter>
 
                                 <CollapsibleContent>
