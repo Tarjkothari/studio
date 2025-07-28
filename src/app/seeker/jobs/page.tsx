@@ -100,8 +100,13 @@ export default function JobSearchPage() {
     return () => {
         window.removeEventListener('storage', handleStorageChange);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isProcessing, pathname]);
+  }, [pathname]);
+
+  useEffect(() => {
+    if(!isApplyDialogOpen) {
+      loadJobs();
+    }
+  },[isApplyDialogOpen]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
@@ -417,3 +422,5 @@ export default function JobSearchPage() {
     </>
   );
 }
+
+    
