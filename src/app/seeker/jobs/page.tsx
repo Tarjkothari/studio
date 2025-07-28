@@ -90,7 +90,7 @@ export default function JobSearchPage() {
     loadJobs();
     
     const handleStorageChange = (event: StorageEvent) => {
-        if (event.key === 'jobPostings' || event.key === 'jobApplications' || event.key === null) {
+        if (event.key === 'jobPostings' || event.key === 'jobApplications') {
             loadJobs();
         }
     };
@@ -100,12 +100,6 @@ export default function JobSearchPage() {
         window.removeEventListener('storage', handleStorageChange);
     };
   }, [loadJobs]);
-
-  useEffect(() => {
-    if(!isApplyDialogOpen) {
-      loadJobs();
-    }
-  },[isApplyDialogOpen, loadJobs]);
 
   const handleApplyClick = (job: JobPosting) => {
     setSelectedJob(job);
@@ -157,6 +151,9 @@ export default function JobSearchPage() {
             const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
             allApplications.push(newApplication);
             localStorage.setItem('jobApplications', JSON.stringify(allApplications));
+            
+            // Manually trigger storage event for the current tab
+            window.dispatchEvent(new StorageEvent('storage', {key: 'jobApplications'}));
 
             toast({
               title: "Application Sent!",
@@ -421,3 +418,5 @@ export default function JobSearchPage() {
     </>
   );
 }
+
+    
