@@ -35,13 +35,17 @@ export async function generateAptitudeTest(
   return generateAptitudeTestFlow(input);
 }
 
+const Generate10AptitudeTestQuestionsSchema = z.object({
+    questions: z.array(MCQSchema).length(10).describe("An array of 10 multiple-choice questions."),
+});
+
 const prompt = ai.definePrompt({
   name: 'generateAptitudeTestPrompt',
   input: {schema: GenerateAptitudeTestInputSchema},
-  output: {schema: GenerateAptitudeTestOutputSchema},
+  output: {schema: Generate10AptitudeTestQuestionsSchema},
   prompt: `You are an expert in creating professional aptitude tests for job candidates. Your task is to generate a comprehensive aptitude test for the following job role: {{{jobTitle}}}.
 
-The test must contain exactly 50 multiple-choice questions. The questions should cover a range of topics relevant to the job title, including technical skills, problem-solving, and role-specific knowledge.
+The test must contain exactly 10 multiple-choice questions. The questions should cover a range of topics relevant to the job title, including technical skills, problem-solving, and role-specific knowledge.
 
 For each question, provide:
 1.  A clear and concise question.
@@ -59,7 +63,18 @@ const generateAptitudeTestFlow = ai.defineFlow(
     outputSchema: GenerateAptitudeTestOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
-    return output!;
+    let allQuestions: MCQ[] = [];
+    const requiredQuestions = 50;
+    const questionsPerBatch = 10;
+    const batches = requiredQuestions / questionsPerBatch;
+
+    for (let i = 0; i < batches; i++) {
+        const {output} = await prompt(input);
+        if (output?.questions) {
+            allQuestions = allQuestions.concat(output.questions);
+        }
+    }
+
+    return { questions: allQuestions };
   }
 );
