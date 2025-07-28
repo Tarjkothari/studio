@@ -56,8 +56,14 @@ export default function JobSearchPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
   const [viewingJob, setViewingJob] = useState<JobPosting | null>(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+
 
   const loadJobs = useCallback(() => {
+    if (!currentUserEmail) {
+      return; 
+    }
+    
     setIsLoading(true);
     try {
       const allJobsString = localStorage.getItem('jobPostings');
@@ -66,9 +72,8 @@ export default function JobSearchPage() {
       const now = new Date();
       const activeJobs = allJobs.filter(job => !job.deadline || new Date(job.deadline) >= now);
 
-      const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
       const allApplications = JSON.parse(localStorage.getItem('jobApplications') || '[]');
-      const userApplications = allApplications.filter((app: Application) => app.applicantEmail === loggedInUser.email);
+      const userApplications = allApplications.filter((app: Application) => app.applicantEmail === currentUserEmail);
       const userAppliedJobIds = new Set(userApplications.map((app: Application) => app.jobId));
       
       const openForApplication = activeJobs.filter(job => !userAppliedJobIds.has(job.id));
@@ -83,6 +88,21 @@ export default function JobSearchPage() {
       setAppliedJobs([]);
     } finally {
         setIsLoading(false);
+    }
+  }, [currentUserEmail]);
+  
+  useEffect(() => {
+    try {
+        const userString = localStorage.getItem('loggedInUser');
+        if (userString) {
+            const user = JSON.parse(userString);
+            setCurrentUserEmail(user.email);
+        } else {
+            setIsLoading(false);
+        }
+    } catch (e) {
+      console.error("Failed to load user", e);
+      setIsLoading(false);
     }
   }, []);
   
@@ -152,7 +172,6 @@ export default function JobSearchPage() {
             allApplications.push(newApplication);
             localStorage.setItem('jobApplications', JSON.stringify(allApplications));
             
-            // Manually trigger storage event for the current tab
             window.dispatchEvent(new StorageEvent('storage', {key: 'jobApplications'}));
 
             toast({
@@ -418,3 +437,5 @@ export default function JobSearchPage() {
     </>
   );
 }
+
+    
