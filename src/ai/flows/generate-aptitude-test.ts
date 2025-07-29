@@ -4,7 +4,7 @@
 /**
  * @fileOverview Generates an aptitude test for a specific job role.
  *
- * - generateAptitudeTest - A function that generates a 30-question MCQ test.
+ * - generateAptitudeTest - A function that generates a 40-question MCQ test.
  * - GenerateAptitudeTestInput - The input type for the generateAptitudeTest function.
  * - GenerateAptitudeTestOutput - The return type for the generateAptitudeTest function.
  */
@@ -24,7 +24,7 @@ const MCQSchema = z.object({
 });
 
 const GenerateAptitudeTestOutputSchema = z.object({
-    questions: z.array(MCQSchema).length(30).describe("An array of 30 multiple-choice questions."),
+    questions: z.array(MCQSchema).length(40).describe("An array of 40 multiple-choice questions."),
 });
 export type GenerateAptitudeTestOutput = z.infer<typeof GenerateAptitudeTestOutputSchema>;
 export type MCQ = z.infer<typeof MCQSchema>;
@@ -65,7 +65,7 @@ const generateAptitudeTestFlow = ai.defineFlow(
   },
   async input => {
     let allQuestions: MCQ[] = [];
-    const requiredQuestions = 30;
+    const requiredQuestions = 40;
     const questionsPerBatch = 10;
     const batches = requiredQuestions / questionsPerBatch;
 
@@ -84,4 +84,5 @@ const generateAptitudeTestFlow = ai.defineFlow(
     return { questions: allQuestions };
   }
 );
+
 
