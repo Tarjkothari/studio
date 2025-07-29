@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
@@ -59,7 +59,7 @@ export default function MyJobsPage() {
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const loadJobsAndApplicants = () => {
+    const loadJobsAndApplicants = useCallback(() => {
          if (!currentUserEmail) {
             return;
         }
@@ -82,7 +82,7 @@ export default function MyJobsPage() {
         } finally {
             setIsLoading(false);
         }
-    }
+    }, [currentUserEmail]);
 
     useEffect(() => {
         try {
@@ -97,6 +97,8 @@ export default function MyJobsPage() {
     }, []);
 
     useEffect(() => {
+        if (!currentUserEmail) return;
+
         loadJobsAndApplicants();
         
         const handleStorageChange = (event: StorageEvent) => {
@@ -109,8 +111,7 @@ export default function MyJobsPage() {
         return () => {
             window.removeEventListener('storage', handleStorageChange);
         };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [currentUserEmail, pathname]);
+    }, [currentUserEmail, loadJobsAndApplicants]);
 
     const handleSelectForTest = (jobId: string, applicantEmail: string) => {
         try {
@@ -120,25 +121,9 @@ export default function MyJobsPage() {
             if (appIndex !== -1) {
                 allApplications[appIndex].status = 'Selected for Test';
                 localStorage.setItem('jobApplications', JSON.stringify(allApplications));
-
-                setMyJobs(prevJobs => {
-                    return prevJobs.map(job => {
-                        if (job.id === jobId) {
-                            return {
-                                ...job,
-                                applicants: job.applicants.map(app => {
-                                    if (app.applicantEmail === applicantEmail) {
-                                        return { ...app, status: 'Selected for Test' };
-                                    }
-                                    return app;
-                                })
-                            };
-                        }
-                        return job;
-                    });
-                });
+                
                 toast({ title: "Candidate Selected", description: "The candidate has been selected for the aptitude test." });
-                 window.dispatchEvent(new Event('storage'));
+                window.dispatchEvent(new Event('storage'));
             }
         } catch (e) {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to update candidate status.' });
@@ -151,15 +136,12 @@ export default function MyJobsPage() {
             let allJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
             let allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
 
-            // Filter out the job to delete
             const updatedJobs = allJobs.filter(job => job.id !== jobId);
             const updatedApplications = allApplications.filter(app => app.jobId !== jobId);
             
             localStorage.setItem('jobPostings', JSON.stringify(updatedJobs));
             localStorage.setItem('jobApplications', JSON.stringify(updatedApplications));
-            localStorage.removeItem(`test_${jobId}`); // Remove associated test
-
-            setMyJobs(prevJobs => prevJobs.filter(job => job.id !== jobId));
+            localStorage.removeItem(`test_${jobId}`);
 
             toast({
                 title: "Job Deleted",
@@ -246,7 +228,7 @@ export default function MyJobsPage() {
                          </Badge>
                          <div className="flex items-center gap-1 font-semibold">
                             <Trophy className="h-4 w-4 text-amber-400" />
-                            <span>{applicant.testScore}/50</span>
+                            <span>{applicant.testScore}/30</span>
                          </div>
                     </div>
                    

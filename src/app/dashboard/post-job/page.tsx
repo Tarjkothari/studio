@@ -231,7 +231,7 @@ export default function PostJobPage() {
                         Generate Aptitude Test
                     </Label>
                     <CardDescription>
-                       Automatically create a 50-question aptitude test for this role.
+                       Automatically create a 30-question aptitude test for this role.
                     </CardDescription>
                 </div>
                 <Switch
