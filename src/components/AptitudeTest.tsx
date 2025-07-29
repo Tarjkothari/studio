@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -40,6 +39,7 @@ const GAZE_THRESHOLD = 3; // seconds user can look away before test submits
 
 export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
     const { toast } = useToast();
+    const testContainerRef = useRef<HTMLDivElement>(null);
 
     const [job, setJob] = useState<JobPosting | null>(null);
     const [questions, setQuestions] = useState<MCQ[]>([]);
@@ -56,10 +56,19 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
     const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
     const [isProctoringReady, setIsProctoringReady] = useState(false);
 
-    const submitTest = useCallback((reason: string) => {
+    const submitTest = useCallback(async (reason: string) => {
         if (isSubmitting) return;
 
         setIsSubmitting(true);
+
+        if (document.fullscreenElement) {
+            try {
+                await document.exitFullscreen();
+            } catch (e) {
+                console.error("Could not exit fullscreen", e);
+            }
+        }
+        
         let correctAnswers = 0;
 
         questions.forEach((q, index) => {
@@ -224,7 +233,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
             }
             if(gazeTimeoutRef.current) clearTimeout(gazeTimeoutRef.current);
         };
-    }, [isLoading, submitTest, toast]);
+    }, [isLoading, isSubmitting, submitTest, toast]);
 
 
     useEffect(() => {
@@ -243,6 +252,41 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
 
         return () => clearInterval(timer);
     }, [isProctoringReady, isSubmitting, submitTest, toast]);
+    
+    // Fullscreen effect
+    useEffect(() => {
+        const enterFullscreen = async () => {
+            if (testContainerRef.current) {
+                try {
+                    await testContainerRef.current.requestFullscreen();
+                } catch(err) {
+                    console.error("Could not enter fullscreen mode:", err)
+                    toast({
+                        variant: "default",
+                        title: "Fullscreen Mode Recommended",
+                        description: "For the best experience, please manually enter fullscreen (F11).",
+                    });
+                }
+            }
+        };
+
+        if(isProctoringReady) {
+            enterFullscreen();
+        }
+
+        const handleFullscreenChange = () => {
+            if (!document.fullscreenElement) {
+                submitTest("Test submitted because you exited fullscreen mode.");
+            }
+        };
+
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+
+        return () => {
+             document.removeEventListener('fullscreenchange', handleFullscreenChange);
+        }
+
+    }, [isProctoringReady, submitTest, toast]);
 
 
     const handleAnswerSelect = (value: string) => {
@@ -259,7 +303,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
 
     const handlePrev = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev - 1);
+            setCurrentQuestionIndex(prev => prev + 1);
         }
     };
 
@@ -292,7 +336,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
     const seconds = timeLeft % 60;
 
     return (
-         <div className="flex h-full w-full flex-col items-center justify-center bg-background p-4 sm:p-6 select-none">
+         <div ref={testContainerRef} className="flex h-full w-full flex-col items-center justify-center bg-background p-4 sm:p-6 select-none">
             <Card className="max-w-4xl mx-auto w-full flex flex-col h-full max-h-full">
                 <CardHeader>
                     <div className="flex justify-between items-start">
