@@ -82,11 +82,16 @@ export default function AptitudeTestPage() {
         if (!jobId) return;
 
         try {
-            const allJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
+            const allJobsString = localStorage.getItem('jobPostings');
+            const allJobs: JobPosting[] = allJobsString ? JSON.parse(allJobsString) : [];
             const currentJob = allJobs.find(j => j.id === jobId);
+
+            const allApplicationsString = localStorage.getItem('jobApplications');
+            const allApplications: Application[] = allApplicationsString ? JSON.parse(allApplicationsString) : [];
             
-            const allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
-            const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser') || '{}');
+            const loggedInUserString = localStorage.getItem('loggedInUser');
+            const loggedInUser = loggedInUserString ? JSON.parse(loggedInUserString) : {};
+
             const application = allApplications.find(app => app.jobId === jobId && app.applicantEmail === loggedInUser.email);
 
             if (!currentJob || !application || application.status !== 'Selected for Test') {
@@ -97,26 +102,20 @@ export default function AptitudeTestPage() {
 
             setJob(currentJob);
 
-            const fetchTest = () => {
-                try {
-                    const storedTest = JSON.parse(localStorage.getItem(`test_${jobId}`) || 'null');
-                    if (storedTest) {
-                        setQuestions(storedTest);
-                    } else {
-                        toast({ variant: 'destructive', title: 'Test Not Found', description: "The test for this job hasn't been generated yet." });
-                        router.push('/seeker/my-applications');
-                    }
-                } catch (e) {
-                    toast({ variant: 'destructive', title: 'Failed to load test.' });
-                } finally {
-                    setIsLoading(false);
-                }
-            };
-
-            fetchTest();
+            const testString = localStorage.getItem(`test_${jobId}`);
+            if (testString) {
+                setQuestions(JSON.parse(testString));
+            } else {
+                toast({ variant: 'destructive', title: 'Test Not Found', description: "The test for this job hasn't been generated yet." });
+                router.push('/seeker/my-applications');
+                return;
+            }
         } catch (e) {
             console.error(e);
+            toast({ variant: 'destructive', title: 'Error', description: 'Could not load the test.'});
             router.push('/seeker/my-applications');
+        } finally {
+            setIsLoading(false);
         }
     }, [jobId, router, toast]);
 
@@ -229,5 +228,3 @@ export default function AptitudeTestPage() {
         </Card>
     );
 }
-
-    
