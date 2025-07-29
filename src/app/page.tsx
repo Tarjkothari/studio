@@ -63,10 +63,10 @@ export default function Home() {
                         return (
                             <span
                                 key={charIndex}
-                                className="inline-block animate-text-3d"
-                                style={{ animationDelay: `${delay}ms` }}
+                                className="inline-block animate-fade-in-down animation-fill-both"
+                                style={{ animationDelay: `${delay}ms`, opacity: 0 }}
                             >
-                                {char}
+                                {char === ' ' ? '\u00A0' : char}
                             </span>
                         );
                     })}
@@ -80,7 +80,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in-down" style={{animationDuration: '1.5s'}}>
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 animate-fade-in" style={{animationDuration: '1s'}}>
         <div className="container flex h-14 max-w-screen-2xl items-center justify-between">
           <Logo />
           <div className="flex items-center gap-2">
@@ -98,7 +98,7 @@ export default function Home() {
           <AnimatedText text={headline} el="h1" className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl" />
           <AnimatedText text={subheadline} el="p" className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl" stagger={headline.length} />
 
-          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up animation-delay-600">
+          <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: `${(headline.length + subheadline.length) * 25 + 100}ms`}}>
             <Button size="lg" asChild>
               <Link href="/signup/job-provider">Get Started as a Job Provider</Link>
             </Button>
@@ -111,10 +111,10 @@ export default function Home() {
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
            <div className="text-center">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              <AnimatedText text={featuresHeadline} />
+              {featuresHeadline}
             </h2>
             <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              <AnimatedText text={featuresSubheadline} stagger={featuresHeadline.length}/>
+              {featuresSubheadline}
             </p>
           </div>
            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
