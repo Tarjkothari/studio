@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2, MessagesSquare, Mail } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2, MessagesSquare, Mail, Mic } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -40,7 +40,7 @@ type Application = {
     resumeDataUri: string;
     achievements: string;
     appliedDate: string;
-    status: 'Applied' | 'Selected for Test' | 'Test Completed' | 'Not Selected';
+    status: 'Applied' | 'Selected for Test' | 'Test Completed' | 'Selected for Interview' | 'Not Selected';
     testScore?: number;
 };
 
@@ -116,22 +116,30 @@ export default function MyJobsPage() {
         };
     }, [currentUserEmail, loadJobsAndApplicants]);
 
-    const handleSelectForTest = (jobId: string, applicantEmail: string) => {
+    const updateApplicantStatus = (jobId: string, applicantEmail: string, newStatus: Application['status']) => {
         try {
             const allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
             const appIndex = allApplications.findIndex(app => app.jobId === jobId && app.applicantEmail === applicantEmail);
 
             if (appIndex !== -1) {
-                allApplications[appIndex].status = 'Selected for Test';
+                allApplications[appIndex].status = newStatus;
                 localStorage.setItem('jobApplications', JSON.stringify(allApplications));
-                
-                toast({ title: "Candidate Selected", description: "The candidate has been selected for the aptitude test." });
                 window.dispatchEvent(new Event('storage'));
             }
         } catch (e) {
             toast({ variant: 'destructive', title: 'Error', description: 'Failed to update candidate status.' });
             console.error(e);
         }
+    };
+    
+    const handleSelectForTest = (jobId: string, applicantEmail: string) => {
+        updateApplicantStatus(jobId, applicantEmail, 'Selected for Test');
+        toast({ title: "Candidate Selected", description: "The candidate has been selected for the aptitude test." });
+    };
+
+    const handleSelectForInterview = (jobId: string, applicantEmail: string) => {
+        updateApplicantStatus(jobId, applicantEmail, 'Selected for Interview');
+        toast({ title: "Candidate Selected for Interview", description: "An interview invitation has been noted." });
     };
     
     const handleDeleteJob = (jobId: string) => {
@@ -259,8 +267,15 @@ export default function MyJobsPage() {
                             <Trophy className="h-4 w-4 text-amber-400" />
                             <span>{applicant.testScore}/40</span>
                          </div>
-                         <Button size="sm" onClick={() => openEmailClient(applicant.applicantEmail, `Next Steps for ${job.title} at ${job.company}`, acceptanceBody)}>Accept</Button>
+                         <Button size="sm" onClick={() => handleSelectForInterview(job.id, applicant.applicantEmail)}>Select for Interview</Button>
                     </div>
+                );
+            case 'Selected for Interview':
+                return (
+                     <div className="flex items-center gap-2">
+                         <Badge variant="default" className="bg-blue-600">Interview Stage</Badge>
+                         <Button size="sm" onClick={() => openEmailClient(applicant.applicantEmail, `Next Steps for ${job.title} at ${job.company}`, `acceptanceBody`)}>Accept</Button>
+                     </div>
                 );
             case 'Not Selected':
                 return <Badge variant="destructive">Not Selected</Badge>;

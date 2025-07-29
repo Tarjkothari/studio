@@ -6,15 +6,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Mic } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AptitudeTest } from "@/components/AptitudeTest";
+import { useRouter } from "next/navigation";
 
 type Application = {
     jobId: string;
     applicantEmail: string;
     appliedDate: string;
-    status: 'Applied' | 'Selected for Test' | 'Test Completed' | 'Not Selected';
+    status: 'Applied' | 'Selected for Test' | 'Test Completed' | 'Selected for Interview' | 'Not Selected';
 };
 
 type JobPosting = {
@@ -29,6 +30,7 @@ type EnrichedApplication = Application & {
 };
 
 export default function MyApplicationsPage() {
+    const router = useRouter();
     const [applications, setApplications] = useState<EnrichedApplication[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [isTestOpen, setIsTestOpen] = useState(false);
@@ -86,6 +88,11 @@ export default function MyApplicationsPage() {
         setSelectedJobIdForTest(jobId);
         setIsTestOpen(true);
     }
+
+    const handleStartInterviewClick = (jobId: string) => {
+        sessionStorage.setItem('interviewJobId', jobId);
+        router.push('/seeker/voice-interview');
+    };
     
     const onTestFinished = () => {
         setIsTestOpen(false);
@@ -105,6 +112,13 @@ export default function MyApplicationsPage() {
                 );
             case 'Test Completed':
                 return <Badge variant='default' className="bg-green-600">Test Completed</Badge>;
+             case 'Selected for Interview':
+                return (
+                    <Button onClick={() => handleStartInterviewClick(app.jobId)} size="sm" variant="default">
+                        <Mic className="mr-2 h-4 w-4" />
+                        Start Voice Interview
+                    </Button>
+                );
             case 'Not Selected':
                 return <Badge variant="destructive">Not Selected</Badge>;
             default:
