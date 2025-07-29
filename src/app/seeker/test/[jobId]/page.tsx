@@ -105,6 +105,7 @@ export default function AptitudeTestPage() {
             const testString = localStorage.getItem(`test_${jobId}`);
             if (testString) {
                 setQuestions(JSON.parse(testString));
+                 setAnswers(new Array(JSON.parse(testString).length).fill(''));
             } else {
                 toast({ variant: 'destructive', title: 'Test Not Found', description: "The test for this job hasn't been generated yet." });
                 router.push('/seeker/my-applications');
@@ -120,7 +121,7 @@ export default function AptitudeTestPage() {
     }, [jobId, router, toast]);
 
     useEffect(() => {
-        if (isLoading || questions.length === 0) return;
+        if (isLoading || questions.length === 0 || isSubmitting) return;
 
         const timer = setInterval(() => {
             setTimeLeft(prevTime => {
@@ -134,7 +135,7 @@ export default function AptitudeTestPage() {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isLoading, questions.length, submitTest]);
+    }, [isLoading, questions.length, isSubmitting, submitTest]);
 
 
     const handleAnswerSelect = (value: string) => {
