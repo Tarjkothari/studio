@@ -15,7 +15,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileUp, LogOut, Settings, Briefcase, Loader2, FileCheck2, LayoutDashboard } from "lucide-react";
+import { FileUp, LogOut, Settings, Briefcase, Loader2, FileCheck2, LayoutDashboard, Telescope } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -141,6 +141,18 @@ export default function SeekerLayout({
                   <Link href="/seeker/improve-resume">
                     <FileUp />
                     <span>Resume Improver</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Skill Gap Analysis"
+                  isActive={pathname.startsWith('/seeker/skill-gap-analysis')}
+                  asChild
+                >
+                  <Link href="/seeker/skill-gap-analysis">
+                    <Telescope />
+                    <span>Skill Gap Analysis</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

@@ -1,11 +1,11 @@
 
 "use client";
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2 } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2, MessagesSquare, Mail } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -13,10 +13,12 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { rankCandidates } from '@/ai/flows/rank-candidates';
-import { parseResume } from '@/ai/flows/parse-resume';
+import { parseResume, ParseResumeOutput } from '@/ai/flows/parse-resume';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-
+import { Dialog, DialogHeader, DialogTitle, DialogContent, DialogDescription } from '@/components/ui/dialog';
+import { generateInterviewQuestions, InterviewQuestionsOutput } from '@/ai/flows/generate-interview-questions';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 type JobPosting = {
     id: string;
@@ -45,6 +47,7 @@ type Application = {
 type RankedApplication = Application & {
     score?: number;
     justification?: string;
+    parsedResume?: ParseResumeOutput | null;
 };
 
 type JobWithApplicants = JobPosting & {
@@ -53,16 +56,16 @@ type JobWithApplicants = JobPosting & {
 
 export default function MyJobsPage() {
     const router = useRouter();
-    const pathname = usePathname();
     const { toast } = useToast();
     const [myJobs, setMyJobs] = useState<JobWithApplicants[]>([]);
     const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [isInterviewDialogOpen, setIsInterviewDialogOpen] = useState(false);
+    const [interviewQuestions, setInterviewQuestions] = useState<InterviewQuestionsOutput | null>(null);
+    const [isGeneratingQuestions, setIsGeneratingQuestions] = useState(false);
 
-    const loadJobsAndApplicants = useCallback(() => {
-         if (!currentUserEmail) {
-            return;
-        }
+    const loadJobsAndApplicants = useCallback(async () => {
+        if (!currentUserEmail) return;
         setIsLoading(true);
         try {
             const allJobs = JSON.parse(localStorage.getItem('jobPostings') || '[]') as JobPosting[];
@@ -70,10 +73,10 @@ export default function MyJobsPage() {
             
             const jobsWithApplicants = allJobs
                 .filter((job: JobPosting) => job.postedBy === currentUserEmail)
-                .map(job => ({
-                    ...job,
-                    applicants: allApplications.filter(app => app.jobId === job.id),
-                }));
+                .map(job => {
+                    const applicantsForJob = allApplications.filter(app => app.jobId === job.id);
+                    return { ...job, applicants: applicantsForJob };
+                });
             
             setMyJobs(jobsWithApplicants.reverse());
 
@@ -133,8 +136,8 @@ export default function MyJobsPage() {
     
     const handleDeleteJob = (jobId: string) => {
         try {
-            let allJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]');
-            let allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]');
+            let allJobs: JobPosting[] = JSON.parse(localStorage.getItem('jobPostings') || '[]') as JobPosting[];
+            let allApplications: Application[] = JSON.parse(localStorage.getItem('jobApplications') || '[]') as Application[];
 
             const updatedJobs = allJobs.filter(job => job.id !== jobId);
             const updatedApplications = allApplications.filter(app => app.jobId !== jobId);
@@ -143,25 +146,17 @@ export default function MyJobsPage() {
             localStorage.setItem('jobApplications', JSON.stringify(updatedApplications));
             localStorage.removeItem(`test_${jobId}`);
 
-            toast({
-                title: "Job Deleted",
-                description: "The job posting has been successfully removed.",
-            });
+            toast({ title: "Job Deleted", description: "The job posting has been successfully removed." });
             window.dispatchEvent(new Event('storage'));
         } catch (e) {
             console.error("Failed to delete job", e);
-            toast({
-                variant: "destructive",
-                title: "Error",
-                description: "Could not delete the job posting.",
-            });
+            toast({ variant: "destructive", title: "Error", description: "Could not delete the job posting." });
         }
     };
 
     const handleRankApplicant = async (jobId: string, applicantEmail: string) => {
         const jobIndex = myJobs.findIndex(j => j.id === jobId);
         if (jobIndex === -1) return;
-
         const applicantIndex = myJobs[jobIndex].applicants.findIndex(a => a.applicantEmail === applicantEmail);
         if (applicantIndex === -1) return;
 
@@ -191,6 +186,7 @@ export default function MyJobsPage() {
                     const targetApplicant = targetJob.applicants[applicantIndex];
                     targetApplicant.score = score;
                     targetApplicant.justification = justification;
+                    targetApplicant.parsedResume = parsed;
                     targetJob.applicants.sort((a,b) => (b.score ?? -1) - (a.score ?? -1));
                     return newJobs;
                 });
@@ -206,46 +202,78 @@ export default function MyJobsPage() {
         }
     };
 
-    const getStatusComponent = (applicant: RankedApplication, jobId: string) => {
+    const handleGenerateInterviewQuestions = async (job: JobPosting, applicant: RankedApplication) => {
+        if (!applicant.parsedResume) {
+            toast({ variant: "destructive", title: "Please rank the candidate first." });
+            return;
+        }
+
+        setIsGeneratingQuestions(true);
+        setIsInterviewDialogOpen(true);
+
+        try {
+            const { experience, education, skills } = applicant.parsedResume;
+            const experienceText = experience.map(p => `Title: ${p.title} at ${p.company} (${p.dates}). Description: ${p.description}`).join('\n');
+            const educationText = education.map(e => `${e.degree} at ${e.institution} (${e.dates})`).join('\n');
+            const skillsText = skills.join(', ');
+            const resumeText = `SKILLS: ${skillsText}\n\nEXPERIENCE:\n${experienceText}\n\nEDUCATION:\n${educationText}\n\nACHIEVEMENTS:\n${applicant.achievements}`;
+
+            const questions = await generateInterviewQuestions({ jobDescription: job.description, resumeText });
+            setInterviewQuestions(questions);
+        } catch (error) {
+            console.error("Failed to generate interview questions", error);
+            toast({ variant: "destructive", title: "AI Error", description: "Could not generate questions." });
+            setIsInterviewDialogOpen(false);
+        } finally {
+            setIsGeneratingQuestions(false);
+        }
+    };
+    
+    const openEmailClient = (recipient: string, subject: string, body: string) => {
+        window.location.href = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+
+    const getStatusComponent = (applicant: RankedApplication, job: JobPosting) => {
+        if (applicant.score === undefined || applicant.score < 0) {
+            return <Badge variant="outline">Rank Pending</Badge>;
+        }
+
         switch(applicant.status) {
             case 'Applied':
                 return (
-                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(jobId, applicant.applicantEmail)}>
-                        Select for Test
-                    </Button>
+                    <div className="flex gap-2">
+                        <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(job.id, applicant.applicantEmail)}>Select for Test</Button>
+                        <Button variant="destructive" size="sm" onClick={() => openEmailClient(applicant.applicantEmail, `Update on your application for ${job.title}`, `Dear ${applicant.applicantName},\n\nThank you for your interest in the ${job.title} position at ${job.company}.\n\nAfter careful consideration, we have decided not to move forward with your application at this time.\n\nWe wish you the best in your job search.\n\nSincerely,\nThe ${job.company} Team`)}>Reject</Button>
+                    </div>
                 );
             case 'Selected for Test':
                  return (
-                    <Badge variant="default">
-                        Test Pending
-                    </Badge>
+                    <Badge variant="default">Test Pending</Badge>
                 );
             case 'Test Completed':
+                const acceptanceBody = `Dear ${applicant.applicantName},\n\nCongratulations! We were impressed with your application and test results for the ${job.title} position at ${job.company}.\n\nWe would like to invite you to the next round of interviews. Please let us know your availability.\n\nSincerely,\nThe ${job.company} Team`;
                 return (
                     <div className="flex items-center gap-2">
-                         <Badge variant="default" className="bg-green-600">
-                           Test Completed
-                         </Badge>
+                         <Badge variant="default" className="bg-green-600">Test Completed</Badge>
                          <div className="flex items-center gap-1 font-semibold">
                             <Trophy className="h-4 w-4 text-amber-400" />
-                            <span>{applicant.testScore}/30</span>
+                            <span>{applicant.testScore}/40</span>
                          </div>
+                         <Button size="sm" onClick={() => openEmailClient(applicant.applicantEmail, `Next Steps for ${job.title} at ${job.company}`, acceptanceBody)}>Accept</Button>
                     </div>
-                   
                 );
             case 'Not Selected':
                 return <Badge variant="destructive">Not Selected</Badge>;
             default:
                  return (
-                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(jobId, applicant.applicantEmail)}>
-                        Select for Test
-                    </Button>
+                    <Button variant="secondary" size="sm" onClick={() => handleSelectForTest(job.id, applicant.applicantEmail)}>Select for Test</Button>
                 );
         }
     }
 
 
     return (
+        <>
         <div className="space-y-6">
             <Card className="transition-shadow hover:shadow-lg">
                 <CardHeader className="flex flex-row items-center justify-between">
@@ -391,12 +419,16 @@ export default function MyJobsPage() {
                                                                 )}
                                                             </TableCell>
                                                             <TableCell className="text-right space-x-2">
-                                                               {getStatusComponent(applicant, job.id)}
+                                                               {getStatusComponent(applicant, job)}
                                                                 <Button variant="ghost" size="icon" asChild>
                                                                     <a href={applicant.resumeDataUri} download={`${applicant.applicantName}_Resume.pdf`}>
                                                                         <Download className="h-4 w-4" />
                                                                         <span className="sr-only">Download Resume</span>
                                                                     </a>
+                                                                </Button>
+                                                                <Button variant="ghost" size="icon" disabled={!applicant.parsedResume} onClick={() => handleGenerateInterviewQuestions(job, applicant)}>
+                                                                    <MessagesSquare className="h-4 w-4" />
+                                                                    <span className="sr-only">Generate Interview Questions</span>
                                                                 </Button>
                                                             </TableCell>
                                                         </TableRow>
@@ -412,7 +444,45 @@ export default function MyJobsPage() {
                 </div>
             )}
         </div>
+        <Dialog open={isInterviewDialogOpen} onOpenChange={setIsInterviewDialogOpen}>
+            <DialogContent className="sm:max-w-2xl">
+                <DialogHeader>
+                    <DialogTitle>Generated Interview Questions</DialogTitle>
+                    <DialogDescription>AI-generated questions tailored to the job and candidate.</DialogDescription>
+                </DialogHeader>
+                <ScrollArea className="max-h-[60vh] pr-4">
+                    {isGeneratingQuestions ? (
+                        <div className="flex flex-col items-center justify-center gap-4 py-8">
+                            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                            <p className="text-muted-foreground">Generating questions...</p>
+                        </div>
+                    ) : interviewQuestions ? (
+                        <div className="space-y-6">
+                            <div>
+                                <h3 className="font-semibold text-lg mb-2">Technical Questions</h3>
+                                <ul className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                                    {interviewQuestions.technicalQuestions.map((q, i) => <li key={`tech-${i}`}>{q}</li>)}
+                                </ul>
+                            </div>
+                             <div>
+                                <h3 className="font-semibold text-lg mb-2">Behavioral Questions</h3>
+                                <ul className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                                    {interviewQuestions.behavioralQuestions.map((q, i) => <li key={`behav-${i}`}>{q}</li>)}
+                                </ul>
+                            </div>
+                             <div>
+                                <h3 className="font-semibold text-lg mb-2">Situational Questions</h3>
+                                <ul className="list-decimal list-inside space-y-2 text-sm text-muted-foreground">
+                                    {interviewQuestions.situationalQuestions.map((q, i) => <li key={`sit-${i}`}>{q}</li>)}
+                                </ul>
+                            </div>
+                        </div>
+                    ) : (
+                        <p>No questions generated.</p>
+                    )}
+                </ScrollArea>
+            </DialogContent>
+        </Dialog>
+        </>
     );
 }
-
-    

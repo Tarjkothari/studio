@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Textarea } from "@/components/ui/textarea";
 
 type User = {
   name: string;
@@ -23,6 +24,8 @@ type User = {
   role: string;
   fallback: string;
   avatar: string;
+  companyDescription?: string;
+  companyWebsite?: string;
 };
 
 export default function AccountPage() {
@@ -31,6 +34,8 @@ export default function AccountPage() {
   const [companyName, setCompanyName] = useState("");
   const [email, setEmail] = useState("");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [companyDescription, setCompanyDescription] = useState("");
+  const [companyWebsite, setCompanyWebsite] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -44,6 +49,8 @@ export default function AccountPage() {
         setCompanyName(loggedInUser.name);
         setEmail(loggedInUser.email);
         setAvatarPreview(loggedInUser.avatar);
+        setCompanyDescription(loggedInUser.companyDescription || "");
+        setCompanyWebsite(loggedInUser.companyWebsite || "");
       }
     } catch (e) {
       console.error("Failed to load user from local storage", e);
@@ -89,6 +96,8 @@ export default function AccountPage() {
             email: email,
             fallback: companyName.substring(0,2).toUpperCase(),
             avatar: avatarPreview || user.avatar,
+            companyDescription: companyDescription,
+            companyWebsite: companyWebsite,
         };
 
         localStorage.setItem('loggedInUser', JSON.stringify(updatedUser));
@@ -136,6 +145,7 @@ export default function AccountPage() {
   }
 
   return (
+    <div className="space-y-6">
     <Card>
       <CardHeader>
         <CardTitle>Account Settings</CardTitle>
@@ -194,5 +204,45 @@ export default function AccountPage() {
         </CardFooter>
       </form>
     </Card>
+
+     <Card>
+      <CardHeader>
+        <CardTitle>Company Profile</CardTitle>
+        <CardDescription>
+          This information will be visible to job seekers on your company profile page.
+        </CardDescription>
+      </CardHeader>
+      <form onSubmit={handleSaveChanges}>
+        <CardContent className="space-y-6">
+            <div className="space-y-2">
+                <Label htmlFor="company-description">About Your Company</Label>
+                <Textarea 
+                    id="company-description"
+                    rows={5}
+                    value={companyDescription}
+                    onChange={(e) => setCompanyDescription(e.target.value)}
+                    placeholder="Describe your company culture, mission, and what makes it a great place to work."
+                />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor="company-website">Company Website</Label>
+                <Input 
+                    id="company-website"
+                    type="url"
+                    value={companyWebsite}
+                    onChange={(e) => setCompanyWebsite(e.target.value)}
+                    placeholder="https://yourcompany.com"
+                />
+            </div>
+        </CardContent>
+        <CardFooter>
+          <Button type="submit" disabled={isSaving}>
+            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Save Profile Info
+          </Button>
+        </CardFooter>
+      </form>
+    </Card>
+    </div>
   );
 }

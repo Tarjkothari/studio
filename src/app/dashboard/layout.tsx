@@ -14,7 +14,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BarChart2, LogOut, Scale, Settings, Send, Loader2, Briefcase } from "lucide-react";
+import { BarChart2, LogOut, Scale, Settings, Send, Loader2, Briefcase, MessagesSquare } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -131,6 +131,18 @@ export default function DashboardLayout({
                   <Link href="/dashboard/post-job">
                     <Send />
                     <span>Post a Job</span>
+                  </Link>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+               <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Interview Questions"
+                  isActive={pathname.startsWith('/dashboard/interview-questions')}
+                  asChild
+                >
+                  <Link href="/dashboard/interview-questions">
+                    <MessagesSquare />
+                    <span>Interview Questions</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

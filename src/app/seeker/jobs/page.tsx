@@ -13,13 +13,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap, Calendar, ListChecks, History } from "lucide-react";
+import { Briefcase, MapPin, Loader2, Upload, FileText, CheckCircle, Award, GraduationCap, Calendar, ListChecks, History, Building, ExternalLink } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
 import { Textarea } from "@/components/ui/textarea";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 type JobPosting = {
   id: string;
@@ -43,6 +44,14 @@ type Application = {
     appliedDate: string;
 }
 
+type CompanyProfile = {
+    name: string;
+    avatar: string;
+    fallback: string;
+    description?: string;
+    website?: string;
+}
+
 export default function JobSearchPage() {
   const router = useRouter();
   const { toast } = useToast();
@@ -55,7 +64,9 @@ export default function JobSearchPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isViewDialogOpen, setIsViewDialogOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [viewingJob, setViewingJob] = useState<JobPosting | null>(null);
+  const [viewingProfile, setViewingProfile] = useState<CompanyProfile | null>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
 
@@ -132,6 +143,27 @@ export default function JobSearchPage() {
   const handleViewDetailsClick = (job: JobPosting) => {
       setViewingJob(job);
       setIsViewDialogOpen(true);
+  }
+
+  const handleViewCompanyClick = (job: JobPosting) => {
+    try {
+        const allUsers = JSON.parse(localStorage.getItem('users') || '[]');
+        const companyUser = allUsers.find((u: any) => u.email === job.postedBy);
+        if (companyUser) {
+            setViewingProfile({
+                name: companyUser.name,
+                avatar: companyUser.avatar,
+                fallback: companyUser.fallback,
+                description: companyUser.companyDescription,
+                website: companyUser.companyWebsite
+            });
+            setIsProfileOpen(true);
+        } else {
+            toast({variant: 'destructive', title: 'Company profile not found.'})
+        }
+    } catch(e) {
+        toast({variant: 'destructive', title: 'Could not load company profile.'})
+    }
   }
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,6 +278,9 @@ export default function JobSearchPage() {
                         </Button>
                     </>
                 )}
+                 <Button variant="secondary" onClick={() => handleViewCompanyClick(job)}>
+                    <Building className="mr-2 h-4 w-4"/> View Company
+                </Button>
             </CardFooter>
         </Card>
     );
@@ -435,8 +470,35 @@ export default function JobSearchPage() {
                 </DialogFooter>
             </DialogContent>
         </Dialog>
+        <Dialog open={isProfileOpen} onOpenChange={setIsProfileOpen}>
+            <DialogContent className="sm:max-w-lg">
+                {viewingProfile && (
+                    <>
+                    <DialogHeader>
+                        <div className="flex items-center gap-4">
+                            <Avatar className="h-16 w-16">
+                                <AvatarImage src={viewingProfile.avatar} data-ai-hint="logo" />
+                                <AvatarFallback>{viewingProfile.fallback}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                                <DialogTitle className="text-2xl">{viewingProfile.name}</DialogTitle>
+                                {viewingProfile.website && (
+                                    <a href={viewingProfile.website} target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline flex items-center gap-1">
+                                        {viewingProfile.website} <ExternalLink className="h-3 w-3" />
+                                    </a>
+                                )}
+                            </div>
+                        </div>
+                    </DialogHeader>
+                    <ScrollArea className="max-h-[50vh] pr-4">
+                        <div className="prose prose-sm dark:prose-invert text-muted-foreground whitespace-pre-wrap">
+                            <p>{viewingProfile.description || "No company description provided."}</p>
+                        </div>
+                    </ScrollArea>
+                    </>
+                )}
+            </DialogContent>
+        </Dialog>
     </>
   );
 }
-
-    
