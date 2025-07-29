@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Timer, X } from "lucide-react";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import type { MCQ } from "@/ai/flows/generate-aptitude-test";
+import { Badge } from "@/components/ui/badge";
 
 type JobPosting = {
     id: string;
@@ -157,7 +158,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
 
     const handlePrev = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev - 1);
+            setCurrentQuestionIndex(prev => prev + 1);
         }
     };
 
@@ -262,4 +263,3 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
         </div>
     );
 }
-
