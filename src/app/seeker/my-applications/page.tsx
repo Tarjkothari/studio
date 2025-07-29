@@ -7,7 +7,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AptitudeTest } from "@/components/AptitudeTest";
 
 type Application = {
@@ -162,6 +162,9 @@ export default function MyApplicationsPage() {
             </Card>
             <Dialog open={isTestOpen} onOpenChange={setIsTestOpen}>
                 <DialogContent className="h-screen max-h-screen w-screen max-w-screen-2xl flex flex-col p-0 border-0">
+                     <DialogHeader className="sr-only">
+                        <DialogTitle>Aptitude Test</DialogTitle>
+                    </DialogHeader>
                     {selectedJobIdForTest && <AptitudeTest jobId={selectedJobIdForTest} onTestFinished={onTestFinished} />}
                 </DialogContent>
             </Dialog>
