@@ -15,7 +15,7 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { FileUp, LogOut, Settings, Briefcase, Loader2, FileCheck2, LayoutDashboard, Telescope, Mic } from "lucide-react";
+import { FileUp, LogOut, Settings, Briefcase, Loader2, FileCheck2, LayoutDashboard, Telescope } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -129,18 +129,6 @@ export default function SeekerLayout({
                   <Link href="/seeker/my-applications">
                     <FileCheck2 />
                     <span>My Applications</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-                <SidebarMenuItem>
-                <SidebarMenuButton
-                  tooltip="Voice Interview"
-                  isActive={pathname.startsWith('/seeker/voice-interview')}
-                  asChild
-                >
-                  <Link href="/seeker/voice-interview">
-                    <Mic />
-                    <span>Voice Interview</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>

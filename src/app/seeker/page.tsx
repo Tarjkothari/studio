@@ -3,7 +3,7 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { Briefcase, FileCheck2, FileUp, Settings, Mic } from "lucide-react";
+import { Briefcase, FileCheck2, FileUp, Settings } from "lucide-react";
 
 
 export default function SeekerDashboardPage() {
@@ -39,12 +39,6 @@ export default function SeekerDashboardPage() {
             description: "Track the status of your submitted applications.",
             href: "/seeker/my-applications",
             icon: <FileCheck2 className="h-8 w-8 text-primary" />,
-        },
-        {
-            title: "Voice Interview",
-            description: "Complete your AI-powered voice screening.",
-            href: "/seeker/voice-interview",
-            icon: <Mic className="h-8 w-8 text-primary" />,
         },
         {
             title: "Resume Improver",
