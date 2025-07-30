@@ -64,8 +64,8 @@ export default function Home() {
                         return (
                             <span
                                 key={charIndex}
-                                className="inline-block animate-fade-in-down animation-fill-both"
-                                style={{ animationDelay: `${delay}ms`, opacity: 0 }}
+                                className="inline-block animate-fade-in-down"
+                                style={{ animationDelay: `${delay}ms`, animationFillMode: 'both' }}
                             >
                                 {char === ' ' ? '\u00A0' : char}
                             </span>
