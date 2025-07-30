@@ -1,4 +1,5 @@
 
+
 "use client";
 
 import { Button } from '@/components/ui/button';
@@ -97,7 +98,7 @@ export default function Home() {
           <AnimatedText 
             text={headline}
             el="h1"
-            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-secondary/70 bg-clip-text text-transparent"
+            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-foreground"
           />
           <AnimatedText 
             text={subheadline}
