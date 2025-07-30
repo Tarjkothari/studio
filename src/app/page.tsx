@@ -96,7 +96,7 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-          <AnimatedText text={headline} el="h1" className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl" falling={true} />
+          <AnimatedText text={headline} el="h1" className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-secondary/70 bg-clip-text text-transparent" falling={true} />
           <AnimatedText text={subheadline} el="p" className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl" stagger={headline.length} />
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: `${(headline.length + subheadline.length) * 25 + 100}ms`}}>
