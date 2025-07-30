@@ -121,7 +121,7 @@ export default function Home() {
             <AnimatedText 
               text={featuresHeadline}
               el="h2"
-              className="text-3xl font-bold tracking-tight sm:text-4xl"
+              className="text-3xl font-bold tracking-tight md:text-4xl"
             />
             <AnimatedText
               text={featuresSubheadline}
