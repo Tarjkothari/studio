@@ -1,4 +1,6 @@
 
+"use client";
+
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
@@ -10,6 +12,31 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
+
+type AnimatedTextProps = {
+  text: string;
+  el?: keyof JSX.IntrinsicElements;
+  className?: string;
+  stagger?: number;
+};
+
+const AnimatedText = ({ text, el: Wrapper = 'p', className, stagger = 50 }: AnimatedTextProps) => {
+  const letters = text.split('');
+  return (
+    <Wrapper className={className}>
+      {letters.map((letter, index) => (
+        <span
+          key={`${letter}-${index}`}
+          className="inline-block animate-fade-in-down"
+          style={{ animationDelay: `${index * stagger}ms`, animationFillMode: 'forwards', opacity: 0 }}
+        >
+          {letter === ' ' ? '\u00A0' : letter}
+        </span>
+      ))}
+    </Wrapper>
+  );
+};
+
 
 export default function Home() {
   const features = [
@@ -67,12 +94,17 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-secondary/70 bg-clip-text text-transparent animate-fade-in-down">
-            {headline}
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl animate-fade-in-down" style={{animationDelay: '200ms'}}>
-            {subheadline}
-          </p>
+          <AnimatedText 
+            text={headline}
+            el="h1"
+            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-secondary/70 bg-clip-text text-transparent"
+          />
+          <AnimatedText 
+            text={subheadline}
+            el="p"
+            className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl"
+            stagger={25}
+          />
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '400ms'}}>
             <Button size="lg" asChild>
               <Link href="/signup/job-provider">Get Started as a Job Provider</Link>
