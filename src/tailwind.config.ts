@@ -126,11 +126,6 @@ export default {
                  opacity: '1'
             }
         },
-        'falling-text': {
-          '0%': { transform: 'translateY(-1em)', opacity: '0' },
-          '20%, 80%': { transform: 'translateY(0)', opacity: '1' },
-          '100%': { transform: 'translateY(1em)', opacity: '0' },
-        }
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
@@ -140,7 +135,6 @@ export default {
         'fade-in-down': 'fade-in-down 0.5s ease-out',
         'fade-in-up': 'fade-in-up 0.6s ease-in-out',
         'text-3d': 'text-3d 1.5s ease-in-out both',
-        'falling-text': 'falling-text 5s infinite ease-in-out',
       },
     },
   },

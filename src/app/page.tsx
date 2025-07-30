@@ -51,7 +51,7 @@ export default function Home() {
   const featuresHeadline = "Everything You Need for Modern Recruitment";
   const featuresSubheadline = "From parsing and ranking to bias detection, our suite of tools is designed to streamline your hiring process.";
 
-  const AnimatedText = ({ text, el: El = 'span', className, stagger = 0, falling = false }: { text: string, el?: keyof JSX.IntrinsicElements, className?: string, stagger?: number, falling?: boolean }) => {
+  const AnimatedText = ({ text, el: El = 'span', className, stagger = 0 }: { text: string, el?: keyof JSX.IntrinsicElements, className?: string, stagger?: number }) => {
     const words = text.split(' ');
     let charCount = 0;
     return (
@@ -59,12 +59,12 @@ export default function Home() {
             {words.map((word, wordIndex) => (
                 <span key={wordIndex} className="inline-block">
                     {word.split('').map((char, charIndex) => {
-                        const delay = (charCount + stagger) * (falling ? 100 : 25);
+                        const delay = (charCount + stagger) * 25;
                         charCount++;
                         return (
                             <span
                                 key={charIndex}
-                                className={cn("inline-block", falling ? "animate-falling-text" : "animate-fade-in-down animation-fill-both")}
+                                className="inline-block animate-fade-in-down animation-fill-both"
                                 style={{ animationDelay: `${delay}ms`, opacity: 0 }}
                             >
                                 {char === ' ' ? '\u00A0' : char}
@@ -96,7 +96,7 @@ export default function Home() {
       </header>
       <main className="flex-1">
         <section className="container mx-auto px-4 py-20 text-center sm:py-32">
-          <AnimatedText text={headline} el="h1" className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-secondary/70 bg-clip-text text-transparent" falling={true} />
+          <AnimatedText text={headline} el="h1" className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl bg-gradient-to-r from-primary to-secondary/70 bg-clip-text text-transparent" />
           <AnimatedText text={subheadline} el="p" className="mx-auto mt-6 max-w-2xl text-lg text-muted-foreground sm:text-xl" stagger={headline.length} />
 
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: `${(headline.length + subheadline.length) * 25 + 100}ms`}}>
