@@ -134,7 +134,7 @@ export default function Home() {
             <AnimatedText 
               text={featuresHeadline}
               el="h2"
-              className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl"
+              className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl"
             />
             <AnimatedText
               text={featuresSubheadline}
@@ -147,7 +147,7 @@ export default function Home() {
               {features.map((feature, index) => (
                   <Link href={feature.href} key={index}>
                       <Card
-                      className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg animate-fade-in-up"
+                      className="flex h-full flex-col items-center p-6 text-center transition-all duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg animate-fade-in-up"
                       style={{ animationDelay: `${200 * (index + 1)}ms`}}
                       >
                       <CardHeader className="p-0">

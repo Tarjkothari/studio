@@ -66,7 +66,7 @@ export default function SeekerDashboardPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {sections.map((section) => (
                     <Link href={section.href} key={section.title}>
-                        <Card className="flex h-full flex-col p-6 text-left transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg">
+                        <Card className="flex h-full flex-col p-6 text-left transition-all hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg">
                             <CardHeader className="p-0 flex-row items-center gap-4">
                                 {section.icon}
                                 <CardTitle>{section.title}</CardTitle>

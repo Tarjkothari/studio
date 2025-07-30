@@ -290,7 +290,7 @@ export default function MyJobsPage() {
     return (
         <>
         <div className="space-y-6">
-            <Card className="transition-shadow hover:shadow-lg">
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader className="flex flex-row items-center justify-between">
                     <div>
                         <CardTitle>My Job Postings</CardTitle>
@@ -306,13 +306,13 @@ export default function MyJobsPage() {
             </Card>
 
              {isLoading ? (
-                 <Card>
+                 <Card className="transition-all hover:shadow-lg">
                     <CardContent className="p-6 text-center flex justify-center items-center">
                         <Loader2 className="mr-2 h-6 w-6 animate-spin" /> Loading your jobs...
                     </CardContent>
                 </Card>
              ) : myJobs.length === 0 ? (
-                <Card>
+                <Card className="transition-all hover:shadow-lg">
                     <CardContent className="p-6 text-center text-muted-foreground">
                         You haven't posted any jobs yet.
                     </CardContent>
@@ -321,7 +321,7 @@ export default function MyJobsPage() {
                 <div className="space-y-6">
                     {myJobs.map((job) => (
                         <Collapsible key={job.id} asChild>
-                            <Card className="flex flex-col transition-shadow hover:shadow-lg">
+                            <Card className="flex flex-col transition-all hover:shadow-lg">
                                 <CardHeader>
                                     <CardTitle>{job.title}</CardTitle>
                                     <CardDescription className="space-y-2 pt-2">

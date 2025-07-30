@@ -289,7 +289,7 @@ export default function JobSearchPage() {
   return (
     <>
     <div className="space-y-8">
-      <Card className="transition-shadow hover:shadow-lg">
+      <Card className="transition-all hover:shadow-lg">
         <CardHeader>
           <CardTitle>Find Your Next Opportunity</CardTitle>
           <CardDescription>
@@ -303,7 +303,7 @@ export default function JobSearchPage() {
                 <Loader2 className="h-8 w-8 animate-spin" />
             </div>
         ) : openJobs.length === 0 && appliedJobs.length === 0 ? (
-            <Card>
+            <Card className="transition-all hover:shadow-lg">
                 <CardContent className="p-6">
                     <p className="text-center text-muted-foreground">No job openings have been posted yet. Check back soon!</p>
                 </CardContent>
@@ -320,7 +320,7 @@ export default function JobSearchPage() {
                            {openJobs.map((job) => renderJobCard(job, false))}
                         </div>
                     ) : (
-                         <Card>
+                         <Card className="transition-all hover:shadow-lg">
                             <CardContent className="p-6">
                                 <p className="text-center text-muted-foreground">You have applied to all available jobs. Great work!</p>
                             </CardContent>

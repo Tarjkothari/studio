@@ -65,7 +65,7 @@ export default function UsersPage() {
 
   return (
     <>
-    <Card className="transition-shadow hover:shadow-lg">
+    <Card className="transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>User Management</CardTitle>
         <CardDescription>A list of all users in the system.</CardDescription>

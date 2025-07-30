@@ -180,7 +180,7 @@ export default function RankerPage() {
           <CardContent>
             <div className="space-y-4">
               {results.map((result, index) => (
-                <Card key={index} className="transition-shadow hover:shadow-md">
+                <Card key={index} className="transition-all hover:shadow-md">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                        <CardTitle className="text-lg">
