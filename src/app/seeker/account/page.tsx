@@ -136,7 +136,7 @@ export default function AccountPage() {
   }
 
   return (
-    <Card>
+    <Card className="transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>Account Settings</CardTitle>
         <CardDescription>

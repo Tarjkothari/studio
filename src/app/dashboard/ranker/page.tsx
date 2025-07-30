@@ -107,7 +107,7 @@ export default function RankerPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-all hover:shadow-lg">
         <CardHeader>
           <CardTitle>Candidate Ranker</CardTitle>
           <CardDescription>
@@ -159,7 +159,7 @@ export default function RankerPage() {
       </Card>
 
       {isLoading && (
-         <Card>
+         <Card className="transition-all hover:shadow-lg">
             <CardContent className="p-6">
                 <div className="flex flex-col items-center justify-center gap-4 text-center">
                     <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -172,7 +172,7 @@ export default function RankerPage() {
       )}
 
       {results.length > 0 && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
           <CardHeader>
             <CardTitle>Ranking Results</CardTitle>
             <CardDescription>Top candidates based on your job description.</CardDescription>

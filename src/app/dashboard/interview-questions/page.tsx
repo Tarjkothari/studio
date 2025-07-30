@@ -80,7 +80,7 @@ export default function InterviewQuestionGeneratorPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-all hover:shadow-lg">
         <CardHeader>
           <CardTitle>AI Interview Question Generator</CardTitle>
           <CardDescription>
@@ -148,7 +148,7 @@ export default function InterviewQuestionGeneratorPage() {
       </Card>
 
       {isLoading && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
            <CardContent className="p-6">
                <div className="flex flex-col items-center justify-center gap-4 text-center">
                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -160,7 +160,7 @@ export default function InterviewQuestionGeneratorPage() {
      )}
 
       {results && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
           <CardHeader>
             <CardTitle>Generated Interview Questions</CardTitle>
             <CardDescription>A set of questions tailored to the candidate and role.</CardDescription>

@@ -121,7 +121,7 @@ export default function PostJobPage() {
   };
 
   return (
-    <Card>
+    <Card className="transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>Post a New Job Opening</CardTitle>
         <CardDescription>
@@ -255,5 +255,3 @@ export default function PostJobPage() {
     </Card>
   );
 }
-
-    

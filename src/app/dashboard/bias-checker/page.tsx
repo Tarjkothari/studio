@@ -45,7 +45,7 @@ export default function BiasCheckerPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-all hover:shadow-lg">
         <CardHeader>
           <CardTitle>Job Description Bias Checker</CardTitle>
           <CardDescription>
@@ -78,7 +78,7 @@ export default function BiasCheckerPage() {
       </Card>
 
       {isLoading && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
            <CardContent className="p-6">
                <div className="flex flex-col items-center justify-center gap-4 text-center">
                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -90,7 +90,7 @@ export default function BiasCheckerPage() {
      )}
 
       {result && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
           <CardHeader>
             <div className="flex items-start gap-4">
               <div>

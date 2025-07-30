@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function AdminDashboardPage() {
     return (
         <div className="flex flex-col gap-6">
-            <Card>
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>Welcome, Admin</CardTitle>
                     <CardDescription>Manage your application from this central hub.</CardDescription>

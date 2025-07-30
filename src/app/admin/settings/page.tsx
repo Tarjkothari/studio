@@ -168,7 +168,7 @@ export default function SettingsPage() {
   
     return (
         <div className="space-y-6">
-            <Card>
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>Administrator Account</CardTitle>
                     <CardDescription>Manage your administrator account details.</CardDescription>
@@ -225,7 +225,7 @@ export default function SettingsPage() {
                 </form>
             </Card>
 
-            <Card>
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>System Actions</CardTitle>
                     <CardDescription>Perform administrative actions on the system. These actions are irreversible.</CardDescription>

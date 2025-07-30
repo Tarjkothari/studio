@@ -107,7 +107,7 @@ export default function ImproveResumePage() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-all hover:shadow-lg">
         <CardHeader>
           <CardTitle>AI Resume Improver</CardTitle>
           <CardDescription>
@@ -186,7 +186,7 @@ export default function ImproveResumePage() {
       </Card>
       
       {isLoading && resumeText && jobDescription && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
            <CardContent className="p-6">
                <div className="flex flex-col items-center justify-center gap-4 text-center">
                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -198,7 +198,7 @@ export default function ImproveResumePage() {
      )}
 
       {results.length > 0 && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
           <CardHeader>
             <CardTitle>Improvement Suggestions</CardTitle>
             <CardDescription>Here are some AI-powered tips to improve your resume.</CardDescription>

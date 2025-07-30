@@ -40,12 +40,12 @@ export default function SkillGapAnalysisPage() {
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    reader.readAsDataURL(file);
     const reader = new FileReader();
     reader.onload = async (e) => {
       const dataUri = e.target?.result as string;
       await parseAndSetResume(dataUri);
     };
+    reader.readAsDataURL(file);
   };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -79,7 +79,7 @@ export default function SkillGapAnalysisPage() {
 
   return (
     <div className="space-y-6">
-      <Card>
+      <Card className="transition-all hover:shadow-lg">
         <CardHeader>
           <CardTitle>AI Skill Gap Analysis</CardTitle>
           <CardDescription>
@@ -146,7 +146,7 @@ export default function SkillGapAnalysisPage() {
       </Card>
       
       {isLoading && resumeText && jobDescription && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
            <CardContent className="p-6">
                <div className="flex flex-col items-center justify-center gap-4 text-center">
                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -158,7 +158,7 @@ export default function SkillGapAnalysisPage() {
      )}
 
       {results && (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
           <CardHeader>
             <CardTitle>Skill Gap Analysis Results</CardTitle>
             <CardDescription>Here's a breakdown of your skills compared to the job requirements.</CardDescription>

@@ -126,7 +126,7 @@ export default function MyApplicationsPage() {
 
     return (
         <>
-            <Card className="transition-shadow hover:shadow-lg">
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>My Applications</CardTitle>
                     <CardDescription>Track the status of all your job applications.</CardDescription>

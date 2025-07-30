@@ -117,7 +117,7 @@ export default function ActivityPage() {
     }
 
     return (
-        <Card>
+        <Card className="transition-all hover:shadow-lg">
             <CardHeader>
                 <CardTitle>Platform Activity</CardTitle>
                 <CardDescription>A chronological log of all important events happening in the application.</CardDescription>

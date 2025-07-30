@@ -5,7 +5,7 @@ import Link from "next/link";
 export default function DashboardPage() {
     return (
         <div className="flex flex-col gap-6">
-            <Card>
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>Welcome to your Dashboard</CardTitle>
                     <CardDescription>Here's where you can manage your recruitment process.</CardDescription>

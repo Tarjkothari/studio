@@ -146,7 +146,7 @@ export default function AccountPage() {
 
   return (
     <div className="space-y-6">
-    <Card>
+    <Card className="transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>Account Settings</CardTitle>
         <CardDescription>
@@ -205,7 +205,7 @@ export default function AccountPage() {
       </form>
     </Card>
 
-     <Card>
+     <Card className="transition-all hover:shadow-lg">
       <CardHeader>
         <CardTitle>Company Profile</CardTitle>
         <CardDescription>

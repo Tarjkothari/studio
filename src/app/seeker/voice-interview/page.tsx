@@ -140,7 +140,7 @@ export default function VoiceInterviewPage() {
     
     if (!job || questions.length === 0) {
         return (
-             <Card>
+             <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>Interview Session</CardTitle>
                 </CardHeader>
@@ -160,7 +160,7 @@ export default function VoiceInterviewPage() {
     const currentQuestion = questions[currentQuestionIndex];
 
     return (
-        <Card className="w-full max-w-3xl mx-auto">
+        <Card className="w-full max-w-3xl mx-auto transition-all hover:shadow-lg">
             <CardHeader>
                 <CardTitle>Voice Interview for {job.title}</CardTitle>
                 <CardDescription>

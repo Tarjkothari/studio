@@ -56,7 +56,7 @@ export default function SeekerDashboardPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <Card>
+            <Card className="transition-all hover:shadow-lg">
                 <CardHeader>
                     <CardTitle>Welcome back, {userName || 'Job Seeker'}!</CardTitle>
                     <CardDescription>Here's your dashboard. Everything you need to land your next job is right here.</CardDescription>

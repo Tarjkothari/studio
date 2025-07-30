@@ -147,7 +147,7 @@ export default function EditJobPage() {
   }
 
   return (
-    <Card>
+    <Card className="transition-all hover:shadow-lg">
       <CardHeader>
         <div className="flex items-center gap-4">
             <Button variant="outline" size="icon" className="h-8 w-8" asChild>

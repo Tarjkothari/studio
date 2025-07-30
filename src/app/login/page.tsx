@@ -127,7 +127,7 @@ export default function LoginPage() {
         <div className="mb-8 flex justify-center">
           <Logo />
         </div>
-        <Card className="transition-shadow hover:shadow-lg">
+        <Card className="transition-all hover:shadow-lg">
           <form onSubmit={handleLogin}>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl">Welcome Back!</CardTitle>
