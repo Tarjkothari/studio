@@ -110,7 +110,7 @@ export default function Home() {
         </section>
 
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
-           <div className="text-center">
+           <div className="text-center animate-fade-in-up">
             <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
               {featuresHeadline}
             </h2>
@@ -122,7 +122,8 @@ export default function Home() {
               {features.map((feature, index) => (
                   <Link href={feature.href} key={index}>
                       <Card
-                      className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg"
+                      className="flex h-full flex-col items-center p-6 text-center transition-transform duration-300 hover:scale-105 hover:shadow-xl active:scale-100 active:shadow-lg animate-fade-in-up"
+                      style={{ animationDelay: `${200 * (index + 1)}ms`}}
                       >
                       <CardHeader className="p-0">
                           {feature.icon}
