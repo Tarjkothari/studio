@@ -22,16 +22,29 @@ type AnimatedTextProps = {
 };
 
 const AnimatedText = ({ text, el: Wrapper = 'p', className, stagger = 50 }: AnimatedTextProps) => {
-  const letters = text.split('');
+  const words = text.split(' ');
+  let i = 0;
   return (
     <Wrapper className={className}>
-      {letters.map((letter, index) => (
-        <span
-          key={`${letter}-${index}`}
-          className="inline-block animate-fade-in-down"
-          style={{ animationDelay: `${index * stagger}ms`, animationFillMode: 'forwards', opacity: 0 }}
-        >
-          {letter === ' ' ? '\u00A0' : letter}
+      {words.map((word, wordIndex) => (
+        <span key={wordIndex} className="inline-block">
+          {word.split('').map((letter, letterIndex) => {
+            const key = `${letter}-${i++}`;
+            return (
+              <span
+                key={key}
+                className="inline-block animate-fade-in-down"
+                style={{ animationDelay: `${i * stagger}ms`, animationFillMode: 'forwards', opacity: 0 }}
+              >
+                {letter}
+              </span>
+            );
+          })}
+          {wordIndex < words.length - 1 && (
+            <span className="inline-block animate-fade-in-down" style={{ animationDelay: `${i++ * stagger}ms`, animationFillMode: 'forwards', opacity: 0 }}>
+              {'\u00A0'}
+            </span>
+          )}
         </span>
       ))}
     </Wrapper>
@@ -121,7 +134,7 @@ export default function Home() {
             <AnimatedText 
               text={featuresHeadline}
               el="h2"
-              className="text-3xl font-bold tracking-tight md:text-4xl"
+              className="text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl"
             />
             <AnimatedText
               text={featuresSubheadline}
