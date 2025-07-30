@@ -98,7 +98,7 @@ export default function Home() {
           <AnimatedText 
             text={headline}
             el="h1"
-            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-foreground"
+            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-white"
           />
           <AnimatedText 
             text={subheadline}
@@ -117,13 +117,18 @@ export default function Home() {
         </section>
 
         <section id="features" className="container mx-auto px-4 py-16 sm:py-24">
-           <div className="text-center animate-fade-in-up">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              {featuresHeadline}
-            </h2>
-            <p className="mx-auto mt-4 max-w-2xl text-muted-foreground">
-              {featuresSubheadline}
-            </p>
+           <div className="text-center">
+            <AnimatedText 
+              text={featuresHeadline}
+              el="h2"
+              className="text-3xl font-bold tracking-tight sm:text-4xl"
+            />
+            <AnimatedText
+              text={featuresSubheadline}
+              el="p"
+              className="mx-auto mt-4 max-w-2xl text-muted-foreground"
+              stagger={25}
+            />
           </div>
            <div className="mt-12 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, index) => (
