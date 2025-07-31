@@ -274,18 +274,6 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
             enterFullscreen();
         }
 
-        const handleFullscreenChange = () => {
-            if (!document.fullscreenElement) {
-                submitTest("Test submitted because you exited fullscreen mode.");
-            }
-        };
-
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-
-        return () => {
-             document.removeEventListener('fullscreenchange', handleFullscreenChange);
-        }
-
     }, [isProctoringReady, submitTest, toast]);
 
 
@@ -303,7 +291,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
 
     const handlePrev = () => {
         if (currentQuestionIndex > 0) {
-            setCurrentQuestionIndex(prev => prev + 1);
+            setCurrentQuestionIndex(prev => prev - 1);
         }
     };
 

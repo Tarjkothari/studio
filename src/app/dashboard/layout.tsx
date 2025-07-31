@@ -17,7 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BarChart2, LogOut, Scale, Settings, Send, Loader2, Briefcase, MessagesSquare } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 type User = {
   email: string;
@@ -38,7 +38,7 @@ export default function DashboardLayout({
   const [loggedInUser, setLoggedInUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-   const updateUser = () => {
+  const updateUser = useCallback(() => {
     try {
         const userString = localStorage.getItem('loggedInUser');
         if (userString) {
@@ -57,7 +57,7 @@ export default function DashboardLayout({
     } finally {
         setIsLoading(false);
     }
-  };
+  }, [router]);
 
   useEffect(() => {
     updateUser();
@@ -73,8 +73,7 @@ export default function DashboardLayout({
     return () => {
       window.removeEventListener('storage', handleStorageChange);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [updateUser]);
 
   if (isLoading) {
     return (

@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2, MessagesSquare, Mail, Mic } from 'lucide-react';
+import { Briefcase, MapPin, Users, PlusCircle, Calendar, Pencil, Loader2, Star, Download, Trophy, Trash2, MessagesSquare, Mail, Mic, BarChart2 } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -173,7 +173,7 @@ export default function MyJobsPage() {
 
         setMyJobs(prev => {
             const newJobs = [...prev];
-            newJobs[jobIndex].applicants[applicantIndex].score = -1; 
+            newJobs[jobIndex].applicants[applicantIndex].score = -1; // Indicate loading
             return newJobs;
         });
 
@@ -191,11 +191,12 @@ export default function MyJobsPage() {
                 setMyJobs(prev => {
                     const newJobs = [...prev];
                     const targetJob = newJobs[jobIndex];
-                    const targetApplicant = targetJob.applicants[applicantIndex];
-                    targetApplicant.score = score;
-                    targetApplicant.justification = justification;
-                    targetApplicant.parsedResume = parsed;
-                    targetJob.applicants.sort((a,b) => (b.score ?? -1) - (a.score ?? -1));
+                    if (targetJob && targetJob.applicants[applicantIndex]) {
+                       targetJob.applicants[applicantIndex].score = score;
+                       targetJob.applicants[applicantIndex].justification = justification;
+                       targetJob.applicants[applicantIndex].parsedResume = parsed;
+                       targetJob.applicants.sort((a,b) => (b.score ?? -1) - (a.score ?? -1));
+                    }
                     return newJobs;
                 });
             }
@@ -204,7 +205,9 @@ export default function MyJobsPage() {
             toast({ variant: 'destructive', title: 'AI Ranking Failed' });
              setMyJobs(prev => {
                 const newJobs = [...prev];
-                newJobs[jobIndex].applicants[applicantIndex].score = undefined;
+                if (newJobs[jobIndex] && newJobs[jobIndex].applicants[applicantIndex]) {
+                   newJobs[jobIndex].applicants[applicantIndex].score = undefined; // Reset on failure
+                }
                 return newJobs;
             });
         }
@@ -415,7 +418,7 @@ export default function MyJobsPage() {
                                                             <TableCell className="text-center">
                                                                 {applicant.score === undefined ? (
                                                                     <Button variant="outline" size="sm" onClick={() => handleRankApplicant(job.id, applicant.applicantEmail)}>
-                                                                        <Star className="mr-2 h-4 w-4" /> Rank
+                                                                        <BarChart2 className="mr-2 h-4 w-4" /> Rank
                                                                     </Button>
                                                                 ) : applicant.score === -1 ? (
                                                                     <div className="flex items-center justify-center">
