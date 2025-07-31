@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { Logo } from '@/components/logo';
+import { cn } from '@/lib/utils';
 
 type AnimatedTextProps = {
   text: string;
@@ -111,7 +112,7 @@ export default function Home() {
           <AnimatedText 
             text={headline}
             el="h1"
-            className="text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl text-white"
+            className="text-4xl font-extrabold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl"
           />
           <AnimatedText 
             text={subheadline}
