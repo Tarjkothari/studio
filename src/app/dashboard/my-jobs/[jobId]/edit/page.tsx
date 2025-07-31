@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,7 +60,7 @@ export default function EditJobPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
+  const loadJob = useCallback(() => {
     if (!jobId) {
         return;
     };
@@ -92,6 +92,10 @@ export default function EditJobPage() {
         setIsLoading(false);
     }
   }, [jobId, router, toast]);
+
+  useEffect(() => {
+    loadJob();
+  }, [loadJob]);
 
   const handleUpdateJob = (event: React.FormEvent) => {
     event.preventDefault();
@@ -195,7 +199,7 @@ export default function EditJobPage() {
             />
           </div>
            <div className="space-y-2 md:col-span-2">
-            <Label htmlFor="criteria">Key Criteria</Label>
+            <Label htmlFor="Key Criteria">Key Criteria</Label>
             <Textarea
               id="criteria"
               rows={4}
