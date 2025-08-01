@@ -179,8 +179,8 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
 
             // 2. Load ML Model
             try {
-                await tf.setBackend('wasm');
                 setWasmPaths(`https://cdn.jsdelivr.net/npm/@tensorflow/tfjs-backend-wasm@${tf.version_wasm}/dist/`);
+                await tf.setBackend('wasm');
                 const model = await faceLandmarksDetection.load(
                     faceLandmarksDetection.SupportedPackages.mediapipeFacemesh,
                     { maxFaces: 1 }
@@ -251,7 +251,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
         }, 1000);
 
         return () => clearInterval(timer);
-    }, [isProctoringReady, isSubmitting, submitTest, toast]);
+    }, [isProctoringReady, isSubmitting, submitTest]);
     
     // Fullscreen effect
     useEffect(() => {
@@ -274,7 +274,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
             enterFullscreen();
         }
 
-    }, [isProctoringReady, submitTest, toast]);
+    }, [isProctoringReady, toast]);
 
 
     const handleAnswerSelect = (value: string) => {
@@ -325,7 +325,7 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
 
     return (
          <div ref={testContainerRef} className="flex h-full w-full flex-col items-center justify-center bg-background p-4 sm:p-6 select-none">
-            <Card className="max-w-4xl mx-auto w-full flex flex-col h-full max-h-full">
+            <Card className="max-w-4xl mx-auto w-full flex flex-col h-full max-h-full transition-all hover:shadow-lg">
                 <CardHeader>
                     <div className="flex justify-between items-start">
                         <div>
@@ -411,3 +411,5 @@ export function AptitudeTest({ jobId, onTestFinished }: AptitudeTestProps) {
         </div>
     );
 }
+
+    
